@@ -1,5 +1,4 @@
 window.newCharacter = {};
-
 (function (obj) {
     obj.initTemplate = initTemplate;
     let $uploadCharacterButton;
@@ -9,33 +8,33 @@ window.newCharacter = {};
     function initTemplate() {
         $uploadCharacterButton = $('#upload-character-button');
         $uploadCharacterButton.click(uploadCharacter);
-        $aliasTextInput = $('#url-character-input');
-        $urlCharacterInput = $('#alias-text-input');
+        $urlCharacterInput = $('#url-character-input');
+        $aliasTextInput = $('#alias-text-input');
         $errorLabel = $('#error-label');
     }
-    
+
     function uploadCharacter() {
         if (validateForm()) {
-
+            $.ajax({
+                type: "POST",
+                url: "/newCharacter",
+                data: {
+                    characterUrl: $urlCharacterInput.val(),
+                    customAlias: $aliasTextInput.val()
+                },
+                async: false,
+                success: (responseData) => {
+                }
+            });
         }
     }
 
     function validateForm() {
-        let errorMessage = "";
-        errorMessage += getNameIfEmpty($aliasTextInput);
-        errorMessage += getNameIfEmpty($urlCharacterInput);
-        if(errorMessage === "") {
+        if ($urlCharacterInput.val().trim() !== "") {
             $errorLabel.text("");
             return true;
         }
-        $errorLabel.text(`${errorMessage}required!`);
-    }
-
-    function getNameIfEmpty(inputTextField){
-        if (inputTextField.val().trim() === ""){
-            return `${inputTextField.attr("name")}, `;
-        }
-        return "";
+        $errorLabel.text(`${$urlCharacterInput.attr("name")} is required!`);
     }
 
 })(window.newCharacter);

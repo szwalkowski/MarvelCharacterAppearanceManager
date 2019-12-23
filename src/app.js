@@ -1,11 +1,11 @@
 const path = require('path');
 const express = require('express');
+const characterController = require('./characterController');
+const bodyParser = require('body-parser');
 const server = express();
 
 configureServerSettings(server);
-server.get('', (req, res) => {
-    res.render('index');
-});
+createDataEndpoints(server);
 startServer(server);
 
 function configureServerSettings(server) {
@@ -14,6 +14,18 @@ function configureServerSettings(server) {
     server.set('view engine', 'hbs');
     server.set('views', viewDirectoryPath);
     server.use(express.static(publicDirectoryPath));
+    server.use(bodyParser.urlencoded({ extended: true }));
+}
+
+function createDataEndpoints(server) {
+    indexEndpoint(server);
+    characterController.createCharacterEndpoints(server);
+}
+
+function indexEndpoint(server) {
+    server.get('', (req, res) => {
+        res.render('index');
+    });
 }
 
 function startServer(server) {
