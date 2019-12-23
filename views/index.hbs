@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="/css/style.css">
+        <title>Marvel Character Appearance Manager</title>
+    </head>
+    <body>
+        <div class="header">
+            <div class="header_container">
+                <h1 class="header_title">Marvel Character Appearance</h1>
+                <h2 class="header_subtitle">Manager</h2>
+            </div>
+        </div>
+        <div id="paging-div" class="actions actions_top">
+            <div class="nav">
+                <label for="character-search">Character filter:</label><input type="text" id="character-search">
+                <button type="button" id="add-new-character-button">Add new character</button>
+                <button type="button" id="update-all-characters-button">Update all characters</button>
+                <button type="button" id="undu-last-read-action">Undo last read mark</button>
+            </div>
+            <div id="pages-control-div">
+                <select id="image-show-select" name="imagesShow">
+                    <option value="no-images" selected="selected">No images</option>
+                    <option value="only-character">Only character</option>
+                    <option value="all-images">VERY SLOW All images</option>
+                </select>
+                <button type="button" id="previous-page-button" class="paging-button"><img src="../img/prev-icon.svg" alt="prev-arrow"></button>
+                <label for="current-page">Current page:</label><input type="number" id="current-page">/<span id="total-page-count">1</span>
+                <button type="button" id="next-page-button" class="paging-button"><img src="../img/next-icon.svg" alt="next-arrow"></button>
+                <label for="page-size-select">Page size:</label>
+                <select id="page-size-select" name="pageSize">
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                    <option value="100" selected="selected">100</option>
+                    <option value="200">200</option>
+                    <option value="500">500</option>
+                    <option value="1000">1000</option>
+                    <option value="0">Use on your own risk</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="container">
+            <div id="character-list-div" class="actions actions_left">
+                <form class="sort-character-list-form">
+                    <h4>Sort:</h4>
+                    <div class="character-list-options">
+                        <select id="sort-order-dropdown" name="sortOrder">
+                            <option value="0">Alphabetical</option>
+                            <option value="1">Oldest not read</option>
+                            <option value="2">With most fresh issues</option>
+                            <option value="3">Custom</option>
+                            <option value="4">Most read</option>
+                            <option value="5">Less read</option>
+                        </select><br/>
+                    </div>
+                    <h4>Character list:</h4>
+                    <div class="character-list-options character-list-options-buttons">
+                        <button id="rhino-button" type="button">Rhino</button>
+                        <br/>
+                        <button id="black-cat-button" type="button">Black Cat</button>
+                        <br/>
+                    </div>
+                </form>
+            </div>
+            <div class="actions actions_left universe-container">
+                <form id="sort-universe-list-form" class="sort-universe-list-form">
+                    <h4>Universe list:</h4>
+                    <div class="universe-list-options universe-list-options-buttons">
+                        <button id="earth-616-button" type="button">Earth 616</button>
+                        <br/>
+                    </div>
+                </form>
+            </div>
+            <div id="landing-container">
+            </div>
+        </div>
+        <script src="/js/libs/jquery-3.4.1.min.js"></script>
+        <script src="/js/libs/handlebars-4.1.2.min.js"></script>
+
+        <script src="/js/navigation.js"></script>
+        <script src="/js/templateGenerator.js"></script>
+
+        <script src="/js/newCharacter.js"></script>
+    </body>
+</html>

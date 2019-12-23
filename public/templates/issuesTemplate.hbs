@@ -1,0 +1,37 @@
+<div class="issue-filter-div actions actions_top">
+    <form id="issue-filter-form">
+        <h4>Filter issues:</h4><br/>
+        <div>
+            <label for="read-status-dropdown" class="label-filter-grouper">Read:</label>
+            <select id="read-status-dropdown" name="readStatus">
+                <option value="0">All</option>
+                <option value="1">Not read</option>
+                <option value="2">Only read</option>
+            </select>
+        </div>
+        <div>
+            <label class="label-filter-grouper">Issue focus type:</label>
+            <label for="feature-character-check">Featured Character</label>
+            <input type="checkbox" id="feature-character-check" checked="checked">
+            <label for="supporting-character-check">Supporting Character</label>
+            <input type="checkbox" id="supporting-character-check" checked="checked">
+            <label for="antagonist-check">Antagonist</label>
+            <input type="checkbox" id="antagonist-check" checked="checked">
+            <label for="other-character-check">Other</label>
+            <input type="checkbox" id="other-character-check" checked="checked">
+        </div>
+        <div>
+            <label class="label-filter-grouper">Appearance types: </label>
+        </div>
+    </form>
+</div>
+<section flex flex-full-center id="issues-landing-container">
+</section>
+<div class="character-manager actions actions_top">
+    <div class="nav">
+        <label for="alias-text-input">Alias: </label><input type="text" id="alias-text-input">
+        <button type="button" id="rename-alias-button">Rename visible alias</button>
+        <button type="button" id="update-character-button">Update character</button>
+        <button type="button" id="remove-character-action">Remove character</button>
+    </div>
+</div>
