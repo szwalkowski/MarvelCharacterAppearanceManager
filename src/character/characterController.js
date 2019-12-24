@@ -1,6 +1,6 @@
 function createCharacterEndpoints(server) {
-    server.post("/newCharacter", (req, res) => {
-        console.log(req.body);
+    server.post("/newCharacter", req => {
+
     });
 }
 

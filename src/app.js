@@ -1,6 +1,6 @@
 const path = require('path');
 const express = require('express');
-const characterController = require('./characterController');
+const characterController = require('./character/characterController');
 const bodyParser = require('body-parser');
 const server = express();
 
