@@ -69,6 +69,10 @@ input[type="checkbox"]:hover {
     width: 100px
 }
 
+#confirm-character-button {
+    padding: 0.6rem 20rem
+}
+
 button.paging-button img {
     width: 2rem;
     height: 1rem;

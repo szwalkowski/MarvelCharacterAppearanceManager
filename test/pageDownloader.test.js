@@ -5,6 +5,9 @@ const PageDownloader = require('../src/pageDownloader');
  Pages to test:
  https://marvel.fandom.com/wiki/Aleksei_Sytsevich_(Earth-616)
  https://marvel.fandom.com/wiki/May_Reilly_(Earth-616)
+ https://marvel.fandom.com/wiki/Felicia_Hardy_(Earth-616)
+ https://marvel.fandom.com/wiki/Hammerhead_(Joseph)_(Earth-616)
+ https://marvel.fandom.com/wiki/Ulysses_Klaw_(Earth-616)
  */
 
 describe.skip("Helpful tests but not good ones to spam, so leave it as skip", function () {

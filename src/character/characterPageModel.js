@@ -2,7 +2,7 @@ const jquery = require('jquery');
 const characterIdSelector = ".page-header__title";
 const realNameSelector = "*[data-source='RealName'] > .pi-data-value";
 const aliasesSelector = "*[data-source='Aliases'] > .pi-data-value";
-const currentAliasSelector = "*[data-source='CurrentAlias'] > .pi-data-value > a";
+const currentAliasSelector = "";
 const universeSelector = "*[data-source='Universe'] > .pi-data-value > a";
 const imageSelector = "*[data-source='Image'] > a > img";
 
@@ -17,19 +17,31 @@ CharacterPageModel.prototype.getId = function () {
 
 CharacterPageModel.prototype.getRealName = function () {
     const realNameElement = findElementBySelector(this.jQuery, realNameSelector);
-    if (realNameElement.children[0]) { // https://marvel.fandom.com/wiki/Felicia_Hardy_(Earth-616) does not work yet
+    if (realNameElement.children[0] && realNameElement.children[0].innerHTML.trim() !== "") {
+        if (realNameElement.children[0].localName === "sup") {
+            const nameWithSupLink = realNameElement.innerHTML.trim()
+            return nameWithSupLink.substring(0, nameWithSupLink.indexOf('<'));
+        }
         return realNameElement.children[0].innerHTML.trim();
     }
-    return realNameElement.innerHTML.trim();
+    const realNameInnerHTML = realNameElement.innerHTML.trim();
+    if(realNameInnerHTML.indexOf('<') > 0){
+        return realNameInnerHTML.substring(0, realNameInnerHTML.indexOf('<')).trim();
+    }
+    return realNameInnerHTML;
 };
 
 CharacterPageModel.prototype.getCurrentAlias = function () {
-    const currentAlias = this.jQuery.find(currentAliasSelector);
+    const currentAlias = this.jQuery.find("*[data-source='CurrentAlias'] > .pi-data-value > a");
     if (currentAlias.length > 0) {
         return currentAlias[0].innerHTML.trim();
     }
+    const currentAliasWithoutLink = this.jQuery.find("*[data-source='CurrentAlias'] > .pi-data-value");
+    if (currentAliasWithoutLink.length > 0) {
+        return currentAliasWithoutLink[0].innerHTML.trim();
+    }
     const aliasesElement = findElementBySelector(this.jQuery, aliasesSelector);
-    if(!aliasesElement) {
+    if (!aliasesElement) {
         return this.getRealName();
     }
     if (aliasesElement.children[0]) {

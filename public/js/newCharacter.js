@@ -1,7 +1,7 @@
 window.newCharacter = {};
 (function (obj) {
     obj.initTemplate = initTemplate;
-    let $uploadCharacterButton;
+    let $uploadCharacterButton, $confirmCharacterButton;
     let $aliasTextInput, $urlCharacterInput;
     let $errorLabel;
     let $characterInfoTableForConfirmation;
@@ -11,17 +11,19 @@ window.newCharacter = {};
     function initTemplate() {
         $uploadCharacterButton = $('#upload-character-button');
         $uploadCharacterButton.click(uploadCharacter);
+        $uploadCharacterButton = $('#confirm-character-button');
+        $uploadCharacterButton.click(confirmCharacter);
         $urlCharacterInput = $('#url-character-input');
         $aliasTextInput = $('#alias-text-input');
         $errorLabel = $('#error-label');
-        $characterInfoTableForConfirmation = $('#characterInfoTableForConfirmation');
+        $characterInfoTableForConfirmation = $('#character-info-table-for-confirmation');
         $characterInfoTableForConfirmation.attr('hidden', true);
-        $realNameTr = $('#realNameTr');
-        $aliasTr = $('#aliasTr');
-        $universeTr = $('#universeTr');
-        $appearancesTr = $('#appearancesTr');
-        $minorAppearancesTr = $('#minorAppearancesTr');
-        $imageTr = $('#imageTr');
+        $realNameTr = $('#real-name-tr');
+        $aliasTr = $('#alias-tr');
+        $universeTr = $('#universe-tr');
+        $appearancesTr = $('#appearances-tr');
+        $minorAppearancesTr = $('#minor-appearances-tr');
+        $imageTr = $('#image-tr');
     }
 
     function uploadCharacter() {
@@ -41,6 +43,23 @@ window.newCharacter = {};
                 },
                 error: (error) => {
                     $characterInfoTableForConfirmation.attr('hidden', true);
+                    $errorLabel.text(error.responseText);
+                }
+            });
+        }
+    }
+
+    function confirmCharacter() {
+        if (validateForm()) {
+            $.ajax({
+                type: "POST",
+                url: "/confirmCharacter",
+                data: {currentCharacterInfo},
+                async: false,
+                success: (responseData) => {
+                    console.log("SUCCESS");
+                },
+                error: (error) => {
                     $errorLabel.text(error.responseText);
                 }
             });
