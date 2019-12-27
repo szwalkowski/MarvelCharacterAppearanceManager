@@ -2,8 +2,29 @@
     <form id="issue-filter-form">
         <h2>New character:</h2><br/>
         <label for="url-character-input">Url: </label><input type="text" id="url-character-input" name="URL">
-        <label for="alias-text-input">Alias: </label><input type="text" id="alias-text-input" name="Alias">
+        <label for="alias-text-input">Custom alias: </label><input type="text" id="alias-text-input" name="Alias">
         <button type="button" id="upload-character-button">Upload character</button>
         <label id="error-label"></label>
     </form>
+</div>
+<div id="characterInfoTableForConfirmation" class="issues-container">
+    <table>
+        <tr>
+            <th>Real name</th>
+            <th>Alias</th>
+            <th>Universe</th>
+            <th>Appearances</th>
+            <th>Minor appearances</th>
+            <th>Image</th>
+        </tr>
+        <tr>
+            <td id="realNameTr"></td>
+            <td id="aliasTr"></td>
+            <td id="universeTr"></td>
+            <td id="appearancesTr"></td>
+            <td id="minorAppearancesTr"></td>
+            <td id="imageTr"></td>
+        </tr>
+    </table>
+    <button style="padding: 0.6rem 20rem">Confirm</button>
 </div>

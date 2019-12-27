@@ -8,6 +8,7 @@ body, input, textarea, select, button {
     color: #989898;
     background: #171717;
     border-color: #464646;
+    padding: 0.07rem;
     font-family: 'Muli', 'sans serif', 'serif';
 }
 
@@ -113,6 +114,16 @@ button.paging-button img {
 #error-label {
     font-weight: bolder;
     color: #962622;
+}
+
+.issues-container {
+    padding: .5rem;
+    flex: 4;
+}
+
+td, th {
+    border: 0.05rem solid #fff;
+    padding: 1rem;
 }
 
 /* Tiny Flex Grid */
