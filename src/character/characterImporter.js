@@ -8,7 +8,7 @@ let CharacterImporter = function () {
 
 CharacterImporter.prototype.provideCharacterBaseInfoFromPage = async function (url) {
     const wikiWindow = await this.pageDownloader.downloadWindowFromUrl(url);
-    const characterPageModel = new CharacterPageModel(wikiWindow);
+    const characterPageModel = new CharacterPageModel(wikiWindow.location.origin, wikiWindow);
     return new CharacterModel(url, characterPageModel);
 };
 
