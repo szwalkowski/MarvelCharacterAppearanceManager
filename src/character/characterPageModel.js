@@ -1,6 +1,7 @@
 const jquery = require('jquery');
 const characterIdSelector = ".page-header__title";
 const realNameSelector = "*[data-source='RealName'] > .pi-data-value";
+const aliasesSelector = "*[data-source='Aliases'] > .pi-data-value";
 const currentAliasSelector = "*[data-source='CurrentAlias'] > .pi-data-value > a";
 const universeSelector = "*[data-source='Universe'] > .pi-data-value > a";
 const imageSelector = "*[data-source='Image'] > a > img";
@@ -15,11 +16,26 @@ CharacterPageModel.prototype.getId = function () {
 };
 
 CharacterPageModel.prototype.getRealName = function () {
-    return findInnerHtmlAndTrimBySelector(this.jQuery, realNameSelector);
+    const realNameElement = findElementBySelector(this.jQuery, realNameSelector);
+    if (realNameElement.children[0]) { // https://marvel.fandom.com/wiki/Felicia_Hardy_(Earth-616) does not work yet
+        return realNameElement.children[0].innerHTML.trim();
+    }
+    return realNameElement.innerHTML.trim();
 };
 
 CharacterPageModel.prototype.getCurrentAlias = function () {
-    return findInnerHtmlAndTrimBySelector(this.jQuery, currentAliasSelector);
+    const currentAlias = this.jQuery.find(currentAliasSelector);
+    if (currentAlias.length > 0) {
+        return currentAlias[0].innerHTML.trim();
+    }
+    const aliasesElement = findElementBySelector(this.jQuery, aliasesSelector);
+    if(!aliasesElement) {
+        return this.getRealName();
+    }
+    if (aliasesElement.children[0]) {
+        return aliasesElement.children[0].innerHTML.trim();
+    }
+    return aliasesElement.innerHTML.trim();
 };
 
 CharacterPageModel.prototype.getUniverse = function () {
@@ -32,12 +48,12 @@ CharacterPageModel.prototype.getImage = function () {
 
 CharacterPageModel.prototype.getAppearancesCount = function () {
     findAppearances(this);
-    return parseInt(this.majorAppearance.innerHTML);
+    return parseInt(this.majorAppearance.innerHTML.replace(',', ''));
 };
 
 CharacterPageModel.prototype.getMinorAppearancesCount = function () {
     findAppearances(this);
-    return parseInt(this.minorAppearance.innerHTML);
+    return parseInt(this.minorAppearance.innerHTML.replace(',', ''));
 };
 
 CharacterPageModel.prototype.getAppearancesUrl = function () {
@@ -63,6 +79,19 @@ function findAppearances(model) {
     }
     model.majorAppearance = model.appearances.filter((cos, el) => !el.innerHTML.includes("Minor"))[0];
     model.minorAppearance = model.appearances.filter((cos, el) => el.innerHTML.includes("Minor"))[0];
+}
+
+/**
+ * @return innerHtml if found
+ * @throws "TypeError" Cannot read property 'innerHtml' of undefined if selector was not valid for page
+ */
+function findElementBySelector(jQuery, selector) {
+    try {
+        return jQuery.find(selector)[0];
+    } catch (error) {
+        console.error(`Error during finding element by ${selector}`);
+        throw error;
+    }
 }
 
 /**
