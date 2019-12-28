@@ -17,11 +17,14 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
     const appearanceWindow = this.pageDownloader.downloadWindowFromUrlAsync(baseCharacterInfo.AppearanceUrl);
     const minorAppearanceLinks = this.characterAppearanceWalker.findAllLinksToIssuesAsync(await minorAppearanceWindow);
     const appearanceLinks = this.characterAppearanceWalker.findAllLinksToIssuesAsync(await appearanceWindow);
-
-    const allAppearanceLinks = (await minorAppearanceLinks).concat(await appearanceLinks);
-    allAppearanceLinks.sort();
-
+    const mergedAppearanceLinks = await mergeListsAndSort(minorAppearanceLinks, appearanceLinks);
 
 };
+
+async function mergeListsAndSort(minorAppearanceLinks, appearanceLinks) {
+    const allAppearanceLinks = (await minorAppearanceLinks).concat(await appearanceLinks);
+    allAppearanceLinks.sort();
+    return allAppearanceLinks;
+}
 
 module.exports = CharacterImporter;
