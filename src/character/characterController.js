@@ -38,24 +38,8 @@ function prepareCharacterFromWikiPage(instance, server) {
 
 function prepareCharacterConfirmAction(instance, server) {
     server.post("/confirmCharacter", (req, res) => {
-        instance.characterImporter.provideCharacterBaseInfoFromPage(req.body["characterUrl"]).then((response) => {
-            res.end(JSON.stringify({
-                CharacterId: response.getId(),
-                OriginAlias: response.getCurrentAlias(),
-                SetAlias: req.body["customAlias"].trim() === "" ? response.getCurrentAlias().trim() : req.body["customAlias"],
-                Universe: response.getUniverse(),
-                RealName: response.getRealName(),
-                AppearanceCount: response.getAppearancesCount(),
-                MinorAppearanceCount: response.getMinorAppearancesCount(),
-                AppearanceUrl: response.getAppearancesUrl(),
-                MinorAppearanceUrl: response.getMinorAppearancesUrl(),
-                ImageUrl: response.getImage()
-            }));
-        }, reason => {
-            console.error(reason);
-            res.status(500);
-            res.end("Error on saving character from provided page");
-        });
+        console.log(req.body["currentCharacterInfo"]);
+        res.end();
     });
 }
 

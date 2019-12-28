@@ -1,14 +1,13 @@
-const jquery = require('jquery');
+const JQuery = require('jquery');
 const characterIdSelector = ".page-header__title";
 const realNameSelector = "*[data-source='RealName'] > .pi-data-value";
 const aliasesSelector = "*[data-source='Aliases'] > .pi-data-value";
-const currentAliasSelector = "";
 const universeSelector = "*[data-source='Universe'] > .pi-data-value > a";
 const imageSelector = "*[data-source='Image'] > a > img";
 
 let CharacterPageModel = function (baseUrl, characterPageWindow) {
     this.baseUrl = baseUrl;
-    this.jQuery = new jquery(characterPageWindow);
+    this.jQuery = new JQuery(characterPageWindow);
 };
 
 CharacterPageModel.prototype.getId = function () {
