@@ -8,7 +8,7 @@ let CharacterAppearanceWalker = function () {
 CharacterAppearanceWalker.prototype.findAllLinksToIssuesAsync = async function (appearanceWindow) {
     const jQuery = new JQuery(appearanceWindow);
     const nextPageOfLinksPromise = findNextPageOfLinksAsync(jQuery, this.pageDownloader);
-    let allLinksToIssues = scanForLinks(jQuery);
+    let allLinksToIssues = scanForLinks(appearanceWindow.location.origin, jQuery);
     let nextPageOfLinks = await nextPageOfLinksPromise;
     if (nextPageOfLinks) {
         const linksFromOtherPage = await this.findAllLinksToIssuesAsync(nextPageOfLinks);
@@ -24,11 +24,11 @@ async function findNextPageOfLinksAsync(jQuery, pageDownloader) {
     }
 }
 
-function scanForLinks(jQuery) {
+function scanForLinks(origin, jQuery) {
     let linkCollection = [];
     const allAElementsWithLinks = jQuery.find('.category-page__member-link');
     allAElementsWithLinks.forEach(aElement => {
-        linkCollection.push(aElement.attributes["href"].value);
+        linkCollection.push(origin + aElement.attributes["href"].value);
     });
     return linkCollection;
 }

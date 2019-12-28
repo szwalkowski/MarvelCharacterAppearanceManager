@@ -38,8 +38,13 @@ function prepareCharacterFromWikiPage(instance, server) {
 
 function prepareCharacterConfirmAction(instance, server) {
     server.post("/confirmCharacter", (req, res) => {
-        console.log(req.body["currentCharacterInfo"]);
-        res.end();
+        instance.characterImporter.downloadAndStoreConfirmedCharacterAsync(req.body["currentCharacterInfo"]).then(() => {
+            res.end();
+        }, reason => {
+            console.error(reason);
+            res.status(500);
+            res.end("Error on saving character and its appearances");
+        });
     });
 }
 
