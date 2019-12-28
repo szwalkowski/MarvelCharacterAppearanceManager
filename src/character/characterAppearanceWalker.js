@@ -5,29 +5,34 @@ let CharacterAppearanceWalker = function () {
     this.pageDownloader = new PageDownloader();
 };
 
-CharacterAppearanceWalker.prototype.findAllLinksToIssues = function (appearanceWindow) {
-    let jQuery = new JQuery(appearanceWindow);
+CharacterAppearanceWalker.prototype.findAllLinksToIssues = async function (appearanceWindow) {
+    const jQuery = new JQuery(appearanceWindow);
     let allLinksToIssues;
-    const nextPageOfLinks = findNextPageOfLinks(jQuery, this.pageDownloader);
+    const nextPageOfLinks = await findNextPageOfLinks(jQuery, this.pageDownloader);
     if (nextPageOfLinks) {
-        allLinksToIssues = this.findAllLinksToIssues(nextPageOfLinks);
+        allLinksToIssues = await this.findAllLinksToIssues(nextPageOfLinks);
     } else {
         allLinksToIssues = [];
     }
-    allLinksToIssues.push(1);
-
+    allLinksToIssues = allLinksToIssues.concat(scanForLinks(jQuery));
     return allLinksToIssues;
 };
 
-function findNextPageOfLinks(jQuery, pageDownloader) {
-    const nextPageUrl = jQuery.find('.category-page__pagination-next')[0].attributes["href"]["value"];
-    if (nextPageUrl) {
-        let nextWindowPage;
-        pageDownloader.downloadWindowFromUrl(nextPageUrl).then(
-            console.log("DONE")
-        );
-        console.log("DONE2");
+async function findNextPageOfLinks(jQuery, pageDownloader) {
+    const nextPageElement = jQuery.find('.category-page__pagination-next')[0];
+    if (nextPageElement) {
+        return await pageDownloader.downloadWindowFromUrl(nextPageElement.attributes["href"]["value"]);
     }
+    return undefined;
+}
+
+function scanForLinks(jQuery) {
+    let linkCollection = [];
+    const allAElementsWithLinks = jQuery.find('.category-page__member-link');
+    allAElementsWithLinks.forEach(aElement => {
+        linkCollection.push(aElement.attributes["href"].value);
+    });
+    return linkCollection;
 }
 
 module.exports = CharacterAppearanceWalker;
