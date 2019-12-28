@@ -15,7 +15,7 @@ function createCharacterEndpoints(instance, server) {
 
 function prepareCharacterFromWikiPage(instance, server) {
     server.post("/newCharacter", (req, res) => {
-        instance.characterImporter.provideCharacterBaseInfoFromPage(req.body["characterUrl"]).then((response) => {
+        instance.characterImporter.provideCharacterBaseInfoFromPageAsync(req.body["characterUrl"]).then((response) => {
             res.end(JSON.stringify({
                 CharacterId: response.getId(),
                 OriginAlias: response.getCurrentAlias(),

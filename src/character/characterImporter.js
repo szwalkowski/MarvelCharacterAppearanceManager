@@ -5,8 +5,8 @@ let CharacterImporter = function () {
     this.pageDownloader = new PageDownloader();
 };
 
-CharacterImporter.prototype.provideCharacterBaseInfoFromPage = async function (url) {
-    const wikiWindow = await this.pageDownloader.downloadWindowFromUrl(url);
+CharacterImporter.prototype.provideCharacterBaseInfoFromPageAsync = async function (url) {
+    const wikiWindow = await this.pageDownloader.downloadWindowFromUrlAsync(url);
     return new CharacterPageModel(wikiWindow.location.origin, wikiWindow);
 };
 

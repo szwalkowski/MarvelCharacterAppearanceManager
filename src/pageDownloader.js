@@ -4,7 +4,7 @@ const {JSDOM} = jsdom;
 let PageDownloader = function () {
 };
 
-PageDownloader.prototype.downloadWindowFromUrl = async function (url) {
+PageDownloader.prototype.downloadWindowFromUrlAsync = async function (url) {
     let dom = await JSDOM.fromURL(url);
     return dom.window;
 };

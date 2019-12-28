@@ -10,13 +10,14 @@ describe("Page model test based on downloaded html", function () {
         const filePath = `${__dirname}/resources/appearances/Aleksei_Sytsevich_(Earth-616).html`;
         const page = fs.readFileSync(filePath, "utf-8");
         const pageWindow = new JSDOM(page).window;
-        const rhinoAppearanceLinks = await new CharacterAppearanceWalker().findAllLinksToIssues(pageWindow);
+        const rhinoAppearanceLinks = await new CharacterAppearanceWalker().findAllLinksToIssuesAsync(pageWindow);
         assert.equal(rhinoAppearanceLinks.length, 200);
     });
 
     it.skip("parse html for Rhino but use online source - there are more than 200 of course", async function () {
-        const windowPromise = await new PageDownloader().downloadWindowFromUrl("https://marvel.fandom.com/wiki/Category:Aleksei_Sytsevich_(Earth-616)/Appearances");
-        const rhinoAppearanceLinks = await new CharacterAppearanceWalker().findAllLinksToIssues(windowPromise);
+        this.timeout(30000);
+        const windowPromise = await new PageDownloader().downloadWindowFromUrlAsync("https://marvel.fandom.com/wiki/Category:Aleksei_Sytsevich_(Earth-616)/Appearances");
+        const rhinoAppearanceLinks = await new CharacterAppearanceWalker().findAllLinksToIssuesAsync(windowPromise);
         assert.equal(rhinoAppearanceLinks.length, 248);
     });
 });

@@ -16,7 +16,7 @@ describe.skip("Helpful tests but not good ones to spam, so leave it as skip", fu
         const pageDownloader = new PageDownloader();
         const windowCharacterWikiPromise = new Promise(function (resolve, reject) {
             setTimeout(function () {
-                    resolve(pageDownloader.downloadWindowFromUrl("https://marvel.fandom.com/wiki/Aleksei_Sytsevich_(Earth-616)"))
+                    resolve(pageDownloader.downloadWindowFromUrlAsync("https://marvel.fandom.com/wiki/Aleksei_Sytsevich_(Earth-616)"))
                 }, 30000
             )
         });

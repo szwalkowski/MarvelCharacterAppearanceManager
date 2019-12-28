@@ -5,25 +5,23 @@ let CharacterAppearanceWalker = function () {
     this.pageDownloader = new PageDownloader();
 };
 
-CharacterAppearanceWalker.prototype.findAllLinksToIssues = async function (appearanceWindow) {
+CharacterAppearanceWalker.prototype.findAllLinksToIssuesAsync = async function (appearanceWindow) {
     const jQuery = new JQuery(appearanceWindow);
-    let allLinksToIssues;
-    const nextPageOfLinks = await findNextPageOfLinks(jQuery, this.pageDownloader);
+    const nextPageOfLinksPromise = findNextPageOfLinksAsync(jQuery, this.pageDownloader);
+    let allLinksToIssues = scanForLinks(jQuery);
+    let nextPageOfLinks = await nextPageOfLinksPromise;
     if (nextPageOfLinks) {
-        allLinksToIssues = await this.findAllLinksToIssues(nextPageOfLinks);
-    } else {
-        allLinksToIssues = [];
+        const linksFromOtherPage = await this.findAllLinksToIssuesAsync(nextPageOfLinks);
+        allLinksToIssues = allLinksToIssues.concat(linksFromOtherPage);
     }
-    allLinksToIssues = allLinksToIssues.concat(scanForLinks(jQuery));
     return allLinksToIssues;
 };
 
-async function findNextPageOfLinks(jQuery, pageDownloader) {
+async function findNextPageOfLinksAsync(jQuery, pageDownloader) {
     const nextPageElement = jQuery.find('.category-page__pagination-next')[0];
     if (nextPageElement) {
-        return await pageDownloader.downloadWindowFromUrl(nextPageElement.attributes["href"]["value"]);
+        return await pageDownloader.downloadWindowFromUrlAsync(nextPageElement.attributes["href"]["value"]);
     }
-    return undefined;
 }
 
 function scanForLinks(jQuery) {
