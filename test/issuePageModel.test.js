@@ -14,6 +14,8 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(rhinoPage.getName(), "Amazing Spider-Man");
         assert.equal(rhinoPage.getVolume(), 1);
         assert.equal(rhinoPage.getIssueNo(), 41);
+        assert.equal(rhinoPage.getImage(), "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d0/Amazing_Spider-Man_Vol_1_41.jpg/revision/latest/scale-to-width-down/300?cb=20171229055342");
+        assert.equal(rhinoPage.getPublishedDate(), new Date(1966, 9).getTime());
     });
 
     it("parse html for random Rhino issue appearance", function () {
@@ -25,6 +27,8 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(rhinoPage.getName(), "Unbeatable Squirrel Girl");
         assert.equal(rhinoPage.getVolume(), 2);
         assert.equal(rhinoPage.getIssueNo(), 49);
+        assert.equal(rhinoPage.getImage(), "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
+        assert.equal(rhinoPage.getPublishedDate(), new Date(2019, 11).getTime());
     });
 
     it("parse html for not issue but a game!", function () {
