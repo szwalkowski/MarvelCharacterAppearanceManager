@@ -1,21 +1,25 @@
 const JQuery = require('jquery');
-const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-const containsComicsCategorySelector = ".page-header__categories-links > :contains('Comics')";
-const imageSelector = "#templateimage .image-thumbnail > img";
+const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
+const SelectorWithAllIssueData = '#wpTextbox1';
 
 let IssuePageModel = function (issuePageWindow, characterUrl) {
     this.characterUrl = characterUrl;
-    this.jQuery = new JQuery(issuePageWindow);
-    this.keywords = issuePageWindow.window.document.getElementsByTagName("meta")["keywords"]["content"].split(",").map(item => item.trim());
-    this.fullName = this.keywords.find(value => new RegExp(".+(\\d)+ (\\d)+$").test(value));
+    this.jquery = new JQuery(issuePageWindow);
+    this.fullName = this.jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
+    this.issueTextInfo = this.jquery.find(SelectorWithAllIssueData)[0].innerHTML.split("\n");
+    this.indexOfValueInLine = this.issueTextInfo.find(value => value.includes("Image")).indexOf("=") + 2;
+    prepareAppearanceInfo(this.issueTextInfo, this.characterUrl);
 };
 
+function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
+}
+
 IssuePageModel.prototype.isIssue = function () {
-    return this.jQuery.find(containsComicsCategorySelector).length > 0;
+    return this.issueTextInfo[0].includes("Marvel Database:Comic Template");
 };
 
 IssuePageModel.prototype.getName = function () {
-    return this.fullName.split(" Vol")[0];
+    return this.fullName.split(" Vol ")[0];
 };
 
 IssuePageModel.prototype.getVolume = function () {
@@ -29,22 +33,15 @@ IssuePageModel.prototype.getIssueNo = function () {
 };
 
 IssuePageModel.prototype.getImage = function () {
-    try {
-        const elementWithImage = this.jQuery.find(imageSelector)[0];
-        if (elementWithImage.attributes["data-src"]) {
-            return elementWithImage.attributes["data-src"]["value"];
-        }
-        return elementWithImage.attributes["src"]["value"];
-    } catch (error) {
-        console.error(`Error during finding element by ${imageSelector}`);
-        throw error;
-    }
+    throw new Error("getImage not yet implemented!");
 };
 
 IssuePageModel.prototype.getPublishedDate = function () {
-    const year = this.keywords.find(value => new RegExp("^\\d{4}$").test(value));
-    const month = this.keywords.find(value => months.includes(value));
-    return new Date(year, months.findIndex(value => value === month)).getTime();
+    const monthLine = this.issueTextInfo.find(line => line.includes("| Month"));
+    const yearLine = this.issueTextInfo.find(line => line.includes("| Year"));
+    const month = parseInt(monthLine.substring(this.indexOfValueInLine, this.indexOfValueInLine + 2));
+    const year = parseInt(yearLine.substring(this.indexOfValueInLine, this.indexOfValueInLine + 4));
+    return new Date(year, month - 1).getTime();
 };
 
 IssuePageModel.prototype.getAppearanceType = function () {
@@ -66,25 +63,5 @@ IssuePageModel.prototype.getCharacterFocusType = function () {
 IssuePageModel.prototype.getSubtitle = function () {
 
 };
-
-function resolveAppearances(jQuery, characterUrl) {
-    for (let i = 0; i < 10; i++) {
-        const startingHeader = jQuery.find(`#AppearingHeader${i}`)[0];
-        if (startingHeader) {
-            return findNextSiblingWithDesiredCharacter(startingHeader, characterUrl);
-        }
-    }
-}
-
-function findNextSiblingWithDesiredCharacter(elementToStartFrom, characterUrl) {
-    const nextElementSibling = elementToStartFrom.nextElementSibling;
-    if (!nextElementSibling) {
-        return undefined;
-    } else if (nextElementSibling.innerHTML.includes(characterUrl)) {
-        const spanElement = nextElementSibling.innerHTML;
-        return spanElement.substring();
-    }
-    return findNextSiblingWithDesiredCharacter(nextElementSibling, characterUrl);
-}
 
 module.exports = IssuePageModel;

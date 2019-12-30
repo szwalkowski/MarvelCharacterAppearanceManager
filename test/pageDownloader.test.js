@@ -14,6 +14,11 @@ const PageDownloader = require('../src/pageDownloader');
  https://marvel.fandom.com/wiki/Amazing_Spider-Man_Vol_1_41
  https://marvel.fandom.com/wiki/Unbeatable_Squirrel_Girl_Vol_2_49
  https://marvel.fandom.com/wiki/The_Amazing_Spider-Man_%26_Captain_America_in_Dr._Doom%27s_Revenge! <-- not an issue!!!!
+
+ issues edit sites:
+ https://marvel.fandom.com/wiki/Amazing_Spider-Man_Vol_1_41?action=edit
+ https://marvel.fandom.com/wiki/Unbeatable_Squirrel_Girl_Vol_2_49?action=edit
+ https://marvel.fandom.com/wiki/The_Amazing_Spider-Man_%26_Captain_America_in_Dr._Doom%27s_Revenge!?action=edit
  */
 
 describe.skip("Helpful tests but not good ones to spam, so leave it as skip", function () {
