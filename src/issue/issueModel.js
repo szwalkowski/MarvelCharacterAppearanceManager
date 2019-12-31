@@ -1,4 +1,4 @@
-let IssueModel = function (url, name, subtitle, volume, issueNo, publishDateTimestamp, imageUrl, appearanceType, characterFocusType, read = null) {
+let IssueModel = function (url, name, subtitle, volume, issueNo, publishDateTimestamp, imageUrl, appearanceType, focusType, read = null) {
     this.url = url;
     this.name = name;
     this.subtitle = subtitle;
@@ -7,7 +7,7 @@ let IssueModel = function (url, name, subtitle, volume, issueNo, publishDateTime
     this.publishDateTimestamp = publishDateTimestamp;
     this.imageUrl = imageUrl;
     this.appearanceType = appearanceType;
-    this.characterFocusType = characterFocusType;
+    this.focusType = focusType;
     this.read = read;
 };
 

@@ -1,21 +1,19 @@
 const JQuery = require('jquery');
 const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
 const SelectorWithAllIssueData = '#wpTextbox1';
+const regexForAppearanceTypeOptionOne = /\{[a-zA-Z\d]+}}$/;
+const regexForAppearanceTypeOptionTwo = /\|[a-zA-Z\d]+}}$/;
 
-let IssuePageModel = function (issuePageWindow, characterUrl) {
-    this.characterUrl = characterUrl;
+let IssuePageModel = function (issuePageWindow, characterId) {
+    this.characterId = characterId;
     this.jquery = new JQuery(issuePageWindow);
     this.fullName = this.jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
     this.issueTextInfo = this.jquery.find(SelectorWithAllIssueData)[0].innerHTML.split("\n");
-    this.indexOfValueInLine = this.issueTextInfo.find(value => value.includes("Image")).indexOf("=") + 2;
-    prepareAppearanceInfo(this.issueTextInfo, this.characterUrl);
-};
-
-function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
-}
-
-IssuePageModel.prototype.isIssue = function () {
-    return this.issueTextInfo[0].includes("Marvel Database:Comic Template");
+    this.isIssue = this.issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
+    if (this.isIssue) {
+        this.indexOfValueInLine = this.issueTextInfo.find(value => value.includes("Image")).indexOf("=") + 2;
+        this.appearances = prepareAppearanceInfo(this.issueTextInfo, this.indexOfValueInLine, this.characterId);
+    }
 };
 
 IssuePageModel.prototype.getName = function () {
@@ -44,24 +42,44 @@ IssuePageModel.prototype.getPublishedDate = function () {
     return new Date(year, month - 1).getTime();
 };
 
-IssuePageModel.prototype.getAppearanceType = function () {
-    return "DD";
+IssuePageModel.prototype.getAppearances = function () {
+    return this.appearances;
 };
 
-IssuePageModel.prototype.getCharacterFocusType = function () {
-    const nextElementToCharacterTypeAppearance = this.jQuery.find(`[href="${this.characterUrl}"]`)[0].nextElementSibling;
-    if (!nextElementToCharacterTypeAppearance) {
-        return "";
+function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
+    let allAppearings = [];
+    let newAppearing;
+    const stringThatContainsStoryTitle = "| StoryTitle";
+    textInfo.forEach(line => {
+        if (line.includes(stringThatContainsStoryTitle)) {
+            //if(newAppearing && ){
+            //     allAppearings.pop();
+            // }
+            newAppearing = {};
+            newAppearing.no = parseInt(line.substring(stringThatContainsStoryTitle.length, stringThatContainsStoryTitle.length + 2));
+            newAppearing.title = line.substring(indexOfValueInLine, line.length);
+        }
+        if (line.includes('\'\'\'')) {
+            newAppearing.focusType = line.substring(3, line.length - 5);
+        }
+        if (line.includes(`|[[${characterId}|`)) {
+            newAppearing.typeOfAppearance = tryToGetAppearanceType(line);
+            allAppearings.push(newAppearing);
+            newAppearing = {};
+        }
+    });
+    return allAppearings;
+}
+
+function tryToGetAppearanceType(line) {
+    let appearanceTypeWithTwoExtraCharacters = regexForAppearanceTypeOptionOne.exec(line);
+    if (!appearanceTypeWithTwoExtraCharacters) {
+        appearanceTypeWithTwoExtraCharacters = regexForAppearanceTypeOptionTwo.exec(line);
     }
-    const regex = /\(.+\)/
-    if (nextElementToCharacterTypeAppearance.nextElementSibling) {
-        return regex.exec(nextElementToCharacterTypeAppearance.nextElementSibling.innerHTML)[0];
+    if (appearanceTypeWithTwoExtraCharacters) {
+        return appearanceTypeWithTwoExtraCharacters[0].substring(1, appearanceTypeWithTwoExtraCharacters[0].length - 2);
     }
-    return regex.exec(nextElementToCharacterTypeAppearance.innerHTML)[0];
-};
-
-IssuePageModel.prototype.getSubtitle = function () {
-
-};
+    return "";
+}
 
 module.exports = IssuePageModel;
