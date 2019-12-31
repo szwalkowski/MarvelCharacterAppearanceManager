@@ -26,7 +26,11 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
             this.pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
                 issuePage => {
                     console.log(`${++no} page downloaded! ${link}`);
-                    new IssuePageModel(issuePage, baseCharacterInfo.characterId);
+                    const issuePageModel = new IssuePageModel(issuePage, baseCharacterInfo.CharacterId);
+                    if (issuePageModel.isIssue) {
+                        console.log(`${issuePageModel.getName()} ${issuePageModel.getVolume()} ${issuePageModel.getIssueNo()} ${new Date(issuePageModel.getPublishedDate())}`);
+                        console.log(issuePageModel.getAppearances());
+                    }
                 }
             ).catch(reason => {
                 console.error(reason);
@@ -34,27 +38,10 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
         );
     });
     await Promise.all(promisesToFindInfoAboutAllIssues).then(value => {
-            value.forEach(issuePageModel => {
-                // IT"S NOT WHAT YOU THINK IT IS //TODO
-                /*
-
-]
-TypeError: Cannot read property 'getName' of undefined
-    at D:\Workspace\javascript\marvel_appearance_db\src\character\characterImporter.js:38:44
-    at Array.forEach (<anonymous>)
-    at D:\Workspace\javascript\marvel_appearance_db\src\character\characterImporter.js:37:19
-    at runMicrotasks (<anonymous>)
-    at processTicksAndRejections (internal/process/task_queues.js:93:5)
-    at async CharacterImporter.downloadAndStoreConfirmedCharacterAsync (D:\Workspace\javascript\marvel_appearance_db\src\character\characterImporter.js:36:5)
-                 */
-                console.log(issuePageModel.getName());
-                console.log(issuePageModel.getAppearances());
-            });
-        }
-    ).catch(reason => {
+        console.log("All promises ended!");
+    }).catch(reason => {
         console.error(reason);
     });
-    console.log(promisesToFindInfoAboutAllIssues);
 };
 
 async function mergeListsAndSort(minorAppearanceLinks, appearanceLinks) {

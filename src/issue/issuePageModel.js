@@ -1,4 +1,5 @@
 const JQuery = require('jquery');
+const Months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
 const SelectorWithAllIssueData = '#wpTextbox1';
 const regexForAppearanceTypeOptionOne = /\{[a-zA-Z\d]+}}$/;
@@ -6,6 +7,12 @@ const regexForAppearanceTypeOptionTwo = /\|[a-zA-Z\d]+}}$/;
 const regexFocusType = /^'''[a-zA-Z ]+:'''$/;
 
 let IssuePageModel = function (issuePageWindow, characterId) {
+    if (!issuePageWindow) {
+        throw new Error("issuePageWindow is undefined!");
+    }
+    if (!characterId) {
+        throw new Error("characterId is undefined!");
+    }
     this.characterId = characterId;
     this.jquery = new JQuery(issuePageWindow);
     this.fullName = this.jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
@@ -36,10 +43,18 @@ IssuePageModel.prototype.getImage = function () {
 };
 
 IssuePageModel.prototype.getPublishedDate = function () {
-    const monthLine = this.issueTextInfo.find(line => line.includes("| Month"));
     const yearLine = this.issueTextInfo.find(line => line.includes("| Year"));
-    const month = parseInt(monthLine.substring(this.indexOfValueInLine, this.indexOfValueInLine + 2));
     const year = parseInt(yearLine.substring(this.indexOfValueInLine, this.indexOfValueInLine + 4));
+    const monthLine = this.issueTextInfo.find(line => line.includes("| Month"));
+    let month;
+    if (monthLine) {
+        month = parseInt(monthLine.substring(this.indexOfValueInLine, this.indexOfValueInLine + 2));
+        if (!month) {
+            month = Months.findIndex(value => value === monthLine.substring(this.indexOfValueInLine, monthLine.length - 1));
+        }
+    } else {
+        month = Months.findIndex(value => value === "January");
+    }
     return new Date(year, month - 1).getTime();
 };
 
