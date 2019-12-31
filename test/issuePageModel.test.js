@@ -123,4 +123,46 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getAppearances()[1], undefined);
     });
 
+    it("parse html for appearance type in front", function () {
+        const filePath = `${__dirname}/resources/issues/Marvel_Tsum_Tsum_Vol_1_2edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const maryJaneIssue = new IssuePageModel(pageWindow, "Aleksei Sytsevich (Earth-616)");
+        assert.equal(maryJaneIssue.isIssue, true);
+        assert.equal(maryJaneIssue.getName(), "Marvel Tsum Tsum");
+        assert.equal(maryJaneIssue.getVolume(), 1);
+        assert.equal(maryJaneIssue.getIssueNo(), 2);
+        //assert.equal(maryJaneIssue.getImage(),
+        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
+        assert.equal(maryJaneIssue.getPublishedDate(), new Date(2016, 10).getTime());
+        assert.equal(maryJaneIssue.getAppearances()[0].title, "Part 2: The Tsum is Off the Rose!");
+        assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Other Character");
+        assert.equal(maryJaneIssue.getAppearances()[0].typeOfAppearance, "OnScreen");
+        assert.equal(maryJaneIssue.getAppearances()[1], undefined);
+    });
+
+    it("parse html for appearance for 3 subtitles", function () {
+        const filePath = `${__dirname}/resources/issues/Savage_Hulk_Vol_1_1edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const maryJaneIssue = new IssuePageModel(pageWindow, "Aleksei Sytsevich (Earth-616)");
+        assert.equal(maryJaneIssue.isIssue, true);
+        assert.equal(maryJaneIssue.getName(), "Savage Hulk");
+        assert.equal(maryJaneIssue.getVolume(), 1);
+        assert.equal(maryJaneIssue.getIssueNo(), 1);
+        //assert.equal(maryJaneIssue.getImage(),
+        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
+        assert.equal(maryJaneIssue.getPublishedDate(), new Date(1996, 0).getTime());
+        assert.equal(maryJaneIssue.getAppearances()[0].title, "Courtroom Sequence");
+        assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Antagonist");
+        assert.equal(maryJaneIssue.getAppearances()[0].typeOfAppearance, "");
+        assert.equal(maryJaneIssue.getAppearances()[1].title, "The Power of Bullies");
+        assert.equal(maryJaneIssue.getAppearances()[1].focusType, "Antagonist");
+        assert.equal(maryJaneIssue.getAppearances()[1].typeOfAppearance, "");
+        assert.equal(maryJaneIssue.getAppearances()[2].title, "The Strongest One There Is");
+        assert.equal(maryJaneIssue.getAppearances()[2].focusType, "Antagonist");
+        assert.equal(maryJaneIssue.getAppearances()[2].typeOfAppearance, "Dream");
+        assert.equal(maryJaneIssue.getAppearances()[3], undefined);
+    });
+
 });

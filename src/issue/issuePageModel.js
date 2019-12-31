@@ -4,6 +4,7 @@ const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
 const SelectorWithAllIssueData = '#wpTextbox1';
 const regexForAppearanceTypeOptionOne = /\{[a-zA-Z\d]+}}$/;
 const regexForAppearanceTypeOptionTwo = /\|[a-zA-Z\d]+}}$/;
+const regexForAppearanceTypeOptionThree = /{[a-zA-Z\d]+\|/;
 const regexFocusType = /^'''[a-zA-Z ]+:'''$/;
 
 let IssuePageModel = function (issuePageWindow, characterId) {
@@ -85,14 +86,23 @@ function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
 }
 
 function tryToGetAppearanceType(line) {
-    let appearanceTypeWithTwoExtraCharacters = regexForAppearanceTypeOptionOne.exec(line);
-    if (!appearanceTypeWithTwoExtraCharacters) {
-        appearanceTypeWithTwoExtraCharacters = regexForAppearanceTypeOptionTwo.exec(line);
+    let appearanceType = regexForAppearanceTypeOptionOne.exec(line);
+    if (!appearanceType) {
+        appearanceType = regexForAppearanceTypeOptionTwo.exec(line);
     }
-    if (appearanceTypeWithTwoExtraCharacters) {
-        return appearanceTypeWithTwoExtraCharacters[0].substring(1, appearanceTypeWithTwoExtraCharacters[0].length - 2);
+    if (appearanceType) {
+        return appearanceType[0].substring(1, appearanceType[0].length - 2);
+    }
+    appearanceType = regexForAppearanceTypeOptionThree.exec(line);
+    if (appearanceType) {
+        appearanceType = appearanceType[0].substring(1, appearanceType[0].length - 1);
+        if (appearanceType === "a" || appearanceType === "apn") {
+            return "";
+        }
+        return appearanceType;
     }
     return "";
 }
 
+// * {{OnScreen|[[Aleksei Sytsevich (Earth-616)|Rhino (Aleksei Sytsevich)]]}}
 module.exports = IssuePageModel;
