@@ -3,6 +3,7 @@ const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
 const SelectorWithAllIssueData = '#wpTextbox1';
 const regexForAppearanceTypeOptionOne = /\{[a-zA-Z\d]+}}$/;
 const regexForAppearanceTypeOptionTwo = /\|[a-zA-Z\d]+}}$/;
+const regexFocusType = /^'''[a-zA-Z ]+:'''$/;
 
 let IssuePageModel = function (issuePageWindow, characterId) {
     this.characterId = characterId;
@@ -59,7 +60,7 @@ function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
             newAppearing.no = parseInt(line.substring(stringThatContainsStoryTitle.length, stringThatContainsStoryTitle.length + 2));
             newAppearing.title = line.substring(indexOfValueInLine, line.length);
         }
-        if (line.includes('\'\'\'')) {
+        if (regexFocusType.exec(line)) {
             newAppearing.focusType = line.substring(3, line.length - 5);
         }
         if (line.includes(`|[[${characterId}|`)) {

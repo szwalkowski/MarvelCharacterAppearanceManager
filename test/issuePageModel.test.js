@@ -67,7 +67,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderIssue.getAppearances()[1], undefined);
     });
 
-    it("parse html for random Silver Sable issue appearance in two titles", function () {
+    it("Problematic issue for Rhino of Mary Jane", function () {
         const filePath = `${__dirname}/resources/issues/Silver_Sable_and_the_Wild_Pack_Vol_1_18edit.html`;
         const page = fs.readFileSync(filePath, "utf-8");
         const pageWindow = new JSDOM(page).window;
@@ -85,6 +85,24 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderIssue.getAppearances()[1].title, "A New Beginning");
         assert.equal(spiderIssue.getAppearances()[1].focusType, "Featured Character");
         assert.equal(spiderIssue.getAppearances()[1].typeOfAppearance, "");
+    });
+
+    it("parse html for random Silver Sable issue appearance in two titles", function () {
+        const filePath = `${__dirname}/resources/issues/Amazing_Mary_Jane_Vol_1_1edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const maryJaneIssue = new IssuePageModel(pageWindow, "Aleksei Sytsevich (Earth-616)");
+        assert.equal(maryJaneIssue.isIssue, true);
+        assert.equal(maryJaneIssue.getName(), "Amazing Mary Jane");
+        assert.equal(maryJaneIssue.getVolume(), 1);
+        assert.equal(maryJaneIssue.getIssueNo(), 1);
+        //assert.equal(maryJaneIssue.getImage(),
+        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
+        assert.equal(maryJaneIssue.getPublishedDate(), new Date(2019, 11).getTime());
+        assert.equal(maryJaneIssue.getAppearances()[0].title, "");
+        assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Other Character");
+        assert.equal(maryJaneIssue.getAppearances()[0].typeOfAppearance, "");
+        assert.equal(maryJaneIssue.getAppearances()[1], undefined);
     });
 
 });

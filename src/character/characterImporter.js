@@ -1,5 +1,6 @@
 const CharacterPageModel = require('./characterPageModel');
 const CharacterAppearanceWalker = require('./characterAppearanceWalker');
+const IssuePageModel = require('../issue/issuePageModel');
 const PageDownloader = require('../pageDownloader');
 
 let CharacterImporter = function () {
@@ -18,7 +19,18 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
     const minorAppearanceLinks = this.characterAppearanceWalker.findAllLinksToIssuesAsync(await minorAppearanceWindow);
     const appearanceLinks = this.characterAppearanceWalker.findAllLinksToIssuesAsync(await appearanceWindow);
     const mergedAppearanceLinks = await mergeListsAndSort(minorAppearanceLinks, appearanceLinks);
-
+    let no = 0;
+    let promisesToFindInfoAboutAllIssues = [];
+    mergedAppearanceLinks.forEach(link => {
+        promisesToFindInfoAboutAllIssues.push(this.pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
+            issuePage => {
+                console.log(`${++no} page downloaded! ${link}`);
+                new IssuePageModel(issuePage, baseCharacterInfo.characterId);
+            }
+        ));
+    });
+    await Promise.all(promisesToFindInfoAboutAllIssues);
+    console.log(promisesToFindInfoAboutAllIssues);
 };
 
 async function mergeListsAndSort(minorAppearanceLinks, appearanceLinks) {
