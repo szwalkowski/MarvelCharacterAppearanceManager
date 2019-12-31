@@ -105,4 +105,22 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getAppearances()[1], undefined);
     });
 
+    it("parse html for official handbook?", function () {
+        const filePath = `${__dirname}/resources/issues/Official_Handbook_of_the_Marvel_Universe_Vol_2_12.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const maryJaneIssue = new IssuePageModel(pageWindow, "Aleksei Sytsevich (Earth-616)");
+        assert.equal(maryJaneIssue.isIssue, true);
+        assert.equal(maryJaneIssue.getName(), "Official Handbook of the Marvel Universe");
+        assert.equal(maryJaneIssue.getVolume(), 2);
+        assert.equal(maryJaneIssue.getIssueNo(), 12);
+        //assert.equal(maryJaneIssue.getImage(),
+        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
+        assert.equal(maryJaneIssue.getPublishedDate(), new Date(1986, 10).getTime());
+        assert.equal(maryJaneIssue.getAppearances()[0].title, undefined);
+        assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Featured Character");
+        assert.equal(maryJaneIssue.getAppearances()[0].typeOfAppearance, "");
+        assert.equal(maryJaneIssue.getAppearances()[1], undefined);
+    });
+
 });

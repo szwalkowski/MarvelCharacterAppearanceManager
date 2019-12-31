@@ -22,6 +22,7 @@ const PageDownloader = require('../src/pageDownloader');
  https://marvel.fandom.com/wiki/The_Spectacular_Spider-Man_Vol_1_210?action=edit
  https://marvel.fandom.com/wiki/Silver_Sable_and_the_Wild_Pack_Vol_1_18?action=edit
  https://marvel.fandom.com/wiki/Amazing_Mary_Jane_Vol_1_1?action=edit
+ https://marvel.fandom.com/wiki/Official_Handbook_of_the_Marvel_Universe_Vol_2_12?action=edit
  */
 
 describe.skip("Helpful tests but not good ones to spam, so leave it as skip", function () {

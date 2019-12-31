@@ -49,13 +49,10 @@ IssuePageModel.prototype.getAppearances = function () {
 
 function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
     let allAppearings = [];
-    let newAppearing;
+    let newAppearing = {};
     const stringThatContainsStoryTitle = "| StoryTitle";
     textInfo.forEach(line => {
         if (line.includes(stringThatContainsStoryTitle)) {
-            //if(newAppearing && ){
-            //     allAppearings.pop();
-            // }
             newAppearing = {};
             newAppearing.no = parseInt(line.substring(stringThatContainsStoryTitle.length, stringThatContainsStoryTitle.length + 2));
             newAppearing.title = line.substring(indexOfValueInLine, line.length);
