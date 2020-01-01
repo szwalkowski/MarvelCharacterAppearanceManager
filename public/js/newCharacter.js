@@ -57,7 +57,9 @@ window.newCharacter = {};
                 data: {currentCharacterInfo},
                 async: false,
                 success: (responseData) => {
-                    console.log("SUCCESS");
+                    $characterInfoTableForConfirmation.attr('hidden', true);
+                    loadCharacters();
+                    $errorLabel.text("");
                 },
                 error: (error) => {
                     $errorLabel.text(error.responseText);

@@ -5,6 +5,22 @@ const IssueModel = require('../issue/issueModel');
 let CharacterManager = function () {
 };
 
+CharacterManager.prototype.provideAllCharactersAvailable = function () {
+    let characters = [];
+    fs.readdirSync('../appearances').forEach(file => {
+        const alias = /[a-zA-Z/d_]+/.exec(file)[0];
+        const universeWithBrackets = /\([a-zA-Z\d-]+\)/.exec(file)[0];
+        const universe = universeWithBrackets.substring(1, universeWithBrackets.length - 1);
+        let existingCharacterWithAliasIdx = characters.findIndex(character => character.alias === alias);
+        if (existingCharacterWithAliasIdx < 0) {
+            existingCharacterWithAliasIdx = characters.length;
+            characters.push({alias, universes: []});
+        }
+        characters[existingCharacterWithAliasIdx].universes.push(universe);
+    });
+    return characters;
+};
+
 CharacterManager.prototype.saveCharacter = function (characterAndIssues) {
     const issues = [];
     characterAndIssues.issues.forEach(issue => {
@@ -28,7 +44,7 @@ CharacterManager.prototype.saveCharacter = function (characterAndIssues) {
 function saveToFile(characterModel) {
     const characterModelAsJson = JSON.stringify(characterModel);
     const fileName = `../appearances/${characterModel.alias.replace(/ /g, "_")}(${characterModel.world}).json`;
-    fs.writeFile(fileName, characterModelAsJson, function (err) {
+    fs.writeFileSync(fileName, characterModelAsJson, function (err) {
         if (err) {
             console.log(err);
             throw err;

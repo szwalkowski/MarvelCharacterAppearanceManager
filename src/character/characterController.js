@@ -1,7 +1,9 @@
 const CharacterImporter = require("./characterImporter");
+const CharacterManager = require("./characterManager");
 
 let CharacterController = function () {
     this.characterImporter = new CharacterImporter();
+    this.characterManager = new CharacterManager();
 };
 
 CharacterController.prototype.setupEndpoints = function (server) {
@@ -11,6 +13,7 @@ CharacterController.prototype.setupEndpoints = function (server) {
 function createCharacterEndpoints(instance, server) {
     prepareCharacterFromWikiPage(instance, server);
     prepareCharacterConfirmAction(instance, server);
+    prepareGetAllCharactersAliases(instance, server);
 }
 
 function prepareCharacterFromWikiPage(instance, server) {
@@ -46,6 +49,12 @@ function prepareCharacterConfirmAction(instance, server) {
             res.status(500);
             res.end("Error on saving character and its appearances");
         });
+    });
+}
+
+function prepareGetAllCharactersAliases(instance, server) {
+    server.get("/getAllCharacters", (req, res) => {
+        res.end(JSON.stringify(instance.characterManager.provideAllCharactersAvailable()));
     });
 }
 
