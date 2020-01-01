@@ -32,8 +32,6 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(rhinoPage.getName(), "Unbeatable Squirrel Girl");
         assert.equal(rhinoPage.getVolume(), 2);
         assert.equal(rhinoPage.getIssueNo(), 49);
-        //assert.equal(rhinoPage.getImage(),
-        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
         assert.equal(rhinoPage.getPublishedDate(), new Date(2019, 11).getTime());
         assert.equal(rhinoPage.getAppearances()[0].title, "");
         assert.equal(rhinoPage.getAppearances()[0].focusType, "Supporting Character");
@@ -58,8 +56,6 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderIssue.getName(), "The Spectacular Spider-Man");
         assert.equal(spiderIssue.getVolume(), 1);
         assert.equal(spiderIssue.getIssueNo(), 210);
-        //assert.equal(spiderIssue.getImage(),
-        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
         assert.equal(spiderIssue.getPublishedDate(), new Date(1994, 2).getTime());
         assert.equal(spiderIssue.getAppearances()[0].title, "Truth and Consequences");
         assert.equal(spiderIssue.getAppearances()[0].focusType, "Featured Character");
@@ -76,8 +72,6 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderIssue.getName(), "Silver Sable and the Wild Pack");
         assert.equal(spiderIssue.getVolume(), 1);
         assert.equal(spiderIssue.getIssueNo(), 18);
-        //assert.equal(spiderIssue.getImage(),
-        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
         assert.equal(spiderIssue.getPublishedDate(), new Date(1993, 10).getTime());
         assert.equal(spiderIssue.getAppearances()[0].title, "Recouping Losses");
         assert.equal(spiderIssue.getAppearances()[0].focusType, "Featured Character");
@@ -96,8 +90,6 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getName(), "Amazing Mary Jane");
         assert.equal(maryJaneIssue.getVolume(), 1);
         assert.equal(maryJaneIssue.getIssueNo(), 1);
-        //assert.equal(maryJaneIssue.getImage(),
-        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
         assert.equal(maryJaneIssue.getPublishedDate(), new Date(2019, 11).getTime());
         assert.equal(maryJaneIssue.getAppearances()[0].title, "");
         assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Other Character");
@@ -114,8 +106,6 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getName(), "Official Handbook of the Marvel Universe");
         assert.equal(maryJaneIssue.getVolume(), 2);
         assert.equal(maryJaneIssue.getIssueNo(), 12);
-        //assert.equal(maryJaneIssue.getImage(),
-        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
         assert.equal(maryJaneIssue.getPublishedDate(), new Date(1986, 10).getTime());
         assert.equal(maryJaneIssue.getAppearances()[0].title, undefined);
         assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Featured Character");
@@ -132,8 +122,6 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getName(), "Marvel Tsum Tsum");
         assert.equal(maryJaneIssue.getVolume(), 1);
         assert.equal(maryJaneIssue.getIssueNo(), 2);
-        //assert.equal(maryJaneIssue.getImage(),
-        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
         assert.equal(maryJaneIssue.getPublishedDate(), new Date(2016, 10).getTime());
         assert.equal(maryJaneIssue.getAppearances()[0].title, "Part 2: The Tsum is Off the Rose!");
         assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Other Character");
@@ -150,8 +138,6 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getName(), "Savage Hulk");
         assert.equal(maryJaneIssue.getVolume(), 1);
         assert.equal(maryJaneIssue.getIssueNo(), 1);
-        //assert.equal(maryJaneIssue.getImage(),
-        // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d1/Unbeatable_Squirrel_Girl_Vol_2_49.jpg/revision/latest/scale-to-width-down/300?cb=20190921203554");
         assert.equal(maryJaneIssue.getPublishedDate(), new Date(1996, 0).getTime());
         assert.equal(maryJaneIssue.getAppearances()[0].title, "Courtroom Sequence");
         assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Antagonist");
@@ -163,6 +149,22 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getAppearances()[2].focusType, "Antagonist");
         assert.equal(maryJaneIssue.getAppearances()[2].typeOfAppearance, "Dream");
         assert.equal(maryJaneIssue.getAppearances()[3], undefined);
+    });
+
+    it("issue has chronology! It causes problems", function () {
+        const filePath = `${__dirname}/resources/issues/Amazing_Spider-Man_Vol_1_2edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const spiderManIssue = new IssuePageModel(pageWindow, "Adrian Toomes (Earth-616)");
+        assert.equal(spiderManIssue.isIssue, true);
+        assert.equal(spiderManIssue.getName(), "Amazing Spider-Man");
+        assert.equal(spiderManIssue.getVolume(), 1);
+        assert.equal(spiderManIssue.getIssueNo(), 2);
+        assert.equal(spiderManIssue.getPublishedDate(), new Date(1963, 4).getTime());
+        assert.equal(spiderManIssue.getAppearances()[0].title, "Duel to the Death with the Vulture!");
+        assert.equal(spiderManIssue.getAppearances()[0].focusType, "Antagonist");
+        assert.equal(spiderManIssue.getAppearances()[0].typeOfAppearance, "1st");
+        assert.equal(spiderManIssue.getAppearances()[1], undefined);
     });
 
 });

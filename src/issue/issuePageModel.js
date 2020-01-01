@@ -2,10 +2,10 @@ const JQuery = require('jquery');
 const Months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
 const SelectorWithAllIssueData = '#wpTextbox1';
-const regexForAppearanceTypeOptionOne = /\{[a-zA-Z\d]+}}$/;
-const regexForAppearanceTypeOptionTwo = /\|[a-zA-Z\d]+}}$/;
-const regexForAppearanceTypeOptionThree = /{[a-zA-Z\d]+\|/;
+const regexForAppearanceTypeOptionOne = /[\{\|][a-zA-Z\d]+}}/g;
+const regexForAppearanceTypeOptionTwo = /{[a-zA-Z\d]+\|/;
 const regexFocusType = /^'''[a-zA-Z ]+:'''$/;
+const invalidTypeAppearances = ["a", "apn", "g", "Chronology", "ChronoFB"];
 
 let IssuePageModel = function (issuePageWindow, characterId, url) {
     if (!issuePageWindow) {
@@ -68,42 +68,60 @@ function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
     let allAppearings = [];
     let newAppearing = {};
     const stringThatContainsStoryTitle = "| StoryTitle";
+    let weHaveStory = false;
+    let appearingsStarted = false;
     textInfo.forEach(line => {
-        if (line.includes(stringThatContainsStoryTitle)) {
+        if (!appearingsStarted && line.includes(stringThatContainsStoryTitle)) {
             newAppearing = {};
             newAppearing.no = parseInt(line.substring(stringThatContainsStoryTitle.length, stringThatContainsStoryTitle.length + 2));
             newAppearing.title = line.substring(indexOfValueInLine, line.length);
+            weHaveStory = true;
         }
-        if (regexFocusType.exec(line)) {
-            newAppearing.focusType = line.substring(3, line.length - 5);
+        if (!appearingsStarted && line.includes("Appearing")) {
+            appearingsStarted = true;
         }
-        if (line.includes(`|[[${characterId}|`)) {
-            newAppearing.typeOfAppearance = tryToGetAppearanceType(line);
-            allAppearings.push(newAppearing);
-            newAppearing = {};
+        if (weHaveStory || appearingsStarted) {
+            if (line.startsWith("{{Quote")) {
+                // continue
+            } else if (regexFocusType.exec(line)) {
+                newAppearing.focusType = line.substring(3, line.length - 5);
+            } else if (line.includes(`|[[${characterId}|`)) {
+                newAppearing.typeOfAppearance = tryToGetAppearanceType(line);
+                allAppearings.push(newAppearing);
+                newAppearing = {};
+                weHaveStory = appearingsStarted = false;
+            } else if (appearingsStarted && line === "") {
+                newAppearing = {};
+                weHaveStory = appearingsStarted = false;
+            }
         }
     });
     return allAppearings;
 }
 
 function tryToGetAppearanceType(line) {
-    let appearanceType = regexForAppearanceTypeOptionOne.exec(line);
-    if (!appearanceType) {
-        appearanceType = regexForAppearanceTypeOptionTwo.exec(line);
+    let appearanceTypes = [];
+    let regexResolution = line.match(regexForAppearanceTypeOptionOne);
+    if (regexResolution) {
+        regexResolution.forEach(type => {
+            let appearanceType = type.substring(1, type.length - 2);
+            if (isValidTypeAppearance(appearanceType)) {
+                appearanceTypes.push(appearanceType);
+            }
+        });
     }
-    if (appearanceType) {
-        return appearanceType[0].substring(1, appearanceType[0].length - 2);
-    }
-    appearanceType = regexForAppearanceTypeOptionThree.exec(line);
-    if (appearanceType) {
-        appearanceType = appearanceType[0].substring(1, appearanceType[0].length - 1);
-        if (appearanceType === "a" || appearanceType === "apn") {
-            return "";
+    regexResolution = regexForAppearanceTypeOptionTwo.exec(line);
+    if (regexResolution) {
+        let appearanceType = regexResolution[0].substring(1, regexResolution[0].length - 1);
+        if (isValidTypeAppearance(appearanceType)) {
+            appearanceTypes.push(appearanceType);
         }
-        return appearanceType;
     }
-    return "";
+    return appearanceTypes;
 }
 
-// * {{OnScreen|[[Aleksei Sytsevich (Earth-616)|Rhino (Aleksei Sytsevich)]]}}
+function isValidTypeAppearance(typeAppearance) {
+    return invalidTypeAppearances.findIndex(type => type === typeAppearance) < 0;
+}
+
 module.exports = IssuePageModel;
