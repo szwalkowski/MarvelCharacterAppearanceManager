@@ -25,6 +25,7 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
     let promisesToFindInfoAboutAllIssues = [];
     let characterAndIssues = baseCharacterInfo;
     characterAndIssues.issues = [];
+    console.log(`Downloading of ${mergedAppearanceLinks.length} issues starting!`);
     mergedAppearanceLinks.forEach(link => {
         promisesToFindInfoAboutAllIssues.push(
             this.pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
@@ -37,11 +38,13 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
                 }
             ).catch(reason => {
                 console.error(reason);
+                throw reason;
             })
         );
     });
     await Promise.all(promisesToFindInfoAboutAllIssues).catch(reason => {
         console.error(reason);
+        throw reason;
     });
     this.characterManager.saveCharacter(characterAndIssues);
 };

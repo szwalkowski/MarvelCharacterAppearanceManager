@@ -22,12 +22,18 @@ CharacterManager.prototype.saveCharacter = function (characterAndIssues) {
     issues.sort((a, b) => (a.publishDateTimestamp > b.publishDateTimestamp) ? 1 : -1);
     const characterModel = new CharacterModel(characterAndIssues.CharacterId.replace(/ /g, "_"), characterAndIssues.Url, characterAndIssues.SetAlias,
         characterAndIssues.RealName, characterAndIssues.Universe, characterAndIssues.ImageUrl, issues, issues[issues.length - 1].publishDateTimestamp);
-    fs.writeFile(`../appearances/${characterModel.id}.json`, JSON.stringify(characterModel), function (err) {
+    saveToFile(characterModel);
+};
+
+function saveToFile(characterModel) {
+    const characterModelAsJson = JSON.stringify(characterModel);
+    const fileName = `../appearances/${characterModel.alias.replace(/ /g, "_")}(${characterModel.world}).json`;
+    fs.writeFile(fileName, characterModelAsJson, function (err) {
         if (err) {
             console.log(err);
+            throw err;
         }
-    });
-    // transform this to those models from requires and save it?
-};
+    })
+}
 
 module.exports = CharacterManager;

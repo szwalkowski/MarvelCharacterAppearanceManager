@@ -21,7 +21,7 @@ let IssuePageModel = function (issuePageWindow, characterId, url) {
     this.issueTextInfo = this.jquery.find(SelectorWithAllIssueData)[0].innerHTML.split("\n");
     this.isIssue = this.issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
     if (this.isIssue) {
-        this.indexOfValueInLine = this.issueTextInfo.find(value => value.includes("Image")).indexOf("=") + 2;
+        this.indexOfValueInLine = this.issueTextInfo.find(value => value.includes(" Year ")).indexOf("=") + 2;
         this.appearances = prepareAppearanceInfo(this.issueTextInfo, this.indexOfValueInLine, this.characterId);
     }
 };
