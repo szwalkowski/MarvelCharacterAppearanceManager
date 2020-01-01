@@ -7,13 +7,14 @@ const regexForAppearanceTypeOptionTwo = /\|[a-zA-Z\d]+}}$/;
 const regexForAppearanceTypeOptionThree = /{[a-zA-Z\d]+\|/;
 const regexFocusType = /^'''[a-zA-Z ]+:'''$/;
 
-let IssuePageModel = function (issuePageWindow, characterId) {
+let IssuePageModel = function (issuePageWindow, characterId, url) {
     if (!issuePageWindow) {
         throw new Error("issuePageWindow is undefined!");
     }
     if (!characterId) {
         throw new Error("characterId is undefined!");
     }
+    this.url = url;
     this.characterId = characterId;
     this.jquery = new JQuery(issuePageWindow);
     this.fullName = this.jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;

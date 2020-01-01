@@ -1,11 +1,13 @@
 const CharacterPageModel = require('./characterPageModel');
 const CharacterAppearanceWalker = require('./characterAppearanceWalker');
+const CharacterManager = require('./characterManager');
 const IssuePageModel = require('../issue/issuePageModel');
 const PageDownloader = require('../pageDownloader');
 
 let CharacterImporter = function () {
     this.pageDownloader = new PageDownloader();
     this.characterAppearanceWalker = new CharacterAppearanceWalker();
+    this.characterManager = new CharacterManager();
 };
 
 CharacterImporter.prototype.provideCharacterBaseInfoFromPageAsync = async function (url) {
@@ -21,15 +23,16 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
     const mergedAppearanceLinks = await mergeListsAndSort(minorAppearanceLinks, appearanceLinks);
     let no = 0;
     let promisesToFindInfoAboutAllIssues = [];
+    let characterAndIssues = baseCharacterInfo;
+    characterAndIssues.issues = [];
     mergedAppearanceLinks.forEach(link => {
         promisesToFindInfoAboutAllIssues.push(
             this.pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
                 issuePage => {
                     console.log(`${++no} page downloaded! ${link}`);
-                    const issuePageModel = new IssuePageModel(issuePage, baseCharacterInfo.CharacterId);
+                    const issuePageModel = new IssuePageModel(issuePage, baseCharacterInfo.CharacterId, link);
                     if (issuePageModel.isIssue) {
-                        console.log(`${issuePageModel.getName()} ${issuePageModel.getVolume()} ${issuePageModel.getIssueNo()} ${new Date(issuePageModel.getPublishedDate())}`);
-                        console.log(issuePageModel.getAppearances());
+                        characterAndIssues.issues.push(issuePageModel);
                     }
                 }
             ).catch(reason => {
@@ -37,11 +40,10 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
             })
         );
     });
-    await Promise.all(promisesToFindInfoAboutAllIssues).then(value => {
-        console.log("All promises ended!");
-    }).catch(reason => {
+    await Promise.all(promisesToFindInfoAboutAllIssues).catch(reason => {
         console.error(reason);
     });
+    this.characterManager.saveCharacter(characterAndIssues);
 };
 
 async function mergeListsAndSort(minorAppearanceLinks, appearanceLinks) {

@@ -18,6 +18,7 @@ function prepareCharacterFromWikiPage(instance, server) {
         instance.characterImporter.provideCharacterBaseInfoFromPageAsync(req.body["characterUrl"]).then((response) => {
             res.end(JSON.stringify({
                 CharacterId: response.getId(),
+                Url: req.body["characterUrl"],
                 OriginAlias: response.getCurrentAlias(),
                 SetAlias: req.body["customAlias"].trim() === "" ? response.getCurrentAlias().trim() : req.body["customAlias"],
                 Universe: response.getUniverse(),

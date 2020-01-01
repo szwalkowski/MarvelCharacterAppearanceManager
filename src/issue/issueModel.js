@@ -1,13 +1,11 @@
-let IssueModel = function (url, name, subtitle, volume, issueNo, publishDateTimestamp, imageUrl, appearanceType, focusType, read = null) {
+let IssueModel = function (url, name, volume, issueNo, publishDateTimestamp, appearances, read = null) {
     this.url = url;
     this.name = name;
-    this.subtitle = subtitle;
     this.volume = volume;
     this.issueNo = issueNo;
     this.publishDateTimestamp = publishDateTimestamp;
-    this.imageUrl = imageUrl;
-    this.appearanceType = appearanceType;
-    this.focusType = focusType;
+    //this.imageUrl = imageUrl;
+    this.appearances = appearances;
     this.read = read;
 };
 
