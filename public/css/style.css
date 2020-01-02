@@ -142,6 +142,10 @@ a:active {
     color: red;
 }
 
+.selectedUniverse, .selectedCharacter {
+    color: #438c0c;
+}
+
 /* Tiny Flex Grid */
 
 [flex] {

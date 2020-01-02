@@ -3,6 +3,7 @@ $newCharacterButton = $('#add-new-character-button');
 
 $newCharacterButton.click(function () {
     cleanPage();
+    cleanActiveCharacterButtons();
     provideTemplate.get('newCharacterTemplate', (template) => {
         $landingContainer.html(template());
         postLoadTemplateAction(window.newCharacter);
