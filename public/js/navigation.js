@@ -9,6 +9,13 @@ $newCharacterButton.click(function () {
     });
 });
 
+function loadIssuesListTemplate(characterData) {
+    cleanPage();
+    provideTemplate.get('issuesTemplate', (template) => {
+        $landingContainer.html(template(characterData));
+    });
+}
+
 function postLoadTemplateAction(currentController) {
     window.currentController = currentController;
     window.currentController.initTemplate();

@@ -14,6 +14,7 @@ function createCharacterEndpoints(instance, server) {
     prepareCharacterFromWikiPage(instance, server);
     prepareCharacterConfirmAction(instance, server);
     prepareGetAllCharactersAliases(instance, server);
+    prepareGetAllIssuesForCharacter(instance, server);
 }
 
 function prepareCharacterFromWikiPage(instance, server) {
@@ -55,6 +56,13 @@ function prepareCharacterConfirmAction(instance, server) {
 function prepareGetAllCharactersAliases(instance, server) {
     server.get("/getAllCharacters", (req, res) => {
         res.end(JSON.stringify(instance.characterManager.provideAllCharactersAvailable()));
+    });
+}
+
+function prepareGetAllIssuesForCharacter(instance, server) {
+    server.get("/getAllIssuesForCharacter", (req, res) => {
+        const issues = instance.characterManager.loadIssues(req.query.alias, req.query.universe);
+        res.end(issues);
     });
 }
 

@@ -1,7 +1,5 @@
 const $characterListDiv = $('.character-list-options-buttons');
 const $universeListDiv = $('.universe-list-options-buttons');
-let pickedCharacterAlias;
-let charactersData;
 
 loadCharacters();
 
@@ -13,13 +11,11 @@ function loadCharacters() {
         success: (responseData) => {
             $characterListDiv.empty();
             $universeListDiv.empty();
-            charactersData = JSON.parse(responseData);
-            charactersData.forEach(character => {
-                $characterListDiv.append(`<button id="${character.alias}" type="button">${character.alias.replace('_', ' ')}</button><br/>`);
-                $(`#${character.alias}`).click((btn) => {
+            JSON.parse(responseData).forEach(character => {
+                $characterListDiv.append(`<button id="${character.alias}_button" type="button">${character.alias.replace('_', ' ')}</button><br/>`);
+                $(`#${character.alias}_button`).click(() => {
                     $universeListDiv.empty();
-                    pickedCharacterAlias = btn.target.id;
-                    showCharacterUniverses();
+                    showCharacterUniverses(character);
                 });
             });
         },
@@ -28,9 +24,29 @@ function loadCharacters() {
         }
     });
 }
-function showCharacterUniverses() {
-    const universes = charactersData.find(character => character.alias === pickedCharacterAlias).universes;
-    universes.forEach(universe => {
-        $universeListDiv.append(`<button id="${universe}" type="button">${universe}</button><br/>`);
+
+function showCharacterUniverses(character) {
+    character.universes.forEach(universe => {
+        $universeListDiv.append(`<button id="${character.alias}_${universe}_button" type="button">${universe}</button><br/>`);
+        $(`#${character.alias}_${universe}_button`).click((btn) => {
+            getAllIssuesForCharacter(character.alias, universe);
+        });
+    });
+}
+
+function getAllIssuesForCharacter(alias, universe) {
+    $.ajax({
+        type: "GET",
+        url: "/getAllIssuesForCharacter",
+        data: `alias=${alias}&universe=${universe}`,
+        async: true,
+        success: (responseData) => {
+            const characterData = JSON.parse(responseData);
+            loadIssuesListTemplate(characterData);
+            console.log(characterData);
+        },
+        error: (error) => {
+            console.error(error);
+        }
     });
 }

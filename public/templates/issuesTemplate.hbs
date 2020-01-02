@@ -26,10 +26,53 @@
     </form>
 </div>
 <section flex flex-full-center id="issues-landing-container">
+    <table>
+        <thead>
+            <tr>
+                <th>Issue name:</th>
+                <th>Publication date:</th>
+                <th>Volume:</th>
+                <th>Issue no:</th>
+                <th>Stories:</th>
+                <th>Read:</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{#each issues}}
+                <tr>
+                    <td><a href="{{url}}">{{name}}</a></td>
+                    <td>{{timestampToDate publishDateTimestamp}}</td>
+                    <td>{{volume}}</td>
+                    <td>{{issueNo}}</td>
+                    <td>
+                        <table class="small-table">
+                            <thead>
+                                <tr>
+                                    <th>title</th>
+                                    <th>focus type</th>
+                                    <th>appearance type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each appearances}}
+                                   <tr>
+                                       <td>{{subtitle}}</td>
+                                       <td>{{focusType}}</td>
+                                       <td>{{appearanceType}}</td>
+                                   </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </td>
+                    <td>{{read}}</td>
+                </tr>
+            {{/each}}
+        </tbody>
+    </table>
 </section>
 <div class="character-manager actions actions_top">
     <div class="nav">
-        <label for="alias-text-input">Alias: </label><input type="text" id="alias-text-input">
+        <label for="alias-text-input">Alias: </label><input type="text" id="alias-text-input" value="{{alias}}">
         <button type="button" id="rename-alias-button">Rename visible alias</button>
         <button type="button" id="update-character-button">Update character</button>
         <button type="button" id="remove-character-action">Remove character</button>

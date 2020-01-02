@@ -41,6 +41,12 @@ CharacterManager.prototype.saveCharacter = function (characterAndIssues) {
     saveToFile(characterModel);
 };
 
+CharacterManager.prototype.loadIssues = function (alias, universe) {
+    const fileName = `${alias}(${universe}).json`;
+    const fileContent = fs.readFileSync(`../appearances/${fileName}`, "utf-8");
+    return fileContent;
+};
+
 function saveToFile(characterModel) {
     const characterModelAsJson = JSON.stringify(characterModel);
     const fileName = `../appearances/${characterModel.alias.replace(/ /g, "_")}(${characterModel.world}).json`;
