@@ -22,6 +22,10 @@
         </div>
         <div>
             <label class="label-filter-grouper">Appearance types: </label>
+            {{#each setOfAppearanceTypes}}
+                <label for="{{this}}-appearance-type-check">{{this}}</label>
+                <input type="checkbox" id="{{this}}-appearance-type-check" checked="checked">
+            {{/each}}
         </div>
     </form>
 </div>
@@ -38,7 +42,7 @@
             </tr>
         </thead>
         <tbody>
-            {{#each issues}}
+            {{#each characterData.issues}}
                 <tr>
                     <td><a href="{{url}}">{{name}}</a></td>
                     <td>{{timestampToDate publishDateTimestamp}}</td>
@@ -55,11 +59,11 @@
                             </thead>
                             <tbody>
                                 {{#each appearances}}
-                                   <tr>
-                                       <td>{{subtitle}}</td>
-                                       <td>{{focusType}}</td>
-                                       <td>{{appearanceType}}</td>
-                                   </tr>
+                                    <tr>
+                                        <td>{{subtitle}}</td>
+                                        <td>{{focusType}}</td>
+                                        <td>{{appearanceTypes}}</td>
+                                    </tr>
                                 {{/each}}
                             </tbody>
                         </table>

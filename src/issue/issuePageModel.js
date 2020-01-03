@@ -86,7 +86,7 @@ function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
             } else if (regexFocusType.exec(line)) {
                 newAppearing.focusType = line.substring(3, line.length - 5);
             } else if (line.includes(`|[[${characterId}|`)) {
-                newAppearing.typeOfAppearance = tryToGetAppearanceType(line);
+                newAppearing.typesOfAppearance = tryToGetAppearanceType(line);
                 allAppearings.push(newAppearing);
                 newAppearing = {};
                 weHaveStory = appearingsStarted = false;

@@ -29,7 +29,7 @@ CharacterManager.prototype.saveCharacter = function (characterAndIssues) {
             appearancesInIssue.push({
                 subtitle: appearance.title,
                 focusType: appearance.focusType,
-                appearanceType: appearance.typeOfAppearance
+                appearanceTypes: appearance.typesOfAppearance
             });
         });
         const issueModel = new IssueModel(issue.url, issue.getName(), issue.getVolume(), issue.getIssueNo(), issue.getPublishedDate(), appearancesInIssue);
@@ -41,10 +41,19 @@ CharacterManager.prototype.saveCharacter = function (characterAndIssues) {
     saveToFile(characterModel);
 };
 
-CharacterManager.prototype.loadIssues = function (alias, universe) {
+CharacterManager.prototype.loadIssuesAndAppearances = function (alias, universe) {
     const fileName = `${alias}(${universe}).json`;
     const fileContent = fs.readFileSync(`../appearances/${fileName}`, "utf-8");
-    return fileContent;
+    const characterData = JSON.parse(fileContent);
+    const setOfAppearanceTypes = new Set();
+    characterData.issues.forEach(issue => {
+        issue.appearances.forEach(appearanceInIssue => {
+            appearanceInIssue.appearanceTypes.forEach(appearanceType => {
+                setOfAppearanceTypes.add(appearanceType);
+            });
+        });
+    });
+    return {characterData, setOfAppearanceTypes: [...setOfAppearanceTypes].sort()};
 };
 
 function saveToFile(characterModel) {

@@ -19,7 +19,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(rhinoPage.getPublishedDate(), new Date(1966, 9).getTime());
         assert.equal(rhinoPage.getAppearances()[0].title, "The Horns of the Rhino!");
         assert.equal(rhinoPage.getAppearances()[0].focusType, "Antagonist");
-        assert.equal(rhinoPage.getAppearances()[0].typeOfAppearance, "1st");
+        assert.equal(rhinoPage.getAppearances()[0].typesOfAppearance, "1st");
         assert.equal(rhinoPage.getAppearances()[1], undefined);
     });
 
@@ -35,7 +35,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(rhinoPage.getPublishedDate(), new Date(2019, 11).getTime());
         assert.equal(rhinoPage.getAppearances()[0].title, "");
         assert.equal(rhinoPage.getAppearances()[0].focusType, "Supporting Character");
-        assert.equal(rhinoPage.getAppearances()[0].typeOfAppearance, "Past");
+        assert.equal(rhinoPage.getAppearances()[0].typesOfAppearance, "Past");
         assert.equal(rhinoPage.getAppearances()[1], undefined);
     });
 
@@ -59,7 +59,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderIssue.getPublishedDate(), new Date(1994, 2).getTime());
         assert.equal(spiderIssue.getAppearances()[0].title, "Truth and Consequences");
         assert.equal(spiderIssue.getAppearances()[0].focusType, "Featured Character");
-        assert.equal(spiderIssue.getAppearances()[0].typeOfAppearance, "");
+        assert.equal(spiderIssue.getAppearances()[0].typesOfAppearance, "");
         assert.equal(spiderIssue.getAppearances()[1], undefined);
     });
 
@@ -75,10 +75,10 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderIssue.getPublishedDate(), new Date(1993, 10).getTime());
         assert.equal(spiderIssue.getAppearances()[0].title, "Recouping Losses");
         assert.equal(spiderIssue.getAppearances()[0].focusType, "Featured Character");
-        assert.equal(spiderIssue.getAppearances()[0].typeOfAppearance, "");
+        assert.equal(spiderIssue.getAppearances()[0].typesOfAppearance, "");
         assert.equal(spiderIssue.getAppearances()[1].title, "A New Beginning");
         assert.equal(spiderIssue.getAppearances()[1].focusType, "Featured Character");
-        assert.equal(spiderIssue.getAppearances()[1].typeOfAppearance, "");
+        assert.equal(spiderIssue.getAppearances()[1].typesOfAppearance, "");
     });
 
     it("parse html for random Silver Sable issue appearance in two titles", function () {
@@ -93,7 +93,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getPublishedDate(), new Date(2019, 11).getTime());
         assert.equal(maryJaneIssue.getAppearances()[0].title, "");
         assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Other Character");
-        assert.equal(maryJaneIssue.getAppearances()[0].typeOfAppearance, "");
+        assert.equal(maryJaneIssue.getAppearances()[0].typesOfAppearance, "");
         assert.equal(maryJaneIssue.getAppearances()[1], undefined);
     });
 
@@ -109,7 +109,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getPublishedDate(), new Date(1986, 10).getTime());
         assert.equal(maryJaneIssue.getAppearances()[0].title, undefined);
         assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Featured Character");
-        assert.equal(maryJaneIssue.getAppearances()[0].typeOfAppearance, "");
+        assert.equal(maryJaneIssue.getAppearances()[0].typesOfAppearance, "");
         assert.equal(maryJaneIssue.getAppearances()[1], undefined);
     });
 
@@ -125,7 +125,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getPublishedDate(), new Date(2016, 10).getTime());
         assert.equal(maryJaneIssue.getAppearances()[0].title, "Part 2: The Tsum is Off the Rose!");
         assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Other Character");
-        assert.equal(maryJaneIssue.getAppearances()[0].typeOfAppearance, "OnScreen");
+        assert.equal(maryJaneIssue.getAppearances()[0].typesOfAppearance, "OnScreen");
         assert.equal(maryJaneIssue.getAppearances()[1], undefined);
     });
 
@@ -141,13 +141,13 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(maryJaneIssue.getPublishedDate(), new Date(1996, 0).getTime());
         assert.equal(maryJaneIssue.getAppearances()[0].title, "Courtroom Sequence");
         assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Antagonist");
-        assert.equal(maryJaneIssue.getAppearances()[0].typeOfAppearance, "");
+        assert.equal(maryJaneIssue.getAppearances()[0].typesOfAppearance, "");
         assert.equal(maryJaneIssue.getAppearances()[1].title, "The Power of Bullies");
         assert.equal(maryJaneIssue.getAppearances()[1].focusType, "Antagonist");
-        assert.equal(maryJaneIssue.getAppearances()[1].typeOfAppearance, "");
+        assert.equal(maryJaneIssue.getAppearances()[1].typesOfAppearance, "");
         assert.equal(maryJaneIssue.getAppearances()[2].title, "The Strongest One There Is");
         assert.equal(maryJaneIssue.getAppearances()[2].focusType, "Antagonist");
-        assert.equal(maryJaneIssue.getAppearances()[2].typeOfAppearance, "Dream");
+        assert.equal(maryJaneIssue.getAppearances()[2].typesOfAppearance, "Dream");
         assert.equal(maryJaneIssue.getAppearances()[3], undefined);
     });
 
@@ -163,7 +163,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderManIssue.getPublishedDate(), new Date(1963, 4).getTime());
         assert.equal(spiderManIssue.getAppearances()[0].title, "Duel to the Death with the Vulture!");
         assert.equal(spiderManIssue.getAppearances()[0].focusType, "Antagonist");
-        assert.equal(spiderManIssue.getAppearances()[0].typeOfAppearance, "1st");
+        assert.equal(spiderManIssue.getAppearances()[0].typesOfAppearance, "1st");
         assert.equal(spiderManIssue.getAppearances()[1], undefined);
     });
 

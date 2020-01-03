@@ -10,10 +10,10 @@ $newCharacterButton.click(function () {
     });
 });
 
-function loadIssuesListTemplate(characterData) {
+function loadIssuesListTemplate(characterDataAndAppearancesTypes) {
     cleanPage();
     provideTemplate.get('issuesTemplate', (template) => {
-        $landingContainer.html(template(characterData));
+        $landingContainer.html(template(characterDataAndAppearancesTypes));
     });
 }
 

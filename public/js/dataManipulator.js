@@ -47,9 +47,8 @@ function getAllIssuesForCharacter(alias, universe) {
         data: `alias=${alias}&universe=${universe}`,
         async: true,
         success: (responseData) => {
-            const characterData = JSON.parse(responseData);
-            loadIssuesListTemplate(characterData);
-            console.log(characterData);
+            const characterDataAndAppearancesTypes = JSON.parse(responseData);
+            loadIssuesListTemplate(characterDataAndAppearancesTypes);
         },
         error: (error) => {
             console.error(error);

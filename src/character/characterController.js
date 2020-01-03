@@ -61,8 +61,8 @@ function prepareGetAllCharactersAliases(instance, server) {
 
 function prepareGetAllIssuesForCharacter(instance, server) {
     server.get("/getAllIssuesForCharacter", (req, res) => {
-        const issues = instance.characterManager.loadIssues(req.query.alias, req.query.universe);
-        res.end(issues);
+        const data = instance.characterManager.loadIssuesAndAppearances(req.query.alias, req.query.universe);
+        res.end(JSON.stringify(data));
     });
 }
 
