@@ -146,6 +146,14 @@ a:active {
     color: #438c0c;
 }
 
+.dictionary-table input[type="text"] {
+    width: 15rem;
+}
+
+#dictionary-body button {
+    width: 2rem;
+}
+
 /* Tiny Flex Grid */
 
 [flex] {

@@ -1,6 +1,7 @@
 const path = require('path');
 const express = require('express');
 const CharacterController = require('./character/characterController');
+const DictionariesController = require('./dictionaries/dictionariesController');
 const bodyParser = require('body-parser');
 const server = express();
 
@@ -20,6 +21,7 @@ function configureServerSettings(server) {
 function createDataEndpoints(server) {
     indexEndpoint(server);
     new CharacterController().setupEndpoints(server);
+    new DictionariesController().setupEndpoints(server);
 }
 
 function indexEndpoint(server) {

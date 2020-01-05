@@ -1,0 +1,31 @@
+<tr>
+    <td>
+        <input id="dictionary-label-new-record-text" type="text">
+        <button id="new-dictionary-record-button">+</button>
+    </td>
+    <td>
+        <input id="dictionary-value-new-record-text" type="text">
+    </td>
+</tr>
+{{#each this}}
+    <tr>
+        <td>
+            <div>
+                <input type="text" value="{{label}}">
+                <button class="remove-dictionary-record" value="{{label}}">-</button>
+            </div>
+        </td>
+        <td>
+            {{#each values}}
+                <div>
+                    <input class="fill-me-or-use-submit" type="text" value="{{this}}">
+                    <button class="remove-value-under-label" value="{{this}}">-</button>
+                </div>
+            {{/each}}
+            <div>
+                <input class="new-value-under-label-{{spacesToUnderscores label}}" type="text">
+                <button class="add-value-under-label" value="{{label}}">+</button>
+            </div>
+        </td>
+    </tr>
+{{/each}}

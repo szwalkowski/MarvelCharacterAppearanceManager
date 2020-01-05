@@ -7,6 +7,7 @@ const provideTemplate = {
         }
         $.get(`/templates/${templateName}.hbs`, (data) => {
             timestampToDate();
+            helperForSpaceUnderscoreEscaping();
             cachedTemplates[templateName] = Handlebars.compile(data);
             callback(cachedTemplates[templateName]);
         });
@@ -16,6 +17,15 @@ const provideTemplate = {
 function timestampToDate() {
     Handlebars.registerHelper("timestampToDate", function (timestamp) {
         return formatDate(new Date(timestamp));
+    });
+}
+
+function helperForSpaceUnderscoreEscaping() {
+    Handlebars.registerHelper("spacesToUnderscores", function (string) {
+        return string.replace(/ /g, "_");
+    });
+    Handlebars.registerHelper("underscoresToSpaces", function (string) {
+        return string.replace(/_/g, " ");
     });
 }
 
