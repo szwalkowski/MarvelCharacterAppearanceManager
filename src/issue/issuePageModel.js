@@ -17,12 +17,17 @@ let IssuePageModel = function (issuePageWindow, characterId, url) {
     this.url = url;
     this.characterId = characterId;
     this.jquery = new JQuery(issuePageWindow);
-    this.fullName = this.jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
-    this.issueTextInfo = this.jquery.find(SelectorWithAllIssueData)[0].innerHTML.split("\n");
-    this.isIssue = this.issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
-    if (this.isIssue) {
-        this.indexOfValueInLine = this.issueTextInfo.find(value => value.includes(" Year ")).indexOf("=") + 2;
-        this.appearances = prepareAppearanceInfo(this.issueTextInfo, this.indexOfValueInLine, this.characterId);
+    const allIssueDataElement = this.jquery.find(SelectorWithAllIssueData)[0];
+    if (allIssueDataElement) {
+        this.issueTextInfo = allIssueDataElement.innerHTML.split("\n");
+        this.isIssue = this.issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
+        if (this.isIssue) {
+            this.fullName = this.jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
+            this.indexOfValueInLine = this.issueTextInfo.find(value => value.includes(" Year ")).indexOf("=") + 2;
+            this.appearances = prepareAppearanceInfo(this.issueTextInfo, this.indexOfValueInLine, this.characterId);
+        }
+    } else {
+        this.isIssue = false;
     }
 };
 
