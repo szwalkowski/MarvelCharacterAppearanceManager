@@ -4,6 +4,9 @@ let DictionariesManager = function () {
 };
 
 DictionariesManager.prototype.saveDictionary = async function saveDictionary(dictionaryId, dictionaryContent) {
+    dictionaryContent.forEach(record => {
+        record.values = record.values.map(value => value.toUpperCase());
+    });
     const dictionaryContentAsString = JSON.stringify(dictionaryContent);
     const fileName = `../database/dictionaries/${dictionaryId}Dictionary.json`;
     await fs.writeFile(fileName, dictionaryContentAsString, function (err) {

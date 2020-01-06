@@ -1,9 +1,13 @@
 const CharacterImporter = require("./characterImporter");
 const CharacterManager = require("./characterManager");
+const DictionaryManager = require("../dictionaries/dictionariesManager");
+const DictionaryTranslator = require("../dictionaries/dictionaryTranslator");
 
 let CharacterController = function () {
     this.characterImporter = new CharacterImporter();
     this.characterManager = new CharacterManager();
+    this.dictionaryManager = new DictionaryManager();
+    this.dictionaryTranslator = new DictionaryTranslator();
 };
 
 CharacterController.prototype.setupEndpoints = function (server) {
@@ -62,6 +66,13 @@ function prepareGetAllCharactersAliases(instance, server) {
 function prepareGetAllIssuesForCharacter(instance, server) {
     server.get("/getAllIssuesForCharacter", (req, res) => {
         const data = instance.characterManager.loadIssuesAndAppearances(req.query.alias, req.query.universe);
+        const dictionary = instance.dictionaryManager.getDictionaryById("appearanceType");
+        data.setOfAppearanceTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, dictionary);
+        data.characterData.issues.forEach(issue => {
+            issue.appearances.forEach(appearance => {
+                appearance.appearanceTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, dictionary, true);
+            });
+        });
         res.end(JSON.stringify(data));
     });
 }

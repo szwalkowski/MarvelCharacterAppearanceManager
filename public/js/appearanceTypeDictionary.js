@@ -84,7 +84,7 @@ window.appearanceTypeDictionary = {};
 
     function tryToAddNewLabel() {
         const newLabel = $('#dictionary-label-new-record-text').val().trim();
-        const newValue = $('#dictionary-value-new-record-text').val().trim();
+        const newValue = $('#dictionary-value-new-record-text').val().trim().toUpperCase();
         let valid = true;
         if (!newLabel) {
             alert(`Define label`);
