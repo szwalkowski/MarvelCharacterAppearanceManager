@@ -32,7 +32,7 @@ CharacterManager.prototype.saveCharacter = function (characterAndIssues) {
                 appearanceTypes: appearance.typesOfAppearance
             });
         });
-        const issueModel = new IssueModel(issue.url, issue.getName(), issue.getVolume(), issue.getIssueNo(), issue.getPublishedDate(), appearancesInIssue);
+        const issueModel = new IssueModel(issue.id, issue.url, issue.getName(), issue.getVolume(), issue.getIssueNo(), issue.getPublishedDate(), appearancesInIssue);
         issues.push(issueModel);
     });
     issues.sort((a, b) => (a.publishDateTimestamp > b.publishDateTimestamp) ? 1 : -1);

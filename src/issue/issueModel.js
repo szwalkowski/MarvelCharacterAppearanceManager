@@ -1,4 +1,5 @@
-let IssueModel = function (url, name, volume, issueNo, publishDateTimestamp, appearances, read = null) {
+let IssueModel = function (id, url, name, volume, issueNo, publishDateTimestamp, appearances, read = null) {
+    this.id = id;
     this.url = url;
     this.name = name;
     this.volume = volume;

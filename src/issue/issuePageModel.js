@@ -19,6 +19,7 @@ let IssuePageModel = function (issuePageWindow, characterId, url) {
     this.jquery = new JQuery(issuePageWindow);
     const allIssueDataElement = this.jquery.find(SelectorWithAllIssueData)[0];
     if (allIssueDataElement) {
+        this.id = issuePageWindow.window.document.location.pathname;
         this.issueTextInfo = allIssueDataElement.innerHTML.split("\n");
         this.isIssue = this.issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
         if (this.isIssue) {
