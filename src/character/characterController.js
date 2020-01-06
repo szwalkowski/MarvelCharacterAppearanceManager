@@ -67,7 +67,7 @@ function prepareGetAllIssuesForCharacter(instance, server) {
     server.get("/getAllIssuesForCharacter", (req, res) => {
         const data = instance.characterManager.loadIssuesAndAppearances(req.query.alias, req.query.universe);
         const dictionary = instance.dictionaryManager.getDictionaryById("appearanceType");
-        data.setOfAppearanceTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, dictionary);
+        data.setOfAppearanceTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, dictionary, true);
         data.characterData.issues.forEach(issue => {
             issue.appearances.forEach(appearance => {
                 appearance.appearanceTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, dictionary, true);

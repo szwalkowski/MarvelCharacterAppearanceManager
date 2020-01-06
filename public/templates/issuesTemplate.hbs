@@ -10,21 +10,23 @@
             </select>
         </div>
         <div>
-            <label class="label-filter-grouper">Issue focus type:</label>
-            <label for="feature-character-check">Featured Character</label>
+            <label class="label-filter-grouper">Show for focus type:</label>
             <input type="checkbox" id="feature-character-check" checked="checked">
-            <label for="supporting-character-check">Supporting Character</label>
-            <input type="checkbox" id="supporting-character-check" checked="checked">
-            <label for="antagonist-check">Antagonist</label>
+            <label for="feature-character-check">Featured Character</label>&nbsp;
             <input type="checkbox" id="antagonist-check" checked="checked">
-            <label for="other-character-check">Other</label>
+            <label for="antagonist-check">Antagonist</label>&nbsp;
+            <input type="checkbox" id="supporting-character-check" checked="checked">
+            <label for="supporting-character-check">Supporting Character</label>&nbsp;
             <input type="checkbox" id="other-character-check" checked="checked">
+            <label for="other-character-check">Other</label>
         </div>
         <div>
             <label class="label-filter-grouper">Appearance types: </label>
+            <input type="checkbox" id="-hide-appearance-type-check" class="checkbox-for-appearance-type" checked="checked">
+            <label for="-hide-appearance-type-check">Empty</label>&nbsp;
             {{#each setOfAppearanceTypes}}
-                <label for="{{this}}-appearance-type-check">{{this}}</label>
-                <input type="checkbox" id="{{this}}-appearance-type-check" checked="checked">
+                <input type="checkbox" id="{{spacesToUnderscores this}}-appearance-type-check" class="checkbox-for-appearance-type" checked="checked">
+                <label for="{{spacesToUnderscores this}}-appearance-type-check">{{this}}</label>&nbsp;
             {{/each}}
         </div>
     </form>
@@ -43,7 +45,8 @@
         </thead>
         <tbody>
             {{#each characterData.issues}}
-                <tr>
+                <tr class="issue-row" data-focus-type="{{resolveFocusTypes appearances}}" data-appearance-type="{{resolveAppearanceTypes appearances}}"
+                    data-read="{{read}}">
                     <td><a href="{{url}}">{{name}}</a></td>
                     <td>{{timestampToDate publishDateTimestamp}}</td>
                     <td>{{volume}}</td>

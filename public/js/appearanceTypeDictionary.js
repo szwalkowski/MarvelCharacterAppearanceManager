@@ -92,8 +92,11 @@ window.appearanceTypeDictionary = {};
         } else if (!newValue) {
             alert(`Define value`);
             return;
-        } else if (newLabel.indexOf('_') > -1) {
-            alert(`Label can't contain underscore '_'`);
+        } else if (newLabel.indexOf('_') > -1 || newLabel.indexOf(',') > -1) {
+            alert(`Label can't contain underscore '_' nor comma ','`);
+            return;
+        } else if (newLabel.toUpperCase() === 'EMPTY') {
+            alert(`Use -hide- instead of empty`);
             return;
         }
         dictionaryContent.forEach(record => {

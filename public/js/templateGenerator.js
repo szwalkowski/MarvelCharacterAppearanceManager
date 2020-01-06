@@ -6,13 +6,33 @@ const provideTemplate = {
             return callback(cachedTemplates[templateName]);
         }
         $.get(`/templates/${templateName}.hbs`, (data) => {
-            timestampToDate();
-            helperForSpaceUnderscoreEscaping();
+            prepareHelpers();
             cachedTemplates[templateName] = Handlebars.compile(data);
             callback(cachedTemplates[templateName]);
         });
     }
 };
+
+function prepareHelpers() {
+    timestampToDate();
+    helperForSpaceUnderscoreEscaping();
+    Handlebars.registerHelper("resolveFocusTypes", function (appearances) {
+        const appearancesFocuses = new Set();
+        appearances.forEach(appearance => {
+            appearancesFocuses.add(appearance.focusType);
+        });
+        return [...appearancesFocuses];
+    });
+    Handlebars.registerHelper("resolveAppearanceTypes", function (appearances) {
+        const appearancesTypes = new Set();
+        appearances.forEach(appearance => {
+            appearance.appearanceTypes.forEach(appearanceType => {
+                appearancesTypes.add(appearanceType);
+            });
+        });
+        return [...appearancesTypes];
+    });
+}
 
 function timestampToDate() {
     Handlebars.registerHelper("timestampToDate", function (timestamp) {
