@@ -167,4 +167,50 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderManIssue.getAppearances()[1], undefined);
     });
 
+    it("Questprobe problems with appearances", function () {
+        const filePath = `${__dirname}/resources/issues/Questprobe_Vol_1_2edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const spiderManIssue = new IssuePageModel(pageWindow, "Felicia Hardy (Earth-616)");
+        assert.equal(spiderManIssue.isIssue, true);
+        assert.equal(spiderManIssue.getName(), "Questprobe");
+        assert.equal(spiderManIssue.getVolume(), 1);
+        assert.equal(spiderManIssue.getIssueNo(), 2);
+        assert.equal(spiderManIssue.getPublishedDate(), new Date(1985, 0).getTime());
+        assert.equal(spiderManIssue.getAppearances()[0].title, "Mysterio Times Two!");
+        assert.equal(spiderManIssue.getAppearances()[0].focusType, "Other Character");
+        assert.equal(spiderManIssue.getAppearances()[0].typesOfAppearance, "vision");
+        assert.equal(spiderManIssue.getAppearances()[1], undefined);
+    });
+
+    it("Girl Comics problems with appearances cause on page it is unknown, yet its marked as character appears", function () {
+        const filePath = `${__dirname}/resources/issues/Girl_Comics_Vol_2_3edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const spiderManIssue = new IssuePageModel(pageWindow, "Felicia Hardy (Earth-616)");
+        assert.equal(spiderManIssue.isIssue, true);
+        assert.equal(spiderManIssue.getName(), "Girl Comics");
+        assert.equal(spiderManIssue.getVolume(), 2);
+        assert.equal(spiderManIssue.getIssueNo(), 3);
+        assert.equal(spiderManIssue.getPublishedDate(), new Date(2010, 7).getTime());
+        assert.equal(spiderManIssue.getAppearances()[0], undefined);
+    });
+
+    it("Empty appearance for black cat issue", function () {
+        const filePath = `${__dirname}/resources/issues/Friendly_Neighborhood_Spider-Man_Vol_2_6edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const spiderManIssue = new IssuePageModel(pageWindow, "Felicia Hardy (Earth-616)");
+        assert.equal(spiderManIssue.isIssue, true);
+        assert.equal(spiderManIssue.getName(), "Friendly Neighborhood Spider-Man");
+        assert.equal(spiderManIssue.getVolume(), 2);
+        assert.equal(spiderManIssue.getIssueNo(), 6);
+        assert.equal(spiderManIssue.getPublishedDate(), new Date(2019, 6).getTime());
+        assert.equal(spiderManIssue.getAppearances()[0].title, "Spider-Bite");
+        assert.equal(spiderManIssue.getAppearances()[0].focusType, "Antagonist");
+        assert.equal(spiderManIssue.getAppearances()[0].typesOfAppearance[0], "Imagination");
+        assert.equal(spiderManIssue.getAppearances()[0].typesOfAppearance[1], "Minor");
+        assert.equal(spiderManIssue.getAppearances()[1], undefined);
+    });
+
 });

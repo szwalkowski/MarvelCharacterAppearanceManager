@@ -27,6 +27,8 @@ const PageDownloader = require('../src/pageDownloader');
  https://marvel.fandom.com/wiki/Savage_Hulk_Vol_1_1?action=edit
  https://marvel.fandom.com/wiki/Marvel_Tsum_Tsum_Vol_1_2?action=edit
  https://marvel.fandom.com/wiki/Amazing_Spider-Man_Vol_1_2?action=edit
+ https://marvel.fandom.com/wiki/Questprobe_Vol_1_2?action=edit
+ https://marvel.fandom.com/wiki/Girl_Comics_Vol_2_3?action=edit
  */
 
 describe.skip("Helpful tests but not good ones to spam, so leave it as skip", function () {

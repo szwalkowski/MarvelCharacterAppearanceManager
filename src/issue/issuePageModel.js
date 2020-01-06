@@ -1,11 +1,11 @@
 const JQuery = require('jquery');
-const Months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+const Months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
 const SelectorWithAllIssueData = '#wpTextbox1';
 const regexForAppearanceTypeOptionOne = /[\{\|][a-zA-Z\d]+}}/g;
 const regexForAppearanceTypeOptionTwo = /{[a-zA-Z\d]+\|/;
 const regexFocusType = /^'''[a-zA-Z ]+:'''$/;
-const invalidTypeAppearances = ["a", "apn", "g", "Chronology", "ChronoFB"];
+const invalidTypeAppearances = ["a", "apn", "g", "Chronology", "ChronoFB", "APN"];
 
 let IssuePageModel = function (issuePageWindow, characterId, url) {
     if (!issuePageWindow) {
@@ -52,7 +52,8 @@ IssuePageModel.prototype.getPublishedDate = function () {
     if (monthLine) {
         month = parseInt(monthLine.substring(this.indexOfValueInLine, this.indexOfValueInLine + 2));
         if (!month) {
-            month = Months.findIndex(value => value === monthLine.substring(this.indexOfValueInLine, monthLine.length - 1));
+            const monthName = monthLine.substring(this.indexOfValueInLine, monthLine.length).toUpperCase();
+            month = Months.findIndex(value => value === monthName);
         }
     } else {
         month = Months.findIndex(value => value === "January");
@@ -70,7 +71,8 @@ function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
     const stringThatContainsStoryTitle = "| StoryTitle";
     let weHaveStory = false;
     let appearingsStarted = false;
-    textInfo.forEach(line => {
+    for(let counter = 0; counter < textInfo.length; counter++) {
+        const line = textInfo[counter];
         if (!appearingsStarted && line.includes(stringThatContainsStoryTitle)) {
             newAppearing = {};
             newAppearing.no = parseInt(line.substring(stringThatContainsStoryTitle.length, stringThatContainsStoryTitle.length + 2));
@@ -85,17 +87,17 @@ function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
                 // continue
             } else if (regexFocusType.exec(line)) {
                 newAppearing.focusType = line.substring(3, line.length - 5);
-            } else if (line.includes(`|[[${characterId}|`)) {
+            } else if (line.includes(`|[[${characterId}|`) || line.startsWith(`** {{Minor|${characterId}|`)) {
                 newAppearing.typesOfAppearance = tryToGetAppearanceType(line);
                 allAppearings.push(newAppearing);
                 newAppearing = {};
                 weHaveStory = appearingsStarted = false;
-            } else if (appearingsStarted && line === "") {
+            } else if (appearingsStarted && line === "" && (!textInfo[counter + 1] || !textInfo[counter + 1].startsWith("'''"))) {
                 newAppearing = {};
                 weHaveStory = appearingsStarted = false;
             }
         }
-    });
+    }
     return allAppearings;
 }
 
