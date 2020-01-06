@@ -5,7 +5,7 @@ const SelectorWithAllIssueData = '#wpTextbox1';
 const regexForAppearanceTypeOptionOne = /[\{\|][a-zA-Z\d]+}}/g;
 const regexForAppearanceTypeOptionTwo = /{[a-zA-Z\d]+\|/;
 const regexFocusType = /^'''[a-zA-Z ]+:'''$/;
-const invalidTypeAppearances = ["a", "apn", "g", "Chronology", "ChronoFB", "APN"];
+const invalidTypeAppearances = ["A", "APN", "G", "CHRONOLOGY", "CHRONOFB"];
 
 let IssuePageModel = function (issuePageWindow, characterId, url) {
     if (!issuePageWindow) {
@@ -128,7 +128,7 @@ function tryToGetAppearanceType(line) {
 }
 
 function isValidTypeAppearance(typeAppearance) {
-    return invalidTypeAppearances.findIndex(type => type === typeAppearance) < 0;
+    return invalidTypeAppearances.findIndex(type => type === typeAppearance.toUpperCase()) < 0;
 }
 
 module.exports = IssuePageModel;
