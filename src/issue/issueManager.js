@@ -7,14 +7,16 @@ IssueManager.prototype.markIssueAsReadAsync = async function (issueId, character
     const fileName = `../database/appearances/${characterAlias.replace(/ /g, '_')}(${characterUniverse}).json`;
     const characterIssues = JSON.parse(fs.readFileSync(fileName, "utf-8"));
     const readTimestamp = new Date().getTime();
-    for (let issue of characterIssues.issues) {
-        if (issue.id === issueId) {
-            issue.read = readTimestamp;
-            break;
-        }
-    }
+    characterIssues.issues.find(issue => issue.id === issueId).read = readTimestamp;
     fs.writeFileSync(fileName, JSON.stringify(characterIssues));
     return readTimestamp;
+};
+
+IssueManager.prototype.markIssueAsNotReadAsync = async function (issueId, characterAlias, characterUniverse) {
+    const fileName = `../database/appearances/${characterAlias.replace(/ /g, '_')}(${characterUniverse}).json`;
+    const characterIssues = JSON.parse(fs.readFileSync(fileName, "utf-8"));
+    characterIssues.issues.find(issue => issue.id === issueId).read = null;
+    fs.writeFileSync(fileName, JSON.stringify(characterIssues));
 };
 
 module.exports = IssueManager;
