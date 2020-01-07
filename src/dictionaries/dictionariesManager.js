@@ -3,7 +3,7 @@ const fs = require('fs');
 let DictionariesManager = function () {
 };
 
-DictionariesManager.prototype.saveDictionary = async function saveDictionary(dictionaryId, dictionaryContent) {
+DictionariesManager.prototype.saveDictionaryAsync = async function saveDictionary(dictionaryId, dictionaryContent) {
     dictionaryContent.forEach(record => {
         record.values = record.values.map(value => value.toUpperCase());
     });
