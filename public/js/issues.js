@@ -7,6 +7,7 @@ function launchScriptsForIssues() {
     loadRowsWithIssues();
     prepareIssueAppearanceTypeButtons();
     prepareIssueFocusTypeButtons();
+    prepareReadButtons();
     fillAppearancesTypes();
     filterIssues();
 }
@@ -17,7 +18,8 @@ function loadRowsWithIssues() {
         const focuses = row["dataset"]["focusType"].split(',');
         const appearanceTypes = row["dataset"]["appearanceType"].split(',');
         const read = row["dataset"]["read"];
-        rowsWithIssues.push({focuses, appearanceTypes, read, $row: $(row)});
+        const issueId = row["dataset"]["issueId"];
+        rowsWithIssues.push({issueId, focuses, appearanceTypes, read, $row: $(row)});
         visibleIssues++;
     }
 }
@@ -58,6 +60,54 @@ function modifyFocusTypesArray(focusTypeName, add) {
     } else {
         visibleFocusTypes = visibleFocusTypes.filter(focus => focus !== focusTypeName);
     }
+}
+
+function prepareReadButtons() {
+    $('.read-issue-button').click(btn => {
+        $.ajax({
+            type: "POST",
+            url: "/markIssueAsRead",
+            async: false,
+            data: {
+                issueId: btn.target.value,
+                characterAlias: $('.selectedCharacter')[0].innerText,
+                characterUniverse: $('.selectedUniverse')[0].innerText
+            },
+            success: (responseData) => {
+                const responseDataAsObject = JSON.parse(responseData);
+                const rowWithIssue = rowsWithIssues.find(row => row.issueId === responseDataAsObject.issueId);
+                const $label = rowWithIssue.$row.find('.read-time-label');
+                $label.text(formatTime(new Date(responseDataAsObject.readTime)));
+                $label.attr("hidden", false);
+                rowWithIssue.$row.find('.remove-read-issue-button').attr("hidden", false);
+                rowWithIssue.$row.find('.read-issue-button').attr("hidden", true);
+            },
+            error: (error) => {
+                console.error(error);
+            }
+        });
+    });
+    $('.remove-read-issue-button').click(btn => {
+        $.ajax({
+            type: "POST",
+            url: "/unmarkIssueAsRead",
+            async: false,
+            data: {
+                issueId: btn.target.value,
+                characterAlias: $('.selectedCharacter')[0].innerText,
+                characterUniverse: $('.selectedUniverse')[0].innerText
+            },
+            success: (responseData) => {
+                const rowWithIssue = rowsWithIssues.find(row => row.issueId === JSON.parse(responseData).issueId);
+                rowWithIssue.$row.find('.read-time-label').attr("hidden", true);
+                rowWithIssue.$row.find('.remove-read-issue-button').attr("hidden", true);
+                rowWithIssue.$row.find('.read-issue-button').attr("hidden", false);
+            },
+            error: (error) => {
+                console.error(error);
+            }
+        });
+    });
 }
 
 function fillAppearancesTypes() {

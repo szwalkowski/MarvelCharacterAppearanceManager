@@ -46,7 +46,7 @@
         <tbody>
             {{#each characterData.issues}}
                 <tr class="issue-row" data-focus-type="{{resolveFocusTypes appearances}}" data-appearance-type="{{resolveAppearanceTypes appearances}}"
-                    data-read="{{read}}">
+                    data-issue-id="{{id}}" data-read="{{read}}">
                     <td><a href="{{url}}">{{name}}</a></td>
                     <td>{{timestampToDate publishDateTimestamp}}</td>
                     <td>{{volume}}</td>
@@ -71,7 +71,11 @@
                             </tbody>
                         </table>
                     </td>
-                    <td>{{read}}</td>
+                    <td class="read-issue-cell">
+                        <label class="read-time-label" {{#unless read}}hidden="hidden"{{/unless}}>{{timestampToTime read}}</label>
+                        <button class="remove-read-issue-button" value="{{id}}" {{#unless read}}hidden="hidden"{{/unless}}>x</button>
+                        <button class="read-issue-button" value="{{id}}" {{#if read}}hidden="hidden"{{/if}}>Read!</button>
+                    </td>
                 </tr>
             {{/each}}
         </tbody>
