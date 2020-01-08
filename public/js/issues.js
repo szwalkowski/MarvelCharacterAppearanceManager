@@ -1,9 +1,12 @@
+let $readStatusDropdown;
 let visibleFocusTypes = ["Featured Character", "Antagonist", "Supporting Character", "Other Character"];
 let appearancesTypes = [];
 let rowsWithIssues;
 let visibleIssues;
 
 function launchScriptsForIssues() {
+    $readStatusDropdown = $('#read-status-dropdown');
+    $readStatusDropdown.change(filterIssues);
     loadRowsWithIssues();
     prepareIssueAppearanceTypeButtons();
     prepareIssueFocusTypeButtons();
@@ -81,6 +84,8 @@ function prepareReadButtons() {
                 $label.attr("hidden", false);
                 rowWithIssue.$row.find('.remove-read-issue-button').attr("hidden", false);
                 rowWithIssue.$row.find('.read-issue-button').attr("hidden", true);
+                rowWithIssue.read = true;
+                filterIssues();
             },
             error: (error) => {
                 console.error(error);
@@ -102,6 +107,8 @@ function prepareReadButtons() {
                 rowWithIssue.$row.find('.read-time-label').attr("hidden", true);
                 rowWithIssue.$row.find('.remove-read-issue-button').attr("hidden", true);
                 rowWithIssue.$row.find('.read-issue-button').attr("hidden", false);
+                rowWithIssue.read = false;
+                filterIssues();
             },
             error: (error) => {
                 console.error(error);
@@ -119,7 +126,9 @@ function fillAppearancesTypes() {
 function filterIssues() {
     visibleIssues = 0;
     rowsWithIssues.forEach(row => {
-        if (row.focuses.some(focus => visibleFocusTypes.includes(focus))) {
+        if (($readStatusDropdown.val() === '1' && row.read) || ($readStatusDropdown.val() === '2' && !row.read)) {
+            row.$row.attr('hidden', true);
+        } else if (row.focuses.some(focus => visibleFocusTypes.includes(focus))) {
             row.$row.attr('hidden', false);
             visibleIssues++;
         } else {
