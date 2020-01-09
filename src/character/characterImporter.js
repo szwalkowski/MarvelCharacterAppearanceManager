@@ -2,6 +2,7 @@ const CharacterPageModel = require('./characterPageModel');
 const CharacterAppearanceWalker = require('./characterAppearanceWalker');
 const CharacterManager = require('./characterManager');
 const IssuePageModel = require('../issue/issuePageModel');
+const IssueModel = require('../issue/issueModel');
 const PageDownloader = require('../pageDownloader');
 
 let CharacterImporter = function () {
@@ -20,7 +21,7 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
     const appearanceWindow = this.pageDownloader.downloadWindowFromUrlAsync(baseCharacterInfo.AppearanceUrl);
     const minorAppearanceLinks = this.characterAppearanceWalker.findAllLinksToIssuesAsync(await minorAppearanceWindow);
     const appearanceLinks = this.characterAppearanceWalker.findAllLinksToIssuesAsync(await appearanceWindow);
-    const mergedAppearanceLinks = await mergeListsAndSort(minorAppearanceLinks, appearanceLinks);
+    const mergedAppearanceLinks = await mergeListsAndSortAsync(minorAppearanceLinks, appearanceLinks);
     let no = 0;
     let promisesToFindInfoAboutAllIssues = [];
     let characterAndIssues = baseCharacterInfo;
@@ -33,7 +34,7 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
                     console.log(`${++no} page downloaded! ${link}`);
                     const issuePageModel = new IssuePageModel(issuePage, baseCharacterInfo.CharacterId, link);
                     if (issuePageModel.isIssue) {
-                        characterAndIssues.issues.push(issuePageModel);
+                        characterAndIssues.issues.push(parseIssuePageModelToIssueModel(issuePageModel));
                     }
                 }
             ).catch(reason => {
@@ -49,10 +50,23 @@ CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async func
     this.characterManager.saveCharacter(characterAndIssues);
 };
 
-async function mergeListsAndSort(minorAppearanceLinks, appearanceLinks) {
+async function mergeListsAndSortAsync(minorAppearanceLinks, appearanceLinks) {
     const allAppearanceLinks = (await minorAppearanceLinks).concat(await appearanceLinks);
     allAppearanceLinks.sort();
     return allAppearanceLinks;
+}
+
+function parseIssuePageModelToIssueModel(issuePageModel) {
+    const appearancesInIssue = [];
+    issuePageModel.appearances.forEach(appearance => {
+        appearancesInIssue.push({
+            subtitle: appearance.title,
+            focusType: appearance.focusType,
+            appearanceTypes: appearance.typesOfAppearance
+        });
+    });
+    return new IssueModel(issuePageModel.id, issuePageModel.url, issuePageModel.getName(), issuePageModel.getVolume(), issuePageModel.getIssueNo(),
+        issuePageModel.getPublishedDate(), appearancesInIssue);
 }
 
 module.exports = CharacterImporter;

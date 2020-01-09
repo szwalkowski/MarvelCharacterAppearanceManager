@@ -22,22 +22,10 @@ CharacterManager.prototype.provideAllCharactersAvailable = function () {
 };
 
 CharacterManager.prototype.saveCharacter = function (characterAndIssues) {
-    const issues = [];
-    characterAndIssues.issues.forEach(issue => {
-        const appearancesInIssue = [];
-        issue.appearances.forEach(appearance => {
-            appearancesInIssue.push({
-                subtitle: appearance.title,
-                focusType: appearance.focusType,
-                appearanceTypes: appearance.typesOfAppearance
-            });
-        });
-        const issueModel = new IssueModel(issue.id, issue.url, issue.getName(), issue.getVolume(), issue.getIssueNo(), issue.getPublishedDate(), appearancesInIssue);
-        issues.push(issueModel);
-    });
-    issues.sort((a, b) => (a.publishDateTimestamp > b.publishDateTimestamp) ? 1 : -1);
+    characterAndIssues.issues.sort((a, b) => compareIssues(a, b));
     const characterModel = new CharacterModel(characterAndIssues.CharacterId.replace(/ /g, "_"), characterAndIssues.Url, characterAndIssues.SetAlias,
-        characterAndIssues.RealName, characterAndIssues.Universe, characterAndIssues.ImageUrl, issues, issues[issues.length - 1].publishDateTimestamp);
+        characterAndIssues.RealName, characterAndIssues.Universe, characterAndIssues.ImageUrl, characterAndIssues.issues,
+        characterAndIssues.issues[characterAndIssues.issues.length - 1].publishDateTimestamp);
     saveToFile(characterModel);
 };
 
@@ -65,6 +53,17 @@ function saveToFile(characterModel) {
             throw err;
         }
     })
+}
+
+function compareIssues(a, b) {
+    if (a.publishDateTimestamp !== b.publishDateTimestamp) {
+        return a.publishDateTimestamp > b.publishDateTimestamp ? 1 : -1
+    } else if (a.name === b.name) {
+        return 0;
+    } else if (a.volume !== b.volume) {
+        return a.volume > b.volume ? 1 : -1
+    }
+    return a.issueNo > b.issueNo ? 1 : -1
 }
 
 module.exports = CharacterManager;
