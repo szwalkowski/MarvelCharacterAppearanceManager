@@ -22,7 +22,7 @@ function prepareGetDictionary(instance, server) {
 
 function prepareSaveDictionary(instance, server) {
     server.post("/saveDictionary", (req, res) => {
-        instance.dictionaryManager.saveDictionary(req.body["dictionaryId"], req.body["dictionaryContent"]).then(() => {
+        instance.dictionaryManager.saveDictionaryAsync(req.body["dictionaryId"], req.body["dictionaryContent"]).then(() => {
             res.end();
         }, reason => {
             console.error(reason);
