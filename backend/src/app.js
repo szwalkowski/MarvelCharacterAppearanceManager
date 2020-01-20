@@ -11,10 +11,9 @@ createDataEndpoints(server);
 startServer(server);
 
 function configureServerSettings(server) {
-    const publicDirectoryPath = path.join(__dirname, '../public/');
-    const viewDirectoryPath = path.join(__dirname, '../views/');
+    const publicDirectoryPath = path.join(__dirname, '../../frontend/public/temp_for_migration');
     server.set('view engine', 'hbs');
-    server.set('views', viewDirectoryPath);
+    server.set('views', publicDirectoryPath);
     server.use(express.static(publicDirectoryPath));
     server.use(bodyParser.urlencoded({ extended: true }));
 }

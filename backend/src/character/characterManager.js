@@ -7,7 +7,7 @@ let CharacterManager = function () {
 
 CharacterManager.prototype.provideAllCharactersAvailable = function () {
     let characters = [];
-    fs.readdirSync('../database/appearances').forEach(file => {
+    fs.readdirSync('../../database/appearances').forEach(file => {
         const alias = /[a-zA-Z/d_]+/.exec(file)[0];
         const universeWithBrackets = /\([a-zA-Z\d-]+\)/.exec(file)[0];
         const universe = universeWithBrackets.substring(1, universeWithBrackets.length - 1);
@@ -31,7 +31,7 @@ CharacterManager.prototype.saveCharacter = function (characterAndIssues) {
 
 CharacterManager.prototype.loadIssuesAndAppearances = function (alias, universe) {
     const fileName = `${alias}(${universe}).json`;
-    const fileContent = fs.readFileSync(`../database/appearances/${fileName}`, "utf-8");
+    const fileContent = fs.readFileSync(`../../database/appearances/${fileName}`, "utf-8");
     const characterData = JSON.parse(fileContent);
     const setOfAppearanceTypes = new Set();
     characterData.issues.forEach(issue => {
@@ -46,7 +46,7 @@ CharacterManager.prototype.loadIssuesAndAppearances = function (alias, universe)
 
 function saveToFile(characterModel) {
     const characterModelAsJson = JSON.stringify(characterModel);
-    const fileName = `../database/appearances/${characterModel.alias.replace(/ /g, "_")}(${characterModel.world}).json`;
+    const fileName = `../../database/appearances/${characterModel.alias.replace(/ /g, "_")}(${characterModel.world}).json`;
     fs.writeFileSync(fileName, characterModelAsJson, function (err) {
         if (err) {
             console.log(err);
