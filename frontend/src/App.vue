@@ -1,32 +1,35 @@
 <template>
   <div id="app">
+    <div class="header">
+      <div class="header_container">
+        <h1 class="header_title">Marvel Character Appearance</h1>
+        <h2 class="header_subtitle">Manager</h2>
+      </div>
+    </div>
+    <McamTopBarNav />
+    <div class="container">
+      <CharactersBarNav />
+      <UniversesBarNav />
+      <router-view />
+    </div>
     <div id="nav">
-      <router-link to="/">Home</router-link> |
+      <router-link to="/">Home</router-link>
+      |
       <router-link to="/about">About</router-link>
     </div>
-    <router-view />
   </div>
 </template>
+<script>
+import McamTopBarNav from "@/components/navigation/TopBarNav";
+import CharactersBarNav from "@/components/navigation/CharactersBarNav";
+import UniversesBarNav from "@/components/navigation/UniversesBarNav";
 
-<style>
-#app {
-  font-family: "Avenir", Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
-
-#nav {
-  padding: 30px;
-}
-
-#nav a {
-  font-weight: bold;
-  color: #2c3e50;
-}
-
-#nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+export default {
+  components: {
+    McamTopBarNav,
+    CharactersBarNav,
+    UniversesBarNav
+  }
+};
+</script>
+<style></style>
