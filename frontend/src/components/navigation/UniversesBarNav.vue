@@ -6,3 +6,10 @@
     </form>
   </div>
 </template>
+<script>
+export default {
+  created() {
+    //TODO load all characters
+  }
+};
+</script>

@@ -12,28 +12,6 @@ body, input, textarea, select, button {
     font-family: 'Muli', 'sans serif', 'serif';
 }
 
-.header {
-    background: #640a14;
-    color: #989898;
-    padding: 1.3rem 0;
-}
-
-.header_container {
-    max-width: 65rem;
-    margin: 0 auto;
-    padding: 0 1.6rem;
-}
-
-.header_title {
-    font-size: 3.3rem;
-    margin-bottom: .4rem;
-}
-
-.header_subtitle {
-    font-size: 1.6rem;
-    font-weight: 300;
-}
-
 button:hover,
 input[type="checkbox"]:hover {
     cursor: pointer;

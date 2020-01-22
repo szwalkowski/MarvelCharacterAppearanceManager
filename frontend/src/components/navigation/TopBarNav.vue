@@ -3,15 +3,15 @@
     <div class="nav">
       <label for="character-search">Character filter:</label>
       <input type="text" id="character-search" />
-      <button type="button" id="add-new-character-button">
+      <router-link tag="button" to="/add-new-character">
         Add new character
-      </button>
+      </router-link>
       <button type="button" id="update-all-characters-button">
         Update all characters
       </button>
-      <button type="button" id="appearances-types-dictionary-button">
+      <router-link tag="button" to="/appearances-types-dictionary">
         Dictionary for appearances
-      </button>
+      </router-link>
     </div>
     <div id="pages-control-div">
       <select id="image-show-select" name="imagesShow">
