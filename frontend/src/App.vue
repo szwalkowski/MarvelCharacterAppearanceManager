@@ -14,7 +14,7 @@
     <div class="container">
       <CharactersBarNav />
       <UniversesBarNav />
-      <router-view />
+      <router-view class="landing-container"/>
     </div>
   </div>
 </template>

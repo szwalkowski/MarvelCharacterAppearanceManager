@@ -15,6 +15,39 @@
       </div>
       <h4>Character list:</h4>
       <div class="character-list-options character-list-options-buttons"></div>
+      <template v-for="character in characterList">
+        <button type="button" :key="character.alias">
+          {{ character.alias | underscoresToSpaces }}
+        </button>
+        <br :key="'_' + character.alias" />
+      </template>
     </form>
   </div>
 </template>
+<script>
+import axios from "axios";
+
+export default {
+  data() {
+    return {
+      characterList: []
+    };
+  },
+  filters: {
+    underscoresToSpaces(value) {
+      return value.replace("_", " ");
+    }
+  },
+  created() {
+    axios
+      .get("getAllCharacters")
+      .then(res => {
+        this.characterList = [];
+        res.data.forEach(character => {
+          this.characterList.push(character);
+        });
+      })
+      .catch(error => console.log(error));
+  }
+};
+</script>

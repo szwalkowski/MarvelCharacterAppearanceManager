@@ -14,6 +14,11 @@ function configureServerSettings(server) {
     const publicDirectoryPath = path.join(__dirname, '../../frontend/public/temp_for_migration');
     server.set('view engine', 'hbs');
     server.set('views', publicDirectoryPath);
+    server.use((req, res, next) => {
+        res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+        res.setHeader("Access-Control-Allow-Methods", "GET");
+        next();
+    });
     server.use(express.static(publicDirectoryPath));
     server.use(bodyParser.urlencoded({ extended: true }));
 }

@@ -1,11 +1,10 @@
-$landingContainer = $('#landing-container');
 $appearancesDictionaryButton = $('#appearances-types-dictionary-button');
 
 $appearancesDictionaryButton.click(() => {
     cleanPage();
     cleanActiveCharacterButtons();
     provideTemplate.get('appearanceTypeDictionaryTemplate', (template) => {
-        $landingContainer.html(template());
+        //$landingContainer.html(template());
         postLoadTemplateAction(window.appearanceTypeDictionary);
     });
 });
@@ -13,7 +12,7 @@ $appearancesDictionaryButton.click(() => {
 function loadIssuesListTemplate(characterDataAndAppearancesTypes) {
     cleanPage();
     provideTemplate.get('issuesTemplate', (template) => {
-        $landingContainer.html(template(characterDataAndAppearancesTypes));
+        //$landingContainer.html(template(characterDataAndAppearancesTypes));
         launchScriptsForIssues();
     });
 }
@@ -24,5 +23,5 @@ function postLoadTemplateAction(currentController) {
 }
 
 function cleanPage() {
-    $landingContainer.empty();
+    //$landingContainer.empty();
 }

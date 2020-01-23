@@ -70,7 +70,7 @@ button.paging-button img {
     margin-left: .3rem;
 }
 
-#landing-container {
+.landing-container {
     flex: 12;
     flex-flow: column wrap;
     width: 100%;
