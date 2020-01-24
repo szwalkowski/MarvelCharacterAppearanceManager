@@ -13,7 +13,7 @@ const routes = [
   {
     path: "/add-new-character",
     name: "about",
-    component: () => import("../views/About.vue")
+    component: () => import("../views/NewCharacter")
   }
 ];
 

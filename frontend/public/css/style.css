@@ -120,7 +120,7 @@ a:active {
     color: red;
 }
 
-.selectedUniverse, .selectedCharacter {
+.selectedUniverse {
     color: #438c0c;
 }
 

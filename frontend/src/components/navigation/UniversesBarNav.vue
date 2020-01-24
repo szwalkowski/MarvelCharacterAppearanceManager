@@ -10,7 +10,11 @@
           <button
             type="button"
             :key="universe"
-            @click="selectedUniverse(universe)"
+            :class="{
+              selectedUniverse:
+                selectedUniverse && selectedUniverse === universe
+            }"
+            @click="selectUniverse(universe)"
           >
             {{ universe }}
           </button>
@@ -26,16 +30,29 @@ import { eventBus } from "../../main";
 export default {
   data() {
     return {
-      selectedCharacter: undefined
+      selectedCharacter: undefined,
+      selectedUniverse: undefined
     };
   },
   methods: {
-    selectedUniverse() {}
+    selectUniverse(universe) {
+      this.selectedUniverse = universe;
+    }
   },
   created() {
     eventBus.$on("barNavCharacterSelected", character => {
       this.selectedCharacter = character;
+      this.selectedUniverse = undefined;
+    });
+    eventBus.$on("resetCharacterSelection", () => {
+      this.selectedCharacter = undefined;
+      this.selectedUniverse = undefined;
     });
   }
 };
 </script>
+<style>
+.selectedUniverse {
+  color: #438c0c;
+}
+</style>

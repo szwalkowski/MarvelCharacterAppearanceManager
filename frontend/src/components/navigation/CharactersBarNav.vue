@@ -19,7 +19,11 @@
         <button
           type="button"
           :key="character.alias"
-          @click="selectedCharacter(character)"
+          :class="{
+            selectedCharacter:
+              selectedCharacter && selectedCharacter.alias === character.alias
+          }"
+          @click="selectCharacter(character)"
         >
           {{ character.alias | underscoresToSpaces }}
         </button>
@@ -35,11 +39,13 @@ import { eventBus } from "../../main";
 export default {
   data() {
     return {
-      characterList: []
+      characterList: [],
+      selectedCharacter: undefined
     };
   },
   methods: {
-    selectedCharacter(character) {
+    selectCharacter(character) {
+      this.selectedCharacter = character;
       eventBus.$emit("barNavCharacterSelected", character);
     }
   },
@@ -58,6 +64,14 @@ export default {
         });
       })
       .catch(error => console.log(error));
+    eventBus.$on("resetCharacterSelection", () => {
+      this.selectedCharacter = undefined;
+    });
   }
 };
 </script>
+<style>
+.selectedCharacter {
+  color: #438c0c;
+}
+</style>
