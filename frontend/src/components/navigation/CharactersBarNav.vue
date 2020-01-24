@@ -16,7 +16,11 @@
       <h4>Character list:</h4>
       <div class="character-list-options character-list-options-buttons"></div>
       <template v-for="character in characterList">
-        <button type="button" :key="character.alias">
+        <button
+          type="button"
+          :key="character.alias"
+          @click="selectedCharacter(character)"
+        >
           {{ character.alias | underscoresToSpaces }}
         </button>
         <br :key="'_' + character.alias" />
@@ -26,12 +30,18 @@
 </template>
 <script>
 import axios from "axios";
+import { eventBus } from "../../main";
 
 export default {
   data() {
     return {
       characterList: []
     };
+  },
+  methods: {
+    selectedCharacter(character) {
+      eventBus.$emit("barNavCharacterSelected", character);
+    }
   },
   filters: {
     underscoresToSpaces(value) {
