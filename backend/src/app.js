@@ -16,7 +16,8 @@ function configureServerSettings(server) {
     server.set('views', publicDirectoryPath);
     server.use((req, res, next) => {
         res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-        res.setHeader("Access-Control-Allow-Methods", "GET");
+        res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+        res.setHeader("Access-Control-Allow-Headers", "Content-Type");
         next();
     });
     server.use(express.static(publicDirectoryPath));

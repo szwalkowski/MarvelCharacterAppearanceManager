@@ -108,10 +108,12 @@ td, th {
     padding: 1rem;
     background-color: #2f2f2f;
 }
+
 /* unvisited link */
 a:link {
     color: lightblue;
 }
+
 a:visited {
     color: lightblue;
 }
@@ -130,6 +132,22 @@ a:active {
 
 #dictionary-body button {
     width: 2rem;
+}
+
+.swal2-popup {
+    background-color: #464646 !important;
+}
+
+.swal2-content {
+    color: #cdcdcd !important;
+}
+
+.swal2-actions button:active {
+    background-color: #640a14 !important;
+}
+
+.swal2-actions button:focus {
+    box-shadow: 0 0 0 3px #212121 !important;
 }
 
 /* Tiny Flex Grid */
