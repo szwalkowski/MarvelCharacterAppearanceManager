@@ -47,7 +47,7 @@ function prepareCharacterFromWikiPage(instance, server) {
 
 function prepareCharacterConfirmAction(instance, server) {
     server.post("/confirmCharacter", (req, res) => {
-        instance.characterImporter.downloadAndStoreConfirmedCharacterAsync(req.body["currentCharacterInfo"]).then(() => {
+        instance.characterImporter.downloadAndStoreConfirmedCharacterAsync(req.body).then(() => {
             res.end();
         }, reason => {
             console.error(reason);

@@ -47,6 +47,17 @@ export default {
     selectCharacter(character) {
       this.selectedCharacter = character;
       eventBus.$emit("barNavCharacterSelected", character);
+    },
+    getAllCharacters() {
+      axios
+        .get("getAllCharacters")
+        .then(res => {
+          this.characterList = [];
+          res.data.forEach(character => {
+            this.characterList.push(character);
+          });
+        })
+        .catch(error => console.log(error));
     }
   },
   filters: {
@@ -55,17 +66,12 @@ export default {
     }
   },
   created() {
-    axios
-      .get("getAllCharacters")
-      .then(res => {
-        this.characterList = [];
-        res.data.forEach(character => {
-          this.characterList.push(character);
-        });
-      })
-      .catch(error => console.log(error));
+    this.getAllCharacters();
     eventBus.$on("resetCharacterSelection", () => {
       this.selectedCharacter = undefined;
+    });
+    eventBus.$on("reloadCharacters", () => {
+      this.getAllCharacters();
     });
   }
 };

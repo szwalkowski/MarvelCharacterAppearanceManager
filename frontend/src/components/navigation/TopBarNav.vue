@@ -9,7 +9,7 @@
       <button type="button" id="update-all-characters-button">
         Update all characters
       </button>
-      <router-link tag="button" to="/appearances-types-dictionary">
+      <router-link tag="button" to="/dictionary?type=appearanceType">
         Dictionary for appearances
       </router-link>
     </div>

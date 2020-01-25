@@ -23,7 +23,7 @@
         <label id="error-label"></label>
       </form>
     </div>
-    <div v-if="characterInfoLoaded" class="issues-container">
+    <div v-if="characterInfo" class="issues-container">
       <table>
         <tr>
           <th>Real name</th>
@@ -34,21 +34,22 @@
           <th>Image</th>
         </tr>
         <tr>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
-          <td></td>
+          <td>{{ characterInfo.RealName }}</td>
+          <td>{{ characterInfo.SetAlias }}</td>
+          <td>{{ characterInfo.Universe }}</td>
+          <td>{{ characterInfo.AppearanceCount }}</td>
+          <td>{{ characterInfo.MinorAppearanceCount }}</td>
+          <td><a :href="characterInfo.ImageUrl">Image</a></td>
         </tr>
       </table>
 
-      <button>Confirm</button>
+      <button @click="confirmCharacter">Confirm</button>
     </div>
   </div>
 </template>
 <script>
 import axios from "axios";
+import { eventBus } from "../main";
 
 const marvelWikiUrl = "https://marvel.fandom.com/wiki/";
 const maxAliasLength = 20;
@@ -57,7 +58,7 @@ const aliasRegexp = /[a-zA-Z0-9 ]+/;
 export default {
   data() {
     return {
-      characterInfoLoaded: false,
+      characterInfo: undefined,
       errors: [],
       newCharacterData: {
         url: marvelWikiUrl,
@@ -71,6 +72,7 @@ export default {
       event.target.select();
     },
     checkForm() {
+      this.characterInfo = undefined;
       this.errors = [];
       const url = this.newCharacterData.url;
       if (!url.trim() || url === marvelWikiUrl) {
@@ -96,16 +98,28 @@ export default {
         axios
           .post("newCharacter", { characterUrl: url, customAlias: alias })
           .then(response => {
-            console.log(response);
+            this.characterInfo = response.data;
           })
           .catch(error => {
             this.errors.push(error.message);
-            console.log(error);
+            console.error(error);
           })
           .then(() => {
             this.characterIsLoading = false;
           });
       }
+    },
+    confirmCharacter() {
+      axios
+        .post("confirmCharacter", this.characterInfo)
+        .then(response => {
+          this.$alert("New character saved in database!");
+          eventBus.$emit("reloadCharacters");
+        })
+        .catch(error => {
+          this.errors.push(error.message);
+          console.log(error);
+        });
     }
   },
   beforeRouteLeave(to, from, next) {
