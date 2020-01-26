@@ -112,7 +112,7 @@ export default {
     confirmCharacter() {
       axios
         .post("confirmCharacter", this.characterInfo)
-        .then(response => {
+        .then(() => {
           this.$alert("New character saved in database!");
           eventBus.$emit("reloadCharacters");
         })

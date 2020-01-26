@@ -53,16 +53,6 @@ window.appearanceTypeDictionary = {};
     }
 
     function addEventsToButtons() {
-        $('.remove-dictionary-record').click(btn => {
-            dictionaryContent = dictionaryContent.filter(row => row.label !== btn.target.value);
-            fillDictionary();
-        });
-        $('.remove-value-under-label').click(btn => {
-            dictionaryContent.forEach(record => {
-                record.values = record.values.filter(value => value !== btn.target.value);
-            });
-            fillDictionary();
-        });
         $('#new-dictionary-record-button').click(tryToAddNewLabel);
         $('.add-value-under-label').click(btn => {
             const newValue = $(`.new-value-under-label-${btn.target.value.replace(/ /g, "_")}`).val().trim();
