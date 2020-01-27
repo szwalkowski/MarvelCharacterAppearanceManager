@@ -37,6 +37,9 @@ export default {
   methods: {
     selectUniverse(universe) {
       this.selectedUniverse = universe;
+      this.$router.push(
+        `issues?characterAlias=${this.selectedCharacter.alias}&universe=${universe}`
+      );
     }
   },
   created() {
