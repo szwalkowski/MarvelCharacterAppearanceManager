@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="issue-filter-div actions actions_top">
+    <div class="actions actions_top">
       <div v-if="errors.length" style="color: red">
         <b>Please correct the following error(s):</b>
         <br />

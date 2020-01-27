@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="existingDictionary">
-      <div class="issue-filter-div actions actions_top">
+      <div class="actions actions_top">
         <form>
           <button type="button" @click="saveDictionary">
             Save Dictionary

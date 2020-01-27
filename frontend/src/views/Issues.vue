@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div class="issue-filter-div actions actions_top">
-      <form id="issue-filter-form">
-        <h4>Filter issues:</h4><br />
+    <div class="actions actions_top">
+      <form>
+        <h4>Filter issues:</h4>
+        <br />
         <div>
           <label for="read-status-dropdown" class="label-filter-grouper">
             Read:
@@ -15,29 +16,33 @@
         </div>
         <div>
           <label class="label-filter-grouper">Show for focus type:</label>
-          <input type="checkbox" id="feature-character-check" checked="checked">
-          <label for="feature-character-check">Featured Character</label>&nbsp;
-          <input type="checkbox" id="antagonist-check" checked="checked">
-          <label for="antagonist-check">Antagonist</label>&nbsp;
-          <input type="checkbox" id="supporting-character-check" checked="checked">
-          <label for="supporting-character-check">Supporting Character</label>&nbsp;
-          <input type="checkbox" id="other-character-check" checked="checked">
-          <label for="other-character-check">Other</label>
+          <template v-for="(type, idx) in focusTypes">
+            <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
+            <input
+              :id="type + idx"
+              :key="idx"
+              type="checkbox"
+              checked="checked"
+            />
+          </template>
         </div>
         <div>
           <label class="label-filter-grouper">Appearance types: </label>
-          <input type="checkbox" id="-hide-appearance-type-check" class="checkbox-for-appearance-type" checked="checked">
-          <label for="-hide-appearance-type-check">Empty</label>&nbsp;
-          <!--
-          {{#each setOfAppearanceTypes}}
-          <input type="checkbox" id="{{spacesToUnderscores this}}-appearance-type-check" class="checkbox-for-appearance-type" checked="checked">
-          <label for="{{spacesToUnderscores this}}-appearance-type-check">{{this}}</label>&nbsp;
-          {{/each}}
-          -->
+          <input type="checkbox" id="hide-type" checked="checked" />
+          <label for="hide-type"> Empty </label>&nbsp;
+          <template v-for="(type, idx) in appearanceTypes">
+            <input
+              :id="type + idx"
+              :key="idx"
+              type="checkbox"
+              checked="checked"
+            />
+            <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
+          </template>
         </div>
       </form>
     </div>
-    <section flex flex-full-center id="issues-landing-container">
+    <section flex flex-full-center>
       <table>
         <thead>
           <tr>
@@ -50,14 +55,13 @@
           </tr>
         </thead>
         <tbody>
-          <!--
-          {{#each characterData.issues}}
-          <tr class="issue-row" data-focus-type="{{resolveFocusTypes appearances}}" data-appearance-type="{{resolveAppearanceTypes appearances}}"
-              data-issue-id="{{id}}" data-read="{{read}}">
-            <td><a href="{{url}}">{{name}}</a></td>
-            <td>{{timestampToDate publishDateTimestamp}}</td>
-            <td>{{volume}}</td>
-            <td>{{issueNo}}</td>
+          <tr v-for="(issue, idx) in issues" :key="idx">
+            <td>
+              <a :href="issue.url">{{ issue.name }}</a>
+            </td>
+            <td>{{ issue.publishDateTimestamp | timestampToDate }}</td>
+            <td>{{ issue.volume }}</td>
+            <td>{{ issue.issueNo }}</td>
             <td>
               <table class="small-table">
                 <thead>
@@ -68,49 +72,156 @@
                   </tr>
                 </thead>
                 <tbody>
-                  {{#each appearances}}
-                  <tr>
-                    <td>{{subtitle}}</td>
-                    <td>{{focusType}}</td>
-                    <td>{{appearanceTypes}}</td>
+                  <tr v-for="(appearance, idx) in issue.appearances" :key="idx">
+                    <td>{{ appearance.subtitle }}</td>
+                    <td>{{ appearance.focusType }}</td>
+                    <td>{{ appearance.appearanceTypes }}</td>
                   </tr>
-                  {{/each}}
                 </tbody>
               </table>
             </td>
-            <td class="read-issue-cell">
-              <label class="read-time-label" {{#unless read}}hidden="hidden" {{/unless}}>{{timestampToTime read}}</label>
-              <button class="remove-read-issue-button" value="{{id}}" {{#unless read}}hidden="hidden" {{
-              /unless}}>x</button>
-              <button class="read-issue-button" value="{{id}}" {{#if read}}hidden="hidden" {{
-              /if}}>Read!</button>
+            <td>
+              <template v-if="issue.read">
+                <label>{{ issue.read | timestampToTime }}</label>
+                <button @click="markAsNotRead(idx, issue.id)">x</button>
+              </template>
+              <button v-else @click="markAsRead(idx, issue.id)">
+                Read!
+              </button>
             </td>
           </tr>
-          {{/each}}
-          -->
         </tbody>
       </table>
     </section>
     <div class="character-manager actions actions_top">
       <div class="nav">
-        <label for="alias-text-input">Alias: </label><input type="text" id="alias-text-input" :value="alias">
-        <button type="button" id="rename-alias-button">Rename visible alias</button>
-        <button type="button" id="update-character-button">Update character</button>
-        <button type="button" id="remove-character-action">Remove character</button>
+        <label for="alias-text-input">Alias: </label>
+        <input type="text" id="alias-text-input" :value="alias" />
+        <button type="button">Rename visible alias</button>
+        <button type="button">Update character</button>
+        <button type="button">Remove character</button>
       </div>
     </div>
   </div>
 </template>
 <script>
-const setOfAppearanceTypes = [];
+import axios from "axios";
 
 export default {
   data() {
     return {
+      alias: "",
+      universe: "",
       readStatuses: ["All", "Read", "Not read"],
+      focusTypes: [
+        "Featured Character",
+        "Antagonist",
+        "Supporting Character",
+        "Other"
+      ],
       selectedReadStatus: "All",
-      alias: ""
+      characterData: {},
+      appearanceTypes: []
     };
+  },
+  computed: {
+    issues() {
+      let issues = this.characterData.issues;
+      if (this.selectedReadStatus !== "All") {
+        issues = issues.filter(
+          issue =>
+            (this.selectedReadStatus === "Read" && issue.read) ||
+            (this.selectedReadStatus === "Not read" && !issue.read)
+        );
+      }
+      return issues;
+    }
+  },
+  methods: {
+    markAsRead(idx, issueId) {
+      axios
+        .post("markIssueAsRead", {
+          issueId: issueId,
+          characterAlias: this.alias,
+          characterUniverse: this.universe
+        })
+        .then(response => {
+          this.characterData.issues[idx].read = response.data.readTime;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    markAsNotRead(idx, issueId) {
+      axios
+        .post("unmarkIssueAsRead", {
+          issueId: issueId,
+          characterAlias: this.alias,
+          characterUniverse: this.universe
+        })
+        .then(() => {
+          this.characterData.issues[idx].read = null;
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
+  },
+  filters: {
+    timestampToDate(timestamp) {
+      let d = new Date(timestamp),
+        month = "" + (d.getMonth() + 1),
+        year = d.getFullYear();
+      if (month.length < 2) {
+        month = "0" + month;
+      }
+      return [year, month].join("-");
+    },
+    timestampToTime(timestamp) {
+      const date = new Date(timestamp);
+      const yyyy = date.getFullYear();
+      let mm = date.getMonth() + 1;
+      if (mm < 10) {
+        mm = "0" + mm;
+      }
+      let dd = date.getDate();
+      if (dd < 10) {
+        dd = "0" + dd;
+      }
+      let hours = date.getHours();
+      if (hours < 10) {
+        hours = "0" + hours;
+      }
+      let minutes = date.getMinutes();
+      if (minutes < 10) {
+        minutes = "0" + minutes;
+      }
+      let seconds = date.getSeconds();
+      if (seconds < 10) {
+        seconds = "0" + seconds;
+      }
+      return (
+        yyyy + "-" + mm + "-" + dd + " " + hours + ":" + minutes + ":" + seconds
+      );
+    }
+  },
+  created() {
+    this.alias = this.$route.query.characterAlias;
+    this.universe = this.$route.query.universe;
+    axios
+      .get("getAllIssuesForCharacter", {
+        params: {
+          alias: this.alias,
+          universe: this.universe
+        }
+      })
+      .then(response => {
+        this.characterData = response.data.characterData;
+        this.appearanceTypes = response.data.setOfAppearanceTypes;
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }
 };
 </script>
