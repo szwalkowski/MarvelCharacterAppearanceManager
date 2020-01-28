@@ -2,7 +2,8 @@
   <div>
     <div class="actions actions_top">
       <form>
-        <h4>Filter issues:</h4>
+        <h4>Filter issues :</h4>
+        <h4>{{ `Showing ${issues.length} of ${totalIssues}` }}</h4>
         <br />
         <div>
           <label for="read-status-dropdown" class="label-filter-grouper">
@@ -17,25 +18,31 @@
         <div>
           <label class="label-filter-grouper">Show for focus type:</label>
           <template v-for="(type, idx) in focusTypes">
-            <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
             <input
               :id="type + idx"
               :key="idx"
+              :value="type"
+              v-model="selectedFocusTypes"
               type="checkbox"
-              checked="checked"
             />
+            <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
           </template>
         </div>
         <div>
           <label class="label-filter-grouper">Appearance types: </label>
-          <input type="checkbox" id="hide-type" checked="checked" />
+          <input
+            type="checkbox"
+            id="hide-type"
+            v-model="showEmptyAppearanceTypes"
+          />
           <label for="hide-type"> Empty </label>&nbsp;
           <template v-for="(type, idx) in appearanceTypes">
             <input
               :id="type + idx"
               :key="idx"
+              :value="type"
+              v-model="selectedAppearances"
               type="checkbox"
-              checked="checked"
             />
             <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
           </template>
@@ -117,24 +124,56 @@ export default {
         "Featured Character",
         "Antagonist",
         "Supporting Character",
-        "Other"
+        "Other Character"
       ],
+      selectedFocusTypes: [],
       selectedReadStatus: "All",
-      characterData: {},
-      appearanceTypes: []
+      characterData: undefined,
+      appearanceTypes: [],
+      selectedAppearances: [],
+      totalIssues: 0,
+      visibleIssues: 0,
+      showEmptyAppearanceTypes: true
     };
   },
   computed: {
     issues() {
-      let issues = this.characterData.issues;
-      if (this.selectedReadStatus !== "All") {
-        issues = issues.filter(
-          issue =>
-            (this.selectedReadStatus === "Read" && issue.read) ||
-            (this.selectedReadStatus === "Not read" && !issue.read)
-        );
+      if (!this.characterData) {
+        return {};
       }
-      return issues;
+      const selectedReadStatus = this.selectedReadStatus;
+      const selectedFocusTypes = this.selectedFocusTypes;
+      const selectedAppearances = this.selectedAppearances;
+      return this.characterData.issues.filter(issue => {
+        if (
+          (selectedReadStatus === "Read" && !issue.read) ||
+          (selectedReadStatus === "Not read" && issue.read)
+        ) {
+          return false;
+        }
+        if (
+          selectedFocusTypes.length !== this.focusTypes.length &&
+          !selectedFocusTypes.some(type =>
+            issue.appearances.find(app => app.focusType === type)
+          )
+        ) {
+          return false;
+        }
+        if (
+          issue.appearances.some(appearance => {
+            return (
+              appearance.appearanceTypes.some(
+                type => selectedAppearances.indexOf(type) > -1
+              ) ||
+              (this.showEmptyAppearanceTypes &&
+                appearance.appearanceTypes.length === 0)
+            );
+          })
+        ) {
+          return true;
+        }
+        return false;
+      });
     }
   },
   methods: {
@@ -208,6 +247,7 @@ export default {
   created() {
     this.alias = this.$route.query.characterAlias;
     this.universe = this.$route.query.universe;
+    this.selectedFocusTypes = this.focusTypes;
     axios
       .get("getAllIssuesForCharacter", {
         params: {
@@ -218,6 +258,8 @@ export default {
       .then(response => {
         this.characterData = response.data.characterData;
         this.appearanceTypes = response.data.setOfAppearanceTypes;
+        this.selectedAppearances = response.data.setOfAppearanceTypes;
+        this.totalIssues = response.data.characterData.issues.length;
       })
       .catch(error => {
         console.error(error);
