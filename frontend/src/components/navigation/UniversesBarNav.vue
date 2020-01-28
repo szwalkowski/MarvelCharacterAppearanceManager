@@ -37,9 +37,10 @@ export default {
   methods: {
     selectUniverse(universe) {
       this.selectedUniverse = universe;
-      this.$router.push(
-        `issues?characterAlias=${this.selectedCharacter.alias}&universe=${universe}`
-      );
+      const newRoute = `/issues?characterAlias=${this.selectedCharacter.alias}&universe=${universe}`;
+      if (this.$route.fullPath !== newRoute) {
+        this.$router.push(newRoute);
+      }
     }
   },
   created() {

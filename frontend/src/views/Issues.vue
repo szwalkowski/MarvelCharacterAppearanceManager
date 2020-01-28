@@ -204,6 +204,28 @@ export default {
         .catch(error => {
           console.error(error);
         });
+    },
+    loadIssuePage() {
+      this.alias = this.$route.query.characterAlias;
+      this.universe = this.$route.query.universe;
+      this.selectedFocusTypes = this.focusTypes;
+      this.showEmptyAppearanceTypes = true;
+      axios
+        .get("getAllIssuesForCharacter", {
+          params: {
+            alias: this.alias,
+            universe: this.universe
+          }
+        })
+        .then(response => {
+          this.characterData = response.data.characterData;
+          this.appearanceTypes = response.data.setOfAppearanceTypes;
+          this.selectedAppearances = response.data.setOfAppearanceTypes;
+          this.totalIssues = response.data.characterData.issues.length;
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
   },
   filters: {
@@ -245,25 +267,11 @@ export default {
     }
   },
   created() {
-    this.alias = this.$route.query.characterAlias;
-    this.universe = this.$route.query.universe;
-    this.selectedFocusTypes = this.focusTypes;
-    axios
-      .get("getAllIssuesForCharacter", {
-        params: {
-          alias: this.alias,
-          universe: this.universe
-        }
-      })
-      .then(response => {
-        this.characterData = response.data.characterData;
-        this.appearanceTypes = response.data.setOfAppearanceTypes;
-        this.selectedAppearances = response.data.setOfAppearanceTypes;
-        this.totalIssues = response.data.characterData.issues.length;
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    this.loadIssuePage();
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.loadIssuePage();
   }
 };
 </script>
