@@ -63,7 +63,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderIssue.getAppearances()[1], undefined);
     });
 
-    it("Problematic issue for Rhino of Mary Jane", function () {
+    it("parse html for random Silver Sable issue appearance in two titles", function () {
         const filePath = `${__dirname}/resources/issues/Silver_Sable_and_the_Wild_Pack_Vol_1_18edit.html`;
         const page = fs.readFileSync(filePath, "utf-8");
         const pageWindow = new JSDOM(page).window;
@@ -81,7 +81,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderIssue.getAppearances()[1].typesOfAppearance, "");
     });
 
-    it("parse html for random Silver Sable issue appearance in two titles", function () {
+    it("Problematic issue for Rhino of Mary Jane", function () {
         const filePath = `${__dirname}/resources/issues/Amazing_Mary_Jane_Vol_1_1edit.html`;
         const page = fs.readFileSync(filePath, "utf-8");
         const pageWindow = new JSDOM(page).window;
@@ -192,7 +192,7 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderManIssue.getName(), "Girl Comics");
         assert.equal(spiderManIssue.getVolume(), 2);
         assert.equal(spiderManIssue.getIssueNo(), 3);
-        assert.equal(spiderManIssue.getPublishedDate(), new Date(2010, 7).getTime());
+        assert.equal(spiderManIssue.getPublishedDate(), new Date(2010, 8).getTime());
         assert.equal(spiderManIssue.getAppearances()[0], undefined);
     });
 
@@ -211,6 +211,55 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(spiderManIssue.getAppearances()[0].typesOfAppearance[0], "Imagination");
         assert.equal(spiderManIssue.getAppearances()[0].typesOfAppearance[1], "Minor");
         assert.equal(spiderManIssue.getAppearances()[1], undefined);
+    });
+
+    it("Empty appearance for black cat issue again", function () {
+        const filePath = `${__dirname}/resources/issues/Amazing_Spider-Man_Vol_1_255edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const issue = new IssuePageModel(pageWindow, "Felicia Hardy (Earth-616)");
+        assert.equal(issue.isIssue, true);
+        assert.equal(issue.getName(), "Amazing Spider-Man");
+        assert.equal(issue.getVolume(), 1);
+        assert.equal(issue.getIssueNo(), 255);
+        assert.equal(issue.getPublishedDate(), new Date(1984, 7).getTime());
+        assert.equal(issue.getAppearances()[0].title, "Even a Ghost Can Fear the Night!");
+        assert.equal(issue.getAppearances()[0].focusType, "Other Character");
+        assert.equal(issue.getAppearances()[0].typesOfAppearance[0], "In Peter's imagination");
+        assert.equal(issue.getAppearances()[0].typesOfAppearance[1], "Minor");
+        assert.equal(issue.getAppearances()[1], undefined);
+    });
+
+    it("Stories listed at begining, then appearances", function () {
+        const filePath = `${__dirname}/resources/issues/Avengers_Spotlight_Vol_1_25edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const issue = new IssuePageModel(pageWindow, "Barbara Morse (Earth-616)");
+        assert.equal(issue.isIssue, true);
+        assert.equal(issue.getName(), "Avengers Spotlight");
+        assert.equal(issue.getVolume(), 1);
+        assert.equal(issue.getIssueNo(), 25);
+        assert.equal(issue.getPublishedDate(), new Date(1989, 10).getTime());
+        assert.equal(issue.getAppearances()[0].title, "Forewarned and Disarmed!");
+        assert.equal(issue.getAppearances()[0].focusType, "Supporting Character");
+        assert.equal(issue.getAppearances()[0].typesOfAppearance.length, 0);
+        assert.equal(issue.getAppearances()[1], undefined);
+    });
+
+    it("Some problems for appearances cause of new type villains", function () {
+        const filePath = `${__dirname}/resources/issues/Amazing_Spider-Man_Vol_1_587edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const issue = new IssuePageModel(pageWindow, "Felicia Hardy (Earth-616)");
+        assert.equal(issue.isIssue, true);
+        assert.equal(issue.getName(), "Amazing Spider-Man");
+        assert.equal(issue.getVolume(), 1);
+        assert.equal(issue.getIssueNo(), 587);
+        assert.equal(issue.getPublishedDate(), new Date(2009, 3).getTime());
+        assert.equal(issue.getAppearances()[0].title, "Character Assassination: Part 3");
+        assert.equal(issue.getAppearances()[0].focusType, "Other Character");
+        assert.equal(issue.getAppearances()[0].typesOfAppearance[0], "Screen");
+        assert.equal(issue.getAppearances()[1], undefined);
     });
 
 });

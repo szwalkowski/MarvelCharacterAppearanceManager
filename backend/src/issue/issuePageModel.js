@@ -2,10 +2,13 @@ const JQuery = require('jquery');
 const Months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
 const SelectorWithAllIssueData = '#wpTextbox1';
-const regexForAppearanceTypeOptionOne = /[\{\|][a-zA-Z\d]+}}/g;
-const regexForAppearanceTypeOptionTwo = /{[a-zA-Z\d]+\|/;
-const regexFocusType = /^'''[a-zA-Z ]+:'''$/;
-const invalidTypeAppearances = ["A", "APN", "G", "CHRONOLOGY", "CHRONOFB"];
+const RegexStoryTitleTag = /^\|[ ]+StoryTitle/;
+const RegexAppearingTag = /^\|[ ]+Appearing/;
+const RegexYearTag = /^\|[ ]+Year/;
+const RegexMonthTag = /^\|[ ]+Month/;
+const RegexForAppearanceTypeOptionOne = /[{\\|][a-zA-Z\d ']+}}/g;
+const RegexForAppearanceTypeOptionTwo = /{[a-zA-Z\d ']+\|/;
+const InvalidTypeAppearances = ["A", "APN", "G", "CHRONOLOGY", "CHRONOFB"];
 
 let IssuePageModel = function (issuePageWindow, characterId, url) {
     if (!issuePageWindow) {
@@ -15,17 +18,15 @@ let IssuePageModel = function (issuePageWindow, characterId, url) {
         throw new Error("characterId is undefined!");
     }
     this.url = url;
-    this.characterId = characterId;
     this.jquery = new JQuery(issuePageWindow);
     const allIssueDataElement = this.jquery.find(SelectorWithAllIssueData)[0];
     if (allIssueDataElement) {
         this.id = issuePageWindow.window.document.location.pathname;
-        this.issueTextInfo = allIssueDataElement.innerHTML.split("\n");
-        this.isIssue = this.issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
+        let issueTextInfo = allIssueDataElement.innerHTML.split("\n");
+        this.isIssue = issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
         if (this.isIssue) {
             this.fullName = this.jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
-            this.indexOfValueInLine = this.issueTextInfo.find(value => value.includes(" Year ")).indexOf("=") + 2;
-            this.appearances = prepareAppearanceInfo(this.issueTextInfo, this.indexOfValueInLine, this.characterId);
+            readDataFromText(this, issueTextInfo, characterId);
         }
     } else {
         this.isIssue = false;
@@ -51,85 +52,122 @@ IssuePageModel.prototype.getImage = function () {
 };
 
 IssuePageModel.prototype.getPublishedDate = function () {
-    const yearLine = this.issueTextInfo.find(line => line.includes("| Year"));
-    const year = parseInt(yearLine.substring(this.indexOfValueInLine, this.indexOfValueInLine + 4));
-    const monthLine = this.issueTextInfo.find(line => line.includes("| Month"));
-    let month;
-    if (monthLine) {
-        month = parseInt(monthLine.substring(this.indexOfValueInLine, this.indexOfValueInLine + 2));
+    const year = parseInt(this.year);
+    let month = this.month;
+    if (month) {
+        month = parseInt(month);
         if (!month) {
-            const monthName = monthLine.substring(this.indexOfValueInLine, monthLine.length).toUpperCase();
+            const monthName = this.month.toUpperCase();
             month = Months.findIndex(value => value === monthName);
+        } else {
+            month--;
         }
     } else {
-        month = Months.findIndex(value => value === "January");
+        month = 0;
     }
-    return new Date(year, month - 1).getTime();
+    return new Date(year, month).getTime();
 };
 
 IssuePageModel.prototype.getAppearances = function () {
     return this.appearances;
 };
 
-function prepareAppearanceInfo(textInfo, indexOfValueInLine, characterId) {
+function readDataFromText(pageModel, issueTextInfo, characterId) {
     let allAppearings = [];
-    let newAppearing = {};
-    const stringThatContainsStoryTitle = "| StoryTitle";
-    let weHaveStory = false;
-    let appearingsStarted = false;
-    for(let counter = 0; counter < textInfo.length; counter++) {
-        const line = textInfo[counter];
-        if (!appearingsStarted && line.includes(stringThatContainsStoryTitle)) {
-            newAppearing = {};
-            newAppearing.no = parseInt(line.substring(stringThatContainsStoryTitle.length, stringThatContainsStoryTitle.length + 2));
-            newAppearing.title = line.substring(indexOfValueInLine, line.length);
-            weHaveStory = true;
-        }
-        if (!appearingsStarted && line.includes("Appearing")) {
-            appearingsStarted = true;
-        }
-        if (weHaveStory || appearingsStarted) {
-            if (line.startsWith("{{Quote")) {
-                // continue
-            } else if (regexFocusType.exec(line)) {
-                newAppearing.focusType = line.substring(3, line.length - 5);
-            } else if (line.includes(`|[[${characterId}|`) || line.startsWith(`** {{Minor|${characterId}|`)) {
-                newAppearing.typesOfAppearance = tryToGetAppearanceType(line);
-                allAppearings.push(newAppearing);
-                newAppearing = {};
-                weHaveStory = appearingsStarted = false;
-            } else if (appearingsStarted && line === "" && (!textInfo[counter + 1] || !textInfo[counter + 1].startsWith("'''"))) {
-                newAppearing = {};
-                weHaveStory = appearingsStarted = false;
+    let appearingNumber = -1;
+    let foundFocusType = false;
+    const regexForCharacter = new RegExp(`^:*\\*.*{{.*${escapeRegExp(characterId)}.*\\|.*`);
+    for(let counter = 0; counter < issueTextInfo.length; counter++) {
+        const line = issueTextInfo[counter].trim();
+        if (appearingNumber > -1 && line.startsWith("| ")) {
+            appearingNumber = -1;
+            foundFocusType = false;
+        } else if (appearingNumber > -1) {
+            if (line.startsWith("'''") && line.endsWith("'''")) {
+                resolveAppearingType(allAppearings, appearingNumber, line);
+                foundFocusType = true;
+            } else if (foundFocusType) {
+                if (regexForCharacter.exec(line)) {
+                    addAppearingTypes(prepareAppearing(allAppearings, appearingNumber), line);
+                    foundFocusType = false;
+                    appearingNumber = -1;
+                }
             }
         }
+        if (RegexStoryTitleTag.exec(line)) {
+            resolveStoryTitleAndOrdinal(allAppearings, line);
+        } else if (RegexAppearingTag.exec(line)) {
+            appearingNumber = getOrdinalOfAppearing(line, RegexAppearingTag);
+        } else if (RegexYearTag.exec(line)) {
+            pageModel.year = getValueAfterEqualsSign(line);
+        } else if (RegexMonthTag.exec(line)) {
+            pageModel.month = getValueAfterEqualsSign(line);
+        }
     }
-    return allAppearings;
+    allAppearings = cleanupEmptyAppearings(allAppearings);
+    pageModel.appearances = allAppearings;
 }
 
-function tryToGetAppearanceType(line) {
-    let appearanceTypes = [];
-    let regexResolution = line.match(regexForAppearanceTypeOptionOne);
+function resolveStoryTitleAndOrdinal(allAppearings, line) {
+    const ordinal = getOrdinalOfAppearing(line, RegexStoryTitleTag);
+    const appearing = prepareAppearing(allAppearings, ordinal);
+    appearing.title = getValueAfterEqualsSign(line);
+}
+
+function resolveAppearingType(allAppearings, ordinal, line) {
+    const appearing = prepareAppearing(allAppearings, ordinal);
+    appearing.focusType = line.substring(3, line.length - 5);
+}
+
+function prepareAppearing(allAppearings, idx) {
+    let appearing = allAppearings.find(appearing => appearing.id === idx);
+    if (!appearing) {
+        appearing = {id: idx};
+        allAppearings.push(appearing);
+    }
+    return appearing;
+}
+
+function getOrdinalOfAppearing(line, regexp) {
+    return parseInt(line.split(regexp)[1]);
+}
+
+function getValueAfterEqualsSign(line) {
+    return line.substring(line.indexOf("=") + 1).trim();
+}
+
+function cleanupEmptyAppearings(allAppearings) {
+    return allAppearings.filter(appearing => appearing.typesOfAppearance);
+}
+
+function escapeRegExp(s) {
+    return s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
+}
+
+function addAppearingTypes(appearing, line) {
+    const appearanceTypes = [];
+    let regexResolution = line.match(RegexForAppearanceTypeOptionOne);
     if (regexResolution) {
         regexResolution.forEach(type => {
-            let appearanceType = type.substring(1, type.length - 2);
+            const appearanceType = type.substring(1, type.length - 2).trim();
             if (isValidTypeAppearance(appearanceType)) {
                 appearanceTypes.push(appearanceType);
             }
         });
     }
-    regexResolution = regexForAppearanceTypeOptionTwo.exec(line);
+    regexResolution = RegexForAppearanceTypeOptionTwo.exec(line);
     if (regexResolution) {
-        let appearanceType = regexResolution[0].substring(1, regexResolution[0].length - 1);
+        const appearanceType = regexResolution[0].substring(1, regexResolution[0].length - 1).trim();
         if (isValidTypeAppearance(appearanceType)) {
             appearanceTypes.push(appearanceType);
         }
     }
-    return appearanceTypes;
+    appearing.typesOfAppearance = appearanceTypes;
 }
 
 function isValidTypeAppearance(typeAppearance) {
-    return invalidTypeAppearances.findIndex(type => type === typeAppearance.toUpperCase()) < 0;
+    return typeAppearance &&
+      InvalidTypeAppearances.findIndex(type => type === typeAppearance.toUpperCase()) < 0;
 }
 
 module.exports = IssuePageModel;
