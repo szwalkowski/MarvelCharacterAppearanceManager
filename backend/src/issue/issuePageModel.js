@@ -84,7 +84,7 @@ function readDataFromText(pageModel, issueTextInfo, characterId) {
             foundFocusType = false;
         } else if (appearingNumber > -1) {
             if (line.startsWith("'''") && line.endsWith("'''")) {
-                resolveAppearingType(allAppearings, appearingNumber, line);
+                resolveFocusType(allAppearings, appearingNumber, line);
                 foundFocusType = true;
             } else if (foundFocusType) {
                 if (regexForCharacter.exec(line)) {
@@ -114,9 +114,9 @@ function resolveStoryTitleAndOrdinal(allAppearings, line) {
     appearing.title = getValueAfterEqualsSign(line);
 }
 
-function resolveAppearingType(allAppearings, ordinal, line) {
+function resolveFocusType(allAppearings, ordinal, line) {
     const appearing = prepareAppearing(allAppearings, ordinal);
-    appearing.focusType = line.substring(3, line.length - 5);
+    appearing.focusType = line.substring(3, line.length - 4);
 }
 
 function prepareAppearing(allAppearings, idx) {

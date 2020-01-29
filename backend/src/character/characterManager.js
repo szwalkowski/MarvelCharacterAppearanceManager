@@ -34,14 +34,16 @@ CharacterManager.prototype.loadIssuesAndAppearances = function (alias, universe)
     const fileContent = fs.readFileSync(`../../database/appearances/${fileName}`, "utf-8");
     const characterData = JSON.parse(fileContent);
     const setOfAppearanceTypes = new Set();
+    const setOfFocusTypes = new Set();
     characterData.issues.forEach(issue => {
         issue.appearances.forEach(appearanceInIssue => {
             appearanceInIssue.appearanceTypes.forEach(appearanceType => {
                 setOfAppearanceTypes.add(appearanceType);
             });
+            setOfFocusTypes.add(appearanceInIssue.focusType);
         });
     });
-    return {characterData, setOfAppearanceTypes: [...setOfAppearanceTypes].sort()};
+    return {characterData, setOfAppearanceTypes: [...setOfAppearanceTypes].sort(), setOfFocusTypes: [...setOfFocusTypes].sort()};
 };
 
 function saveToFile(characterModel) {

@@ -120,12 +120,7 @@ export default {
       alias: "",
       universe: "",
       readStatuses: ["All", "Read", "Not read"],
-      focusTypes: [
-        "Featured Character",
-        "Antagonist",
-        "Supporting Character",
-        "Other Character"
-      ],
+      focusTypes: [],
       selectedFocusTypes: [],
       selectedReadStatus: "All",
       characterData: undefined,
@@ -221,6 +216,8 @@ export default {
           this.characterData = response.data.characterData;
           this.appearanceTypes = response.data.setOfAppearanceTypes;
           this.selectedAppearances = response.data.setOfAppearanceTypes;
+          this.focusTypes = response.data.setOfFocusTypes;
+          this.selectedFocusTypes = response.data.setOfFocusTypes;
           this.totalIssues = response.data.characterData.issues.length;
         })
         .catch(error => {
