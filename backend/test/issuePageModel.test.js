@@ -262,4 +262,21 @@ describe("Page model test based on downloaded html for issues", function () {
         assert.equal(issue.getAppearances()[1], undefined);
     });
 
+    it("Tigra first as tigra", function () {
+        const filePath = `${__dirname}/resources/issues/Giant-Size_Creatures_Vol_1_1edit.html`;
+        const page = fs.readFileSync(filePath, "utf-8");
+        const pageWindow = new JSDOM(page).window;
+        const issue = new IssuePageModel(pageWindow, "Greer Grant (Earth-616)");
+        assert.equal(issue.isIssue, true);
+        assert.equal(issue.getName(), "Giant-Size Creatures");
+        assert.equal(issue.getVolume(), 1);
+        assert.equal(issue.getIssueNo(), 1);
+        assert.equal(issue.getPublishedDate(), new Date(1974, 6).getTime());
+        assert.equal(issue.getAppearances()[0].title, "Tigra - the Were-Woman!");
+        assert.equal(issue.getAppearances()[0].focusType, "Featured Character");
+        assert.equal(issue.getAppearances()[0].typesOfAppearance[0], "1stas");
+        assert.equal(issue.getAppearances()[0].typesOfAppearance[1], "Tigra");
+        assert.equal(issue.getAppearances()[1], undefined);
+    });
+
 });

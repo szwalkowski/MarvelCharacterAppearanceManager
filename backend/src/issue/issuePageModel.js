@@ -167,7 +167,8 @@ function addAppearingTypes(appearing, line) {
 
 function isValidTypeAppearance(typeAppearance) {
     return typeAppearance &&
-      InvalidTypeAppearances.findIndex(type => type === typeAppearance.toUpperCase()) < 0;
+      InvalidTypeAppearances.findIndex(type => type === typeAppearance.toUpperCase()) < 0 &&
+      !typeAppearance.includes(" Vol ");
 }
 
 module.exports = IssuePageModel;
