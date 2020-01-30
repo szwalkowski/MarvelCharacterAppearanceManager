@@ -17,6 +17,12 @@
         </div>
         <div>
           <label class="label-filter-grouper">Show for focus type:</label>
+          <input
+            type="checkbox"
+            id="hide-focus-type"
+            v-model="showEmptyFocusTypes"
+          />
+          <label for="hide-focus-type"> Empty </label>&nbsp;
           <template v-for="(type, idx) in focusTypes">
             <input
               :id="type + idx"
@@ -128,7 +134,8 @@ export default {
       selectedAppearances: [],
       totalIssues: 0,
       visibleIssues: 0,
-      showEmptyAppearanceTypes: true
+      showEmptyAppearanceTypes: true,
+      showEmptyFocusTypes: true
     };
   },
   computed: {
@@ -147,10 +154,15 @@ export default {
           return false;
         }
         if (
-          selectedFocusTypes.length !== this.focusTypes.length &&
-          !selectedFocusTypes.some(type =>
-            issue.appearances.find(app => app.focusType === type)
-          )
+          (selectedFocusTypes.length !== this.focusTypes.length &&
+            issue.appearances.length &&
+            !issue.appearances.some(
+              app =>
+                !app.focusType || selectedFocusTypes.includes(app.focusType)
+            )) ||
+          (!this.showEmptyFocusTypes &&
+            (!issue.appearances ||
+              !issue.appearances.some(app => app.focusType)))
         ) {
           return false;
         }
@@ -206,6 +218,7 @@ export default {
       this.universe = this.$route.query.universe;
       this.selectedFocusTypes = this.focusTypes;
       this.showEmptyAppearanceTypes = true;
+      this.showEmptyFocusTypes = true;
       axios
         .get("getAllIssuesForCharacter", {
           params: {

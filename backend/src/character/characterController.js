@@ -66,11 +66,18 @@ function prepareGetAllCharactersAliases(instance, server) {
 function prepareGetAllIssuesForCharacter(instance, server) {
     server.get("/getAllIssuesForCharacter", (req, res) => {
         const data = instance.characterManager.loadIssuesAndAppearances(req.query.alias, req.query.universe);
-        const dictionary = instance.dictionaryManager.getDictionaryById("appearanceType");
-        data.setOfAppearanceTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, dictionary, true);
+        const appearanceDictionary = instance.dictionaryManager.getDictionaryById("appearanceType");
+        const focusDictionary = instance.dictionaryManager.getDictionaryById("focusType");
+        data.setOfAppearanceTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, appearanceDictionary, true);
+        data.setOfFocusTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(data.setOfFocusTypes, focusDictionary, true);
         data.characterData.issues.forEach(issue => {
             issue.appearances.forEach(appearance => {
-                appearance.appearanceTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, dictionary, true);
+                appearance.appearanceTypes = instance.dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, appearanceDictionary, true);
+            });
+        });
+        data.characterData.issues.forEach(issue => {
+            issue.appearances.forEach(appearance => {
+                appearance.focusType = instance.dictionaryTranslator.translateUsingDictionary(appearance.focusType, focusDictionary, true);
             });
         });
         res.end(JSON.stringify(data));

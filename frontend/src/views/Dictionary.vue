@@ -72,7 +72,7 @@
 <script>
 import axios from "axios";
 
-const existingDictionaries = ["appearanceType"];
+const existingDictionaries = ["appearanceType", "focusType"];
 
 export default {
   data() {
@@ -154,24 +154,31 @@ export default {
           this.errors.push(error.message);
           console.error(error);
         });
+    },
+    loadDictionary() {
+      this.dictionaryId = this.$route.query.type;
+      this.existingDictionary =
+        existingDictionaries.indexOf(this.dictionaryId) > -1;
+      axios
+        .get("getDictionary", {
+          params: {
+            dictionaryId: this.dictionaryId
+          }
+        })
+        .then(response => {
+          this.dictionary = response.data;
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
   },
   created() {
-    this.dictionaryId = this.$route.query.type;
-    this.existingDictionary =
-      existingDictionaries.indexOf(this.dictionaryId) > -1;
-    axios
-      .get("getDictionary", {
-        params: {
-          dictionaryId: this.dictionaryId
-        }
-      })
-      .then(response => {
-        this.dictionary = response.data;
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    this.loadDictionary();
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.loadDictionary();
   }
 };
 </script>
