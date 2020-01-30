@@ -241,9 +241,9 @@ export default {
   },
   filters: {
     timestampToDate(timestamp) {
-      let d = new Date(timestamp),
-        month = "" + (d.getMonth() + 1),
-        year = d.getFullYear();
+      const d = new Date(timestamp);
+      const year = d.getFullYear();
+      let month = "" + (d.getMonth() + 1);
       if (month.length < 2) {
         month = "0" + month;
       }
