@@ -163,7 +163,8 @@ export default {
               (this.showEmptyAppearanceTypes &&
                 appearance.appearanceTypes.length === 0)
             );
-          })
+          }) ||
+          (this.showEmptyAppearanceTypes && !issue.appearances.length)
         ) {
           return true;
         }
