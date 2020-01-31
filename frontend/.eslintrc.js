@@ -5,7 +5,7 @@ module.exports = {
   },
   extends: ["plugin:vue/essential", "@vue/prettier"],
   rules: {
-    "prettier/prettier": ["error", {}]
+    //"prettier/prettier": ["error", {}]
   },
   parserOptions: {
     parser: "babel-eslint"
