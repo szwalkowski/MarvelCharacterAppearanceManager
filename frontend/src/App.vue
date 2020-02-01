@@ -1,6 +1,6 @@
 <template>
-  <div id="app">
-    <div class="header_div">
+  <div id="app" class="container-fluid">
+    <div class="header_div row">
       <div class="header_container">
         <h1 class="header header_title" @click="navigateToHome">
           Marvel Character Appearance
@@ -10,11 +10,11 @@
         </h2>
       </div>
     </div>
-    <McamTopBarNav />
-    <div class="container">
-      <CharactersBarNav />
-      <UniversesBarNav />
-      <router-view class="landing-container" />
+    <McamTopBarNav class="row" />
+    <div class="row">
+      <CharactersBarNav class="col-2" />
+      <UniversesBarNav class="col-1" />
+      <router-view class="col-9 actions" />
     </div>
   </div>
 </template>

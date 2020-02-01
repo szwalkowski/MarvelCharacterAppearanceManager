@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="existingDictionary">
-      <div class="actions actions_top">
+      <div class="actions row">
         <form>
           <button type="button" @click="saveDictionary">
             Save Dictionary
@@ -15,48 +15,91 @@
           <li v-for="error in errors" :key="error">{{ error }}</li>
         </ul>
       </div>
-      <div class="dictionary-table">
-        <table>
+      <div class="row">
+        <table class="table table-hover table-bordered">
           <thead>
             <tr>
-              <th>Label</th>
-              <th>Value</th>
+              <th scope="col">Label</th>
+              <th scope="col">Value</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>
-                <input type="text" v-model.trim="newRow.label" />
-                <button type="button" @click="addNewRow">+</button>
+              <td scope="row">
+                <div class="form-group form-inline">
+                  <button type="button" class="btn btn-dark" @click="addNewRow">
+                    +
+                  </button>
+                  <input
+                    type="text"
+                    placeholder="Enter new label"
+                    class="form-control-plaintext col-xl"
+                    v-model.trim="newRow.label"
+                  />
+                </div>
               </td>
               <td>
-                <input type="text" v-model.trim="newRow.value" />
+                <div class="form-group form-inline">
+                  <input
+                    type="text"
+                    placeholder="Enter value"
+                    class="form-control-plaintext col-6"
+                    v-model.trim="newRow.value"
+                  />
+                </div>
               </td>
             </tr>
             <tr v-for="(row, rowIdx) in dictionary" :key="row.label">
-              <td>
-                <div>
-                  <input type="text" :value="row.label" />
+              <td scope="row">
+                <div class="form-group form-inline">
                   <button
-                    class="remove-dictionary-record"
+                    class="btn btn-dark"
                     :value="row.label"
                     @click="removeRow(rowIdx)"
                     v-if="row.label !== '-hide-'"
                   >
                     -
                   </button>
+                  <input
+                    type="text"
+                    class="form-control-plaintext col-xl"
+                    :value="row.label"
+                    disabled
+                  />
                 </div>
               </td>
               <td>
-                <div v-for="(value, valueIdx) in row.values" :key="value">
-                  <input type="text" :value="value" />
-                  <button :value="value" @click="removeValue(rowIdx, valueIdx)">
+                <div
+                  v-for="(value, valueIdx) in row.values"
+                  :key="value"
+                  class="form-group form-inline"
+                >
+                  <button
+                    :value="value"
+                    @click="removeValue(rowIdx, valueIdx)"
+                    class="btn btn-dark"
+                  >
                     -
                   </button>
+                  <input
+                    :value="value"
+                    type="text"
+                    class="form-control-plaintext col-6"
+                    disabled
+                  />
                 </div>
-                <div>
-                  <input type="text" :ref="'newValueFor' + rowIdx" />
-                  <button @click="addValueToRow(rowIdx, $event)">+</button>
+                <div class="form-group form-inline">
+                  <button
+                    @click="addValueToRow(rowIdx, $event)"
+                    class="btn btn-dark"
+                  >
+                    +
+                  </button>
+                  <input
+                    :ref="'newValueFor' + rowIdx"
+                    type="text"
+                    class="form-control-plaintext col-6"
+                  />
                 </div>
               </td>
             </tr>
@@ -182,3 +225,15 @@ export default {
   }
 };
 </script>
+<style scoped>
+thead tr th:first-child,
+tbody tr td:first-child {
+  width: 20rem;
+  min-width: 20rem;
+  max-width: 20rem;
+  word-break: break-all;
+}
+input {
+  width: max-content;
+}
+</style>

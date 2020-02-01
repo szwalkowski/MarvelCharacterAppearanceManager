@@ -2,8 +2,7 @@
   <div>
     <div class="actions actions_top">
       <form>
-        <h4>Filter issues :</h4>
-        <h4>{{ `Showing ${issues.length} of ${totalIssues}` }}</h4>
+        <h4>{{ `Visible ${issues.length} issues of ${totalIssues} total` }}</h4>
         <br />
         <div>
           <label for="read-status-dropdown" class="label-filter-grouper">
@@ -55,7 +54,7 @@
         </div>
       </form>
     </div>
-    <section flex flex-full-center>
+    <section>
       <table>
         <thead>
           <tr>

@@ -1,9 +1,9 @@
 <template>
-  <div id="character-list-div" class="actions actions_left">
+  <div class="actions actions_left">
     <form class="sort-character-list-form">
       <h4>Sort:</h4>
       <div class="character-list-options">
-        <select id="sort-order-dropdown" name="sortOrder">
+        <select name="sortOrder">
           <option value="0">Alphabetical</option>
           <option value="1">Oldest not read</option>
           <option value="2">With most fresh issues</option>

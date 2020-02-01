@@ -12,13 +12,7 @@ input[type="checkbox"]:hover {
     cursor: pointer;
 }
 
-#paging-div {
-    display: flex;
-    flex-direction: row;
-}
-
 .actions {
-    background-color: #2e2e2e;
     padding: .8rem .1rem .8rem .8rem;
 }
 
@@ -28,10 +22,6 @@ input[type="checkbox"]:hover {
 
 .actions_left {
     border-right: 1px solid #979798;
-}
-
-.nav, #character-list-div {
-    flex: 3;
 }
 
 #current-page {
@@ -52,8 +42,6 @@ button.paging-button img {
 }
 
 .container {
-    display: flex;
-    flex-direction: row;
     margin-bottom: 0;
 }
 
@@ -63,16 +51,6 @@ button.paging-button img {
 
 .character-list-options, .universe-list-options {
     margin-left: .3rem;
-}
-
-.landing-container {
-    flex: 25;
-    flex-flow: column wrap;
-    width: 100%;
-}
-
-.universe-container {
-    flex: 2;
 }
 
 .universe-list-options-buttons button {
@@ -95,13 +73,6 @@ button.paging-button img {
 
 .issues-container {
     padding: .5rem;
-    flex: 4;
-}
-
-td, th {
-    border: 0.05rem solid #fff;
-    padding: 1rem;
-    background-color: #2f2f2f;
 }
 
 /* unvisited link */
@@ -143,35 +114,4 @@ a:active {
 
 .swal2-actions button:focus {
     box-shadow: 0 0 0 3px #212121 !important;
-}
-
-/* Tiny Flex Grid */
-
-[flex] {
-    display: flex;
-}
-
-[flex-fill] {
-    flex: 1;
-}
-
-[flex-full-center] {
-    align-items: center;
-    justify-content: center;
-}
-
-[flex-direction=column] {
-    flex-direction: column;
-}
-
-[flex-direction=row] {
-    flex-direction: row;
-}
-
-[flex-size="40"] {
-    flex: 40;
-}
-
-[flex-size="60"] {
-    flex: 60;
 }
