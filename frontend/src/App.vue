@@ -3,10 +3,10 @@
     <div class="header_div row">
       <div class="header_container">
         <h1 class="header header_title" @click="navigateToHome">
-          Marvel Character Appearance
+          MARVEL CHARACTER APPEARANCE
         </h1>
         <h2 class="header header_subtitle" @click="navigateToHome">
-          Manager
+          MANAGER
         </h2>
       </div>
     </div>
@@ -43,6 +43,7 @@ export default {
   background: #640a14;
   color: #989898;
   padding: 1.3rem 0;
+  font-family: "GoldenSentry", serif !important;
 }
 
 .header_container {

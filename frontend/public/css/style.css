@@ -1,10 +1,12 @@
+@font-face {
+    font-family: 'GoldenSentry';
+    src: url('../fonts/GoldenSentry-pXBv.ttf');
+}
+
 body, input, textarea, select, button {
-    font-size: 1rem;
     color: #989898;
     background: #171717;
     border-color: #464646;
-    padding: 0.07rem;
-    font-family: 'Muli', 'sans serif', 'serif';
 }
 
 button:hover,
@@ -22,23 +24,6 @@ input[type="checkbox"]:hover {
 
 .actions_left {
     border-right: 1px solid #979798;
-}
-
-#current-page {
-    width: 35px
-}
-
-#page-size-select {
-    width: 100px
-}
-
-#confirm-character-button {
-    padding: 0.6rem 20rem
-}
-
-button.paging-button img {
-    width: 2rem;
-    height: 1rem;
 }
 
 .container {
