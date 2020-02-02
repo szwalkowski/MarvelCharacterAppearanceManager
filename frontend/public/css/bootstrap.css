@@ -2224,8 +2224,8 @@ pre code {
   font-size: 0.9375rem;
   font-weight: 400;
   line-height: 1.5;
-  color: #444;
-  background-color: #fff;
+  color: #ababab;
+  background-color: #101010;
   background-clip: padding-box;
   border: 1px solid #222;
   border-radius: 0.25rem;
@@ -2253,13 +2253,21 @@ pre code {
 }
 
 .form-control:focus {
-  color: #444;
-  background-color: #fff;
+  color: #ababab;
+  background-color: #101010;
   border-color: #739ac2;
   outline: 0;
   -webkit-box-shadow: 0 0 0 0.2rem rgba(55, 90, 127, 0.25);
           box-shadow: 0 0 0 0.2rem rgba(55, 90, 127, 0.25);
 }
+
+.form-control:-webkit-autofill,
+.form-control:-webkit-autofill:hover,
+.form-control:-webkit-autofill:focus,
+.form-control:-webkit-autofill:active  {
+  -webkit-box-shadow: 0 0 0px 1000px #101010 inset !important;
+  -webkit-text-fill-color: #ababab !important;
+ }
 
 .form-control::-webkit-input-placeholder {
   color: #999;

@@ -14,10 +14,6 @@ input[type="checkbox"]:hover {
     cursor: pointer;
 }
 
-.actions {
-    padding: .8rem .1rem .8rem .8rem;
-}
-
 .actions_top {
     border-bottom: 1px solid #979798;
 }
@@ -54,10 +50,6 @@ input[type="checkbox"]:hover {
 #error-label {
     font-weight: bolder;
     color: #962622;
-}
-
-.issues-container {
-    padding: .5rem;
 }
 
 /* unvisited link */

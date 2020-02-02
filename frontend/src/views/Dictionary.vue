@@ -2,8 +2,8 @@
   <div>
     <div v-if="existingDictionary">
       <div class="actions row">
-        <form>
-          <button type="button" @click="saveDictionary">
+        <form class="form-group form-inline">
+          <button type="button" class="btn btn-dark" @click="saveDictionary">
             Save Dictionary
           </button>
         </form>
@@ -16,7 +16,7 @@
         </ul>
       </div>
       <div class="row">
-        <table class="table table-hover table-bordered">
+        <table class="table table-hover table-bordered table-sm">
           <thead>
             <tr>
               <th scope="col">Label</th>
@@ -26,8 +26,12 @@
           <tbody>
             <tr>
               <td scope="row">
-                <div class="form-group form-inline">
-                  <button type="button" class="btn btn-dark" @click="addNewRow">
+                <div class="form-group form-inline form-control-sm">
+                  <button
+                    type="button"
+                    class="btn btn-dark btn-sm"
+                    @click="addNewRow"
+                  >
                     +
                   </button>
                   <input
@@ -39,7 +43,7 @@
                 </div>
               </td>
               <td>
-                <div class="form-group form-inline">
+                <div class="form-group form-inline form-control-sm">
                   <input
                     type="text"
                     placeholder="Enter value"
@@ -51,9 +55,9 @@
             </tr>
             <tr v-for="(row, rowIdx) in dictionary" :key="row.label">
               <td scope="row">
-                <div class="form-group form-inline">
+                <div class="form-group form-inline form-control-sm">
                   <button
-                    class="btn btn-dark"
+                    class="btn btn-dark btn-sm"
                     :value="row.label"
                     @click="removeRow(rowIdx)"
                     v-if="row.label !== '-hide-'"
@@ -72,12 +76,12 @@
                 <div
                   v-for="(value, valueIdx) in row.values"
                   :key="value"
-                  class="form-group form-inline"
+                  class="form-group form-inline form-control-sm"
                 >
                   <button
                     :value="value"
                     @click="removeValue(rowIdx, valueIdx)"
-                    class="btn btn-dark"
+                    class="btn btn-dark btn-sm"
                   >
                     -
                   </button>
@@ -88,10 +92,10 @@
                     disabled
                   />
                 </div>
-                <div class="form-group form-inline">
+                <div class="form-group form-inline form-control-sm">
                   <button
                     @click="addValueToRow(rowIdx, $event)"
-                    class="btn btn-dark"
+                    class="btn btn-dark btn-sm"
                   >
                     +
                   </button>

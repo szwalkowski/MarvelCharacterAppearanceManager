@@ -11,10 +11,10 @@
       </div>
     </div>
     <McamTopBarNav class="row" />
-    <div class="row">
-      <CharactersBarNav class="col-2" />
-      <UniversesBarNav class="col-1" />
-      <router-view class="col-9 actions" />
+    <div class="row flex-xl-nowrap">
+      <CharactersBarNav class="col-2 py-md-4 pl-md-3" />
+      <UniversesBarNav class="col-1 py-md-4 pl-md-2" />
+      <router-view class="col-9 py-md-4 pl-md-4" />
     </div>
   </div>
 </template>

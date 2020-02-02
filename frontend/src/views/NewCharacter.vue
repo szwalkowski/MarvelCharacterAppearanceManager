@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="actions actions_top">
+    <fieldset>
       <div v-if="errors.length" style="color: red">
         <b>Please correct the following error(s):</b>
         <br />
@@ -8,23 +8,34 @@
           <li v-for="error in errors" :key="error">{{ error }}</li>
         </ul>
       </div>
-      <form @submit.prevent="checkForm" action="newCharacter">
-        <label for="url">Url to new character: </label>
-        <input
-          type="text"
-          id="url"
-          v-model="newCharacterData.url"
-          @click="selectAll($event)"
-          name="url"
-        />
-        <label for="alias">Custom alias: </label>
-        <input type="text" id="alias" v-model="newCharacterData.customAlias" />
-        <button type="submit">Upload character</button>
-        <label id="error-label"></label>
+      <form @submit.prevent="checkForm">
+        <div class="form-group row">
+          <button type="submit" class="btn btn-dark">Upload character</button>
+          <div class="col-5">
+            <label for="url">Url to new character: </label>
+            <input
+              type="text"
+              class="form-control"
+              id="url"
+              v-model="newCharacterData.url"
+              @click="selectAll($event)"
+              name="url"
+            />
+          </div>
+          <div class="col-3">
+            <label for="alias">Custom alias: </label>
+            <input
+              type="text"
+              id="alias"
+              class="form-control"
+              v-model="newCharacterData.customAlias"
+            />
+          </div>
+        </div>
       </form>
-    </div>
-    <div v-if="characterInfo" class="issues-container">
-      <table>
+    </fieldset>
+    <div v-if="characterInfo" class="row">
+      <table class="table table-dark">
         <tr>
           <th>Real name</th>
           <th>Alias</th>
@@ -43,7 +54,9 @@
         </tr>
       </table>
 
-      <button @click="confirmCharacter">Confirm</button>
+      <button class="btn btn-dark btn-lg" @click="confirmCharacter">
+        Confirm
+      </button>
     </div>
   </div>
 </template>
@@ -141,12 +154,3 @@ export default {
   }
 };
 </script>
-<style>
-#url {
-  width: 20rem;
-}
-
-#alias {
-  width: 15rem;
-}
-</style>
