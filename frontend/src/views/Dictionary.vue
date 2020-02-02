@@ -3,7 +3,7 @@
     <div v-if="existingDictionary">
       <div class="actions row">
         <form class="form-group form-inline">
-          <button type="button" class="btn btn-dark" @click="saveDictionary">
+          <button type="button" class="btn btn-primary" @click="saveDictionary">
             Save Dictionary
           </button>
         </form>
@@ -29,7 +29,7 @@
                 <div class="form-group form-inline form-control-sm">
                   <button
                     type="button"
-                    class="btn btn-dark btn-sm"
+                    class="btn btn-primary btn-sm mr-1"
                     @click="addNewRow"
                   >
                     +
@@ -37,7 +37,7 @@
                   <input
                     type="text"
                     placeholder="Enter new label"
-                    class="form-control-plaintext col-xl"
+                    class="form-control-plaintext col-xl p-"
                     v-model.trim="newRow.label"
                   />
                 </div>
@@ -57,7 +57,7 @@
               <td scope="row">
                 <div class="form-group form-inline form-control-sm">
                   <button
-                    class="btn btn-dark btn-sm"
+                    class="btn btn-primary btn-sm"
                     :value="row.label"
                     @click="removeRow(rowIdx)"
                     v-if="row.label !== '-hide-'"
@@ -81,7 +81,7 @@
                   <button
                     :value="value"
                     @click="removeValue(rowIdx, valueIdx)"
-                    class="btn btn-dark btn-sm"
+                    class="btn btn-primary btn-sm"
                   >
                     -
                   </button>
@@ -95,7 +95,7 @@
                 <div class="form-group form-inline form-control-sm">
                   <button
                     @click="addValueToRow(rowIdx, $event)"
-                    class="btn btn-dark btn-sm"
+                    class="btn btn-primary btn-sm"
                   >
                     +
                   </button>

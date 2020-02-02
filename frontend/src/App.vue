@@ -1,20 +1,20 @@
 <template>
   <div id="app" class="container-fluid">
     <div class="header_div row">
-      <div class="header_container">
-        <h1 class="header header_title" @click="navigateToHome">
+      <div class="col-sm pl-sm-5 p-sm-3">
+        <h1 class="header_title row" @click="navigateToHome">
           MARVEL CHARACTER APPEARANCE
         </h1>
-        <h2 class="header header_subtitle" @click="navigateToHome">
+        <h2 class="header_subtitle row" @click="navigateToHome">
           MANAGER
         </h2>
       </div>
     </div>
     <McamTopBarNav class="row" />
     <div class="row flex-xl-nowrap">
-      <CharactersBarNav class="col-2 py-md-4 pl-md-3" />
-      <UniversesBarNav class="col-1 py-md-4 pl-md-2" />
-      <router-view class="col-9 py-md-4 pl-md-4" />
+      <CharactersBarNav class="col-2 py-4 pl-0" />
+      <UniversesBarNav class="col-1 py-4 pl-2" />
+      <router-view class="col-9 py-4 pl-4" />
     </div>
   </div>
 </template>
@@ -42,28 +42,17 @@ export default {
 .header_div {
   background: #640a14;
   color: #989898;
-  padding: 1.3rem 0;
   font-family: "GoldenSentry", serif !important;
-}
-
-.header_container {
-  max-width: 65rem;
-  margin: 0 auto;
-  padding: 0 1.6rem;
-}
-
-.header {
-  cursor: pointer;
-  width: fit-content;
 }
 
 .header_title {
   font-size: 3.3rem;
-  margin-bottom: 0.4rem;
+  cursor: pointer;
 }
 
 .header_subtitle {
   font-size: 1.6rem;
   font-weight: 300;
+  cursor: pointer;
 }
 </style>

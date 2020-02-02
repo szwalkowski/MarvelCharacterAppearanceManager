@@ -1,61 +1,64 @@
 <template>
   <div>
-    <div class="actions actions_top">
-      <form>
-        <h4>{{ `Visible ${issues.length} issues of ${totalIssues} total` }}</h4>
-        <br />
-        <div>
-          <label for="read-status-dropdown" class="label-filter-grouper">
-            Read:
-          </label>
-          <select id="read-status-dropdown" v-model="selectedReadStatus">
-            <option v-for="status in readStatuses" :key="status">
-              {{ status }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label class="label-filter-grouper">Show for focus type:</label>
-          <input
-            type="checkbox"
-            id="hide-focus-type"
-            v-model="showEmptyFocusTypes"
-          />
-          <label for="hide-focus-type"> Empty </label>&nbsp;
-          <template v-for="(type, idx) in focusTypes">
+    <div class="col-sm">
+      <h4 class="row">
+        {{ `Visible ${issues.length} issues of ${totalIssues} total:` }}
+      </h4>
+      <form class="form-group row">
+        <div class="col-sm">
+          <div class="row">
+            <label for="read-status-dropdown" class="label-filter-grouper">
+              Read:
+            </label>
+            <select id="read-status-dropdown" v-model="selectedReadStatus">
+              <option v-for="status in readStatuses" :key="status">
+                {{ status }}
+              </option>
+            </select>
+          </div>
+          <div class="row">
+            <label class="label-filter-grouper">Show for focus type:</label>
             <input
-              :id="type + idx"
-              :key="idx"
-              :value="type"
-              v-model="selectedFocusTypes"
               type="checkbox"
+              id="hide-focus-type"
+              v-model="showEmptyFocusTypes"
             />
-            <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
-          </template>
-        </div>
-        <div>
-          <label class="label-filter-grouper">Appearance types: </label>
-          <input
-            type="checkbox"
-            id="hide-type"
-            v-model="showEmptyAppearanceTypes"
-          />
-          <label for="hide-type"> Empty </label>&nbsp;
-          <template v-for="(type, idx) in appearanceTypes">
+            <label for="hide-focus-type"> Empty </label>&nbsp;
+            <template v-for="(type, idx) in focusTypes">
+              <input
+                :id="type + idx"
+                :key="idx"
+                :value="type"
+                v-model="selectedFocusTypes"
+                type="checkbox"
+              />
+              <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
+            </template>
+          </div>
+          <div class="row">
+            <label class="label-filter-grouper">Appearance types: </label>
             <input
-              :id="type + idx"
-              :key="idx"
-              :value="type"
-              v-model="selectedAppearances"
               type="checkbox"
+              id="hide-type"
+              v-model="showEmptyAppearanceTypes"
             />
-            <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
-          </template>
+            <label for="hide-type"> Empty </label>&nbsp;
+            <template v-for="(type, idx) in appearanceTypes">
+              <input
+                :id="type + idx"
+                :key="idx"
+                :value="type"
+                v-model="selectedAppearances"
+                type="checkbox"
+              />
+              <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
+            </template>
+          </div>
         </div>
       </form>
     </div>
-    <section>
-      <table>
+    <section class="row">
+      <table class="table table-bordered table-striped table-sm">
         <thead>
           <tr>
             <th>Issue name:</th>
@@ -75,16 +78,20 @@
             <td>{{ issue.volume }}</td>
             <td>{{ issue.issueNo }}</td>
             <td>
-              <table class="small-table">
+              <table>
                 <thead>
-                  <tr>
+                  <tr style="background-color: inherit">
                     <th>title</th>
                     <th>focus type</th>
                     <th>appearance type</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="(appearance, idx) in issue.appearances" :key="idx">
+                  <tr
+                    style="background-color: inherit"
+                    v-for="(appearance, idx) in issue.appearances"
+                    :key="idx"
+                  >
                     <td>{{ appearance.subtitle }}</td>
                     <td>{{ appearance.focusType }}</td>
                     <td>{{ appearance.appearanceTypes }}</td>
@@ -94,10 +101,19 @@
             </td>
             <td>
               <template v-if="issue.read">
+                <button
+                  class="btn btn-primary btn-sm"
+                  @click="markAsNotRead(idx, issue.id)"
+                >
+                  x
+                </button>
                 <label>{{ issue.read | timestampToTime }}</label>
-                <button @click="markAsNotRead(idx, issue.id)">x</button>
               </template>
-              <button v-else @click="markAsRead(idx, issue.id)">
+              <button
+                class="btn btn-primary btn-sm"
+                v-else
+                @click="markAsRead(idx, issue.id)"
+              >
                 Read!
               </button>
             </td>
@@ -105,14 +121,18 @@
         </tbody>
       </table>
     </section>
-    <div class="character-manager actions actions_top">
-      <div class="nav">
-        <label for="alias-text-input">Alias: </label>
-        <input type="text" id="alias-text-input" :value="alias" />
-        <button type="button">Rename visible alias</button>
-        <button type="button">Update character</button>
-        <button type="button">Remove character</button>
-      </div>
+    <div class="row">
+      <label for="alias-text-input">Alias: </label>
+      <input type="text" id="alias-text-input" :value="alias" />
+      <button type="button" class="btn btn-primary btn-sm">
+        Rename visible alias
+      </button>
+      <button type="button" class="btn btn-primary btn-sm">
+        Update character
+      </button>
+      <button type="button" class="btn btn-primary btn-sm">
+        Remove character
+      </button>
     </div>
   </div>
 </template>

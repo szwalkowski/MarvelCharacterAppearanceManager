@@ -1,34 +1,25 @@
 <template>
-  <div class="actions actions_left">
-    <form class="sort-character-list-form">
-      <h4>Sort:</h4>
-      <div class="character-list-options">
-        <select name="sortOrder">
-          <option value="0">Alphabetical</option>
-          <option value="1">Oldest not read</option>
-          <option value="2">With most fresh issues</option>
-          <option value="3">Custom</option>
-          <option value="4">Most read</option>
-          <option value="5">Less read</option>
-        </select>
-        <br />
-      </div>
-      <h4>Character list:</h4>
-      <div class="character-list-options character-list-options-buttons"></div>
-      <template v-for="character in characterList">
-        <button
-          type="button"
-          :key="character.alias"
-          :class="{
-            selectedCharacter:
-              selectedCharacter && selectedCharacter.alias === character.alias
-          }"
-          @click="selectCharacter(character)"
-        >
-          {{ character.alias | underscoresToSpaces }}
-        </button>
-        <br :key="'_' + character.alias" />
-      </template>
+  <div class="actions_left">
+    <form class="form-group pr-3">
+      <ol class="row-cols-1">
+        <h4>Characters:</h4>
+      </ol>
+      <ol class="row-cols-1">
+        <template v-for="character in characterList">
+          <button
+            type="button"
+            class="btn btn-primary btn-block"
+            :key="character.alias"
+            :class="{
+              active:
+                selectedCharacter && selectedCharacter.alias === character.alias
+            }"
+            @click="selectCharacter(character)"
+          >
+            {{ character.alias | underscoresToSpaces }}
+          </button>
+        </template>
+      </ol>
     </form>
   </div>
 </template>

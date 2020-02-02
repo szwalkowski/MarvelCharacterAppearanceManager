@@ -1,18 +1,17 @@
 <template>
-  <div class="actions actions_left universe-container">
-    <form id="sort-universe-list-form" class="sort-universe-list-form">
-      <h4>Universe list:</h4>
-      <div
-        class="universe-list-options universe-list-options-buttons"
-        v-if="selectedCharacter"
-      >
+  <div class="actions_left">
+    <form class="form-group pl-1">
+      <ol class="row-cols-1 pl-0">
+        <h4>Universes:</h4>
+      </ol>
+      <ol class="pl-0" v-if="selectedCharacter">
         <template v-for="universe in selectedCharacter.universes">
           <button
             type="button"
+            class="btn btn-primary btn-block"
             :key="universe"
             :class="{
-              selectedUniverse:
-                selectedUniverse && selectedUniverse === universe
+              active: selectedUniverse && selectedUniverse === universe
             }"
             @click="selectUniverse(universe)"
           >
@@ -20,7 +19,7 @@
           </button>
           <br :key="'_' + universe" />
         </template>
-      </div>
+      </ol>
     </form>
   </div>
 </template>

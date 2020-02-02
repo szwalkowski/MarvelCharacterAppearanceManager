@@ -10,7 +10,9 @@
       </div>
       <form @submit.prevent="checkForm">
         <div class="form-group row">
-          <button type="submit" class="btn btn-dark">Upload character</button>
+          <button type="submit" class="btn btn-primary">
+            Upload character
+          </button>
           <div class="col-5">
             <label for="url">Url to new character: </label>
             <input
@@ -54,7 +56,7 @@
         </tr>
       </table>
 
-      <button class="btn btn-dark btn-lg" @click="confirmCharacter">
+      <button class="btn btn-primary btn-lg" @click="confirmCharacter">
         Confirm
       </button>
     </div>

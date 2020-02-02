@@ -22,26 +22,6 @@ input[type="checkbox"]:hover {
     border-right: 1px solid #979798;
 }
 
-.container {
-    margin-bottom: 0;
-}
-
-.sort-character-list-form *, .sort-universe-list-form * {
-    margin: .3rem 0;
-}
-
-.character-list-options, .universe-list-options {
-    margin-left: .3rem;
-}
-
-.universe-list-options-buttons button {
-    width: 6rem;
-}
-
-.character-list-options-buttons button {
-    width: 13rem;
-}
-
 .label-filter-grouper {
     font-weight: bold;
     font-style: oblique;
@@ -50,19 +30,6 @@ input[type="checkbox"]:hover {
 #error-label {
     font-weight: bolder;
     color: #962622;
-}
-
-/* unvisited link */
-a:link {
-    color: lightblue;
-}
-
-a:visited {
-    color: lightblue;
-}
-
-a:active {
-    color: red;
 }
 
 .selectedUniverse {
