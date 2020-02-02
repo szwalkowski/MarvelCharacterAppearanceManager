@@ -1,63 +1,85 @@
 <template>
   <div>
-    <div class="col-sm">
+    <div class="col-sm pl-sm-1">
       <h4 class="row">
         {{ `Visible ${issues.length} issues of ${totalIssues} total:` }}
       </h4>
-      <form class="form-group row">
+      <form class="row">
         <div class="col-sm">
-          <div class="row">
-            <label for="read-status-dropdown" class="label-filter-grouper">
+          <div class="row form-group">
+            <label for="read-dr" class="col-sm-1 pl-sm-0">
               Read:
             </label>
-            <select id="read-status-dropdown" v-model="selectedReadStatus">
+            <select id="read-dr" class="col-sm-1" v-model="selectedReadStatus">
               <option v-for="status in readStatuses" :key="status">
                 {{ status }}
               </option>
             </select>
           </div>
-          <div class="row">
-            <label class="label-filter-grouper">Show for focus type:</label>
-            <input
-              type="checkbox"
-              id="hide-focus-type"
-              v-model="showEmptyFocusTypes"
-            />
-            <label for="hide-focus-type"> Empty </label>&nbsp;
-            <template v-for="(type, idx) in focusTypes">
+          <div class="row form-group">
+            <label class="col-sm-1 pl-sm-0">Focus types:</label>
+            <div class="custom-control custom-checkbox col-sm-1">
+              <input
+                type="checkbox"
+                class="custom-control-input"
+                id="hide-focus-type"
+                v-model="showEmptyFocusTypes"
+              />
+              <label class="custom-control-label" for="hide-focus-type">
+                Empty
+              </label>
+            </div>
+            <div
+              class="custom-control custom-checkbox col-sm-1"
+              v-for="(type, idx) in focusTypes"
+              :key="'_' + type + idx"
+            >
               <input
                 :id="type + idx"
                 :key="idx"
                 :value="type"
+                class="custom-control-input"
                 v-model="selectedFocusTypes"
                 type="checkbox"
               />
-              <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
-            </template>
+              <label class="custom-control-label" :for="type + idx" :key="type">
+                {{ ` ${type} ` }}
+              </label>
+            </div>
           </div>
-          <div class="row">
-            <label class="label-filter-grouper">Appearance types: </label>
-            <input
-              type="checkbox"
-              id="hide-type"
-              v-model="showEmptyAppearanceTypes"
-            />
-            <label for="hide-type"> Empty </label>&nbsp;
-            <template v-for="(type, idx) in appearanceTypes">
+          <div class="row form-group">
+            <label class="col-sm-1 pl-sm-0">Appearances: </label>
+            <div class="custom-control custom-checkbox col-sm-1">
               <input
+                type="checkbox"
+                class="custom-control-input"
+                id="hide-type"
+                v-model="showEmptyAppearanceTypes"
+              />
+              <label class="custom-control-label" for="hide-type">Empty</label>
+            </div>
+            <div
+              class="custom-control custom-checkbox col-sm-1"
+              v-for="(type, idx) in appearanceTypes"
+              :key="' ' + idx"
+            >
+              <input
+                type="checkbox"
+                class="custom-control-input"
                 :id="type + idx"
                 :key="idx"
                 :value="type"
                 v-model="selectedAppearances"
-                type="checkbox"
               />
-              <label :for="type + idx" :key="type">{{ ` ${type} ` }}</label>
-            </template>
+              <label class="custom-control-label" :for="type + idx" :key="type">
+                {{ ` ${type} ` }}
+              </label>
+            </div>
           </div>
         </div>
       </form>
     </div>
-    <section class="row">
+    <section class="row pr-sm-5">
       <table class="table table-bordered table-striped table-sm">
         <thead>
           <tr>
@@ -78,7 +100,7 @@
             <td>{{ issue.volume }}</td>
             <td>{{ issue.issueNo }}</td>
             <td>
-              <table>
+              <table class="table">
                 <thead>
                   <tr style="background-color: inherit">
                     <th>title</th>

@@ -22,11 +22,6 @@ input[type="checkbox"]:hover {
     border-right: 1px solid #979798;
 }
 
-.label-filter-grouper {
-    font-weight: bold;
-    font-style: oblique;
-}
-
 #error-label {
     font-weight: bolder;
     color: #962622;
@@ -50,6 +45,12 @@ input[type="checkbox"]:hover {
 
 .swal2-content {
     color: #cdcdcd !important;
+}
+
+.swal2-confirm {
+    color: #fff !important;
+    background-color: #375a7f !important;
+    border-color: #375a7f !important;
 }
 
 .swal2-actions button:active {
