@@ -8,7 +8,7 @@ let CharacterManager = function () {
 CharacterManager.prototype.provideAllCharactersAvailable = function () {
     let characters = [];
     fs.readdirSync('../../database/appearances').forEach(file => {
-        const alias = /[a-zA-Z/d_]+/.exec(file)[0];
+        const alias = /[a-zA-Z/d_.]+/.exec(file)[0];
         const universeWithBrackets = /\([a-zA-Z\d-]+\)/.exec(file)[0];
         const universe = universeWithBrackets.substring(1, universeWithBrackets.length - 1);
         let existingCharacterWithAliasIdx = characters.findIndex(character => character.alias === alias);
