@@ -22,23 +22,6 @@ input[type="checkbox"]:hover {
     border-right: 1px solid #979798;
 }
 
-#error-label {
-    font-weight: bolder;
-    color: #962622;
-}
-
-.selectedUniverse {
-    color: #438c0c;
-}
-
-.dictionary-table input[type="text"] {
-    width: 15rem;
-}
-
-#dictionary-body button {
-    width: 2rem;
-}
-
 .swal2-popup {
     background-color: #464646 !important;
 }

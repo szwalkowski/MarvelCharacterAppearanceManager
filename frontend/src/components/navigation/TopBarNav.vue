@@ -7,19 +7,26 @@
             Add new character
           </router-link>
         </li>
-        <li class="nav-item">
-          <router-link tag="a" class="nav-link" to="/dictionary?type=focusType">
-            Dictionary for focus types
-          </router-link>
-        </li>
-        <li class="nav-item">
-          <router-link
-            tag="a"
-            class="nav-link"
-            to="/dictionary?type=appearanceType"
-          >
-            Dictionary for appearances
-          </router-link>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
+            Dictionaries
+          </a>
+          <div class="dropdown-menu">
+            <router-link
+              tag="a"
+              class="nav-link ml-sm-1"
+              to="/dictionary?type=focusType"
+            >
+              Focus types
+            </router-link>
+            <router-link
+              tag="a"
+              class="nav-link ml-sm-1"
+              to="/dictionary?type=appearanceType"
+            >
+              Appearances
+            </router-link>
+          </div>
         </li>
       </ul>
     </div>
