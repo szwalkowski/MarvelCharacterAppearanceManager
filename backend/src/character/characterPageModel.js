@@ -5,130 +5,135 @@ const aliasesSelector = "*[data-source='Aliases'] > .pi-data-value";
 const universeSelector = "*[data-source='Universe'] > .pi-data-value > a";
 const imageSelector = "*[data-source='Image'] > a > img";
 
-let CharacterPageModel = function (baseUrl, characterPageWindow) {
-    this.baseUrl = baseUrl;
-    this.jQuery = new JQuery(characterPageWindow);
-};
+module.exports = class {
+  #baseUrl;
+  #jQuery;
+  #majorAppearance;
+  #minorAppearance;
 
-CharacterPageModel.prototype.getId = function () {
-    return findId(this);
-};
+  constructor(baseUrl, characterPageWindow) {
+    this.#baseUrl = baseUrl;
+    this.#jQuery = new JQuery(characterPageWindow);
+  }
 
-CharacterPageModel.prototype.getRealName = function () {
-    const realNameElement = findElementBySelector(this.jQuery, realNameSelector);
+  getId() {
+    return this.#findId();
+  };
+
+  getRealName() {
+    const realNameElement = this.#findElementBySelector(realNameSelector);
     if (realNameElement.children[0] && realNameElement.children[0].innerHTML.trim() !== "") {
-        if (realNameElement.children[0].localName === "sup") {
-            const nameWithSupLink = realNameElement.innerHTML.trim()
-            return nameWithSupLink.substring(0, nameWithSupLink.indexOf('<'));
-        }
-        return realNameElement.children[0].innerHTML.trim();
+      if (realNameElement.children[0].localName === "sup") {
+        const nameWithSupLink = realNameElement.innerHTML.trim()
+        return nameWithSupLink.substring(0, nameWithSupLink.indexOf('<'));
+      }
+      return realNameElement.children[0].innerHTML.trim();
     }
     const realNameInnerHTML = realNameElement.innerHTML.trim();
-    if(realNameInnerHTML.indexOf('<') > 0){
-        return realNameInnerHTML.substring(0, realNameInnerHTML.indexOf('<')).trim();
+    if (realNameInnerHTML.indexOf('<') > 0) {
+      return realNameInnerHTML.substring(0, realNameInnerHTML.indexOf('<')).trim();
     }
     return realNameInnerHTML;
-};
+  };
 
-CharacterPageModel.prototype.getCurrentAlias = function () {
-    const currentAlias = this.jQuery.find("*[data-source='CurrentAlias'] > .pi-data-value > a");
+  getCurrentAlias() {
+    const currentAlias = this.#jQuery.find("*[data-source='CurrentAlias'] > .pi-data-value > a");
     if (currentAlias.length > 0) {
-        return currentAlias[0].innerHTML.trim();
+      return currentAlias[0].innerHTML.trim();
     }
-    const currentAliasWithoutLink = this.jQuery.find("*[data-source='CurrentAlias'] > .pi-data-value");
+    const currentAliasWithoutLink = this.#jQuery.find("*[data-source='CurrentAlias'] > .pi-data-value");
     if (currentAliasWithoutLink.length > 0) {
-        return currentAliasWithoutLink[0].innerHTML.trim();
+      return currentAliasWithoutLink[0].innerHTML.trim();
     }
-    const aliasesElement = findElementBySelector(this.jQuery, aliasesSelector);
+    const aliasesElement = this.#findElementBySelector(aliasesSelector);
     if (!aliasesElement) {
-        return this.getRealName();
+      return getRealName();
     }
     if (aliasesElement.children[0]) {
-        return aliasesElement.children[0].innerHTML.trim();
+      return aliasesElement.children[0].innerHTML.trim();
     }
     return aliasesElement.innerHTML.trim();
-};
+  };
 
-CharacterPageModel.prototype.getUniverse = function () {
-    return findInnerHtmlAndTrimBySelector(this.jQuery, universeSelector);
-};
+  getUniverse() {
+    return this.#findInnerHtmlAndTrimBySelector(universeSelector);
+  };
 
-CharacterPageModel.prototype.getImage = function () {
-    return findUrlOfImageBySelector(this.jQuery, imageSelector);
-};
+  getImage() {
+    return this.#findUrlOfImageBySelector(imageSelector);
+  };
 
-CharacterPageModel.prototype.getAppearancesCount = function () {
-    findAppearances(this);
-    return parseInt(this.majorAppearance.innerHTML.replace(',', ''));
-};
+  getAppearancesCount() {
+    this.#findAppearances();
+    return parseInt(this.#majorAppearance.innerHTML.replace(',', ''));
+  };
 
-CharacterPageModel.prototype.getMinorAppearancesCount = function () {
-    findAppearances(this);
-    return parseInt(this.minorAppearance.innerHTML.replace(',', ''));
-};
+  getMinorAppearancesCount() {
+    this.#findAppearances();
+    return parseInt(this.#minorAppearance.innerHTML.replace(',', ''));
+  };
 
-CharacterPageModel.prototype.getAppearancesUrl = function () {
-    findAppearances(this);
-    return this.baseUrl + this.majorAppearance.attributes["href"].value;
-};
+  getAppearancesUrl() {
+    this.#findAppearances();
+    return this.#baseUrl + this.#majorAppearance.attributes["href"].value;
+  };
 
-CharacterPageModel.prototype.getMinorAppearancesUrl = function () {
-    findAppearances(this);
-    return this.baseUrl + this.minorAppearance.attributes["href"].value;
-};
+  getMinorAppearancesUrl() {
+    this.#findAppearances();
+    return this.#baseUrl + this.#minorAppearance.attributes["href"].value;
+  };
 
-function findId(model) {
-    if (model.id === undefined) {
-        model.id = findInnerHtmlAndTrimBySelector(model.jQuery, characterIdSelector);
+  #findId = function () {
+    if (this.id === undefined) {
+      this.id = this.#findInnerHtmlAndTrimBySelector(characterIdSelector);
     }
-    return model.id;
-}
+    return this.id;
+  };
 
-function findAppearances(model) {
-    if (model.appearances === undefined) {
-        model.appearances = model.jQuery(`li > :contains(Appearances of ${findId(model)})`);
+  #findAppearances = function () {
+    if (this.appearances === undefined) {
+      this.appearances = this.#jQuery(`li > :contains(Appearances of ${this.#findId()})`);
     }
-    model.majorAppearance = model.appearances.filter((cos, el) => !el.innerHTML.includes("Minor"))[0];
-    model.minorAppearance = model.appearances.filter((cos, el) => el.innerHTML.includes("Minor"))[0];
-}
+    this.#majorAppearance = this.appearances.filter((cos, el) => !el.innerHTML.includes("Minor"))[0];
+    this.#minorAppearance = this.appearances.filter((cos, el) => el.innerHTML.includes("Minor"))[0];
+  };
 
-/**
- * @return innerHtml if found
- * @throws "TypeError" Cannot read property 'innerHtml' of undefined if selector was not valid for page
- */
-function findElementBySelector(jQuery, selector) {
+  /**
+   * @return innerHtml if found
+   * @throws "TypeError" Cannot read property 'innerHtml' of undefined if selector was not valid for page
+   */
+  #findElementBySelector = function (selector) {
     try {
-        return jQuery.find(selector)[0];
+      return this.#jQuery.find(selector)[0];
     } catch (error) {
-        console.error(`Error during finding element by ${selector}`);
-        throw error;
+      console.error(`Error during finding element by ${selector}`);
+      throw error;
     }
-}
+  };
 
-/**
- * @return innerHtml if found
- * @throws "TypeError" Cannot read property 'innerHtml' of undefined if selector was not valid for page
- */
-function findInnerHtmlAndTrimBySelector(jQuery, selector) {
+  /**
+   * @return innerHtml if found
+   * @throws "TypeError" Cannot read property 'innerHtml' of undefined if selector was not valid for page
+   */
+  #findInnerHtmlAndTrimBySelector = function (selector) {
     try {
-        return jQuery.find(selector)[0].innerHTML.trim();
+      return this.#jQuery.find(selector)[0].innerHTML.trim();
     } catch (error) {
-        console.error(`Error during finding element by ${selector}`);
-        throw error;
+      console.error(`Error during finding element by ${selector}`);
+      throw error;
     }
-}
+  };
 
-/**
- * @return url of element if found
- * @throws "TypeError" Cannot read property 'innerHtml' of undefined if selector was not valid for page
- */
-function findUrlOfImageBySelector(jQuery, selector) {
+  /**
+   * @return url of element if found
+   * @throws "TypeError" Cannot read property 'innerHtml' of undefined if selector was not valid for page
+   */
+  #findUrlOfImageBySelector = function (selector) {
     try {
-        return jQuery.find(selector)[0].attributes["src"]["value"];
+      return this.#jQuery.find(selector)[0].attributes["src"]["value"];
     } catch (error) {
-        console.error(`Error during finding element by ${selector}`);
-        throw error;
+      console.error(`Error during finding element by ${selector}`);
+      throw error;
     }
-}
-
-module.exports = CharacterPageModel;
+  }
+};

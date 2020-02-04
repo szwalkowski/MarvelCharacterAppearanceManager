@@ -1,36 +1,38 @@
 const IssueManager = require('./issueManager');
 
-const IssueController = function () {
-    this.issueManager = new IssueManager();
-};
+module.exports = class {
+  #issueManager = new IssueManager();
 
-IssueController.prototype.setupEndpoints = function (server) {
-    prepareMarkAsReadEndpoint(this, server);
-    prepareUnmarkAsReadEndpoint(this, server);
-};
+  constructor(server) {
+    this.#setupEndpoints(server);
+  }
 
-function prepareMarkAsReadEndpoint(instance, server) {
+  #setupEndpoints = function (server) {
+    this.#prepareMarkAsReadEndpoint(server);
+    this.#prepareUnmarkAsReadEndpoint(server);
+  };
+
+  #prepareMarkAsReadEndpoint = function (server) {
     server.post("/markIssueAsRead", (req, res) => {
-        instance.issueManager.markIssueAsReadAsync(req.body["issueId"], req.body["characterAlias"], req.body["characterUniverse"]).then(response => {
-            res.end(JSON.stringify({issueId: req.body["issueId"], readTime: response}));
-        }, reason => {
-            console.error(reason);
-            res.status(500);
-            res.end("Error on marking as read an issue");
-        });
+      this.#issueManager.markIssueAsReadAsync(req.body["issueId"], req.body["characterAlias"], req.body["characterUniverse"]).then(response => {
+        res.end(JSON.stringify({ issueId: req.body["issueId"], readTime: response }));
+      }, reason => {
+        console.error(reason);
+        res.status(500);
+        res.end("Error on marking as read an issue");
+      });
     });
-}
+  };
 
-function prepareUnmarkAsReadEndpoint(instance, server) {
+  #prepareUnmarkAsReadEndpoint = function (server) {
     server.post("/unmarkIssueAsRead", (req, res) => {
-        instance.issueManager.markIssueAsNotReadAsync(req.body["issueId"], req.body["characterAlias"], req.body["characterUniverse"]).then(() => {
-            res.end(JSON.stringify({issueId: req.body["issueId"]}));
-        }, reason => {
-            console.error(reason);
-            res.status(500);
-            res.end("Error on marking as read an issue");
-        });
+      this.#issueManager.markIssueAsNotReadAsync(req.body["issueId"], req.body["characterAlias"], req.body["characterUniverse"]).then(() => {
+        res.end(JSON.stringify({ issueId: req.body["issueId"] }));
+      }, reason => {
+        console.error(reason);
+        res.status(500);
+        res.end("Error on marking as read an issue");
+      });
     });
-}
-
-module.exports = IssueController;
+  };
+};

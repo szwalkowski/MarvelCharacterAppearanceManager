@@ -5,35 +5,42 @@ const IssueController = require('./issue/issueController');
 const bodyParser = require('body-parser');
 const server = express();
 
-configureServerSettings(server);
-createDataEndpoints(server);
-startServer(server);
+class App {
 
-function configureServerSettings(server) {
+  constructor(server) {
+    this.#configureServerSettings(server);
+    this.#createDataEndpoints(server);
+    this.#startServer(server);
+  }
+
+  #configureServerSettings = function (server) {
     server.use((req, res, next) => {
-        res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-        res.setHeader("Access-Control-Allow-Methods", "GET, POST");
-        res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-        next();
+      res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST");
+      res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+      next();
     });
     server.use(bodyParser.json());
-}
+  };
 
-function createDataEndpoints(server) {
-    indexEndpoint(server);
-    new CharacterController().setupEndpoints(server);
-    new DictionariesController().setupEndpoints(server);
-    new IssueController().setupEndpoints(server);
-}
+  #createDataEndpoints = function (server) {
+    this.#indexEndpoint(server);
+    new CharacterController(server);
+    new DictionariesController(server);
+    new IssueController(server);
+  };
 
-function indexEndpoint(server) {
-    server.get('', (req, res) => {
-        res.render('index');
-    });
-}
-
-function startServer(server) {
+  #startServer = function (server) {
     server.listen(3000, () => {
-        console.log('Server is up on port 3000');
+      console.log('Server is up on port 3000');
     });
+  };
+
+  #indexEndpoint = function (server) {
+    server.get('', (req, res) => {
+      res.render('index');
+    });
+  }
 }
+
+new App(server);

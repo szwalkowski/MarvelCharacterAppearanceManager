@@ -1,44 +1,42 @@
 const DictionaryManager = require('./dictionariesManager');
 
-let DictionariesController = function () {
-  this.dictionaryManager = new DictionaryManager();
-};
+module.exports = class {
+  #dictionaryManager = new DictionaryManager();
 
-DictionariesController.prototype.setupEndpoints = function (server) {
-  createDictionaryEndpoints(this, server);
-};
+  constructor(server) {
+    this.#createDictionaryEndpoints(server);
+  };
 
-function createDictionaryEndpoints(instance, server) {
-  prepareGetDictionary(instance, server);
-  prepareSaveDictionary(instance, server);
-}
+  #createDictionaryEndpoints = function (server) {
+    this.#prepareGetDictionary(server);
+    this.#prepareSaveDictionary(server);
+  };
 
-function prepareGetDictionary(instance, server) {
-  server.get("/getDictionary", (req, res) => {
-    const data = instance.dictionaryManager.getDictionaryById(req.query.dictionaryId);
-    data.sort((a, b) => {
-      if (a.label === '-hide-') return -1;
-      if (b.label === '-hide-') return 1;
-      if (a.label > b.label) {
-        return 1;
-      }
-      return -1;
+  #prepareGetDictionary = function (server) {
+    server.get("/getDictionary", (req, res) => {
+      const data = this.#dictionaryManager.getDictionaryById(req.query.dictionaryId);
+      data.sort((a, b) => {
+        if (a.label === '-hide-') return -1;
+        if (b.label === '-hide-') return 1;
+        if (a.label > b.label) {
+          return 1;
+        }
+        return -1;
+      });
+      data.forEach(d => d.values.sort((v1, v2) => v1 > v2 ? 1 : -1));
+      res.end(JSON.stringify(data));
     });
-    data.forEach(d => d.values.sort((v1, v2) => v1 > v2 ? 1 : -1));
-    res.end(JSON.stringify(data));
-  });
-}
+  };
 
-function prepareSaveDictionary(instance, server) {
-  server.post("/saveDictionary", (req, res) => {
-    instance.dictionaryManager.saveDictionaryAsync(req.body["dictionaryId"], req.body["dictionaryContent"]).then(() => {
-      res.end();
-    }, reason => {
-      console.error(reason);
-      res.status(500);
-      res.end("Error on saving dictionary");
+  #prepareSaveDictionary = function (server) {
+    server.post("/saveDictionary", (req, res) => {
+      this.#dictionaryManager.saveDictionaryAsync(req.body["dictionaryId"], req.body["dictionaryContent"]).then(() => {
+        res.end();
+      }, reason => {
+        console.error(reason);
+        res.status(500);
+        res.end("Error on saving dictionary");
+      });
     });
-  });
-}
-
-module.exports = DictionariesController;
+  };
+};
