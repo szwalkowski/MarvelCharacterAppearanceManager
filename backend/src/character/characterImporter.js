@@ -18,9 +18,12 @@ module.exports = class {
 
   async downloadAndStoreConfirmedCharacterAsync(baseCharacterInfo) {
     const that = this;
-    const minorAppearanceWindow = this.#pageDownloader.downloadWindowFromUrlAsync(baseCharacterInfo.MinorAppearanceUrl);
+    let minorAppearanceLinks = [];
+    if (baseCharacterInfo.MinorAppearanceUrl) {
+      const minorAppearanceWindow = this.#pageDownloader.downloadWindowFromUrlAsync(baseCharacterInfo.MinorAppearanceUrl);
+      minorAppearanceLinks = this.#characterAppearanceWalker.findAllLinksToIssuesAsync(await minorAppearanceWindow);
+    }
     const appearanceWindow = this.#pageDownloader.downloadWindowFromUrlAsync(baseCharacterInfo.AppearanceUrl);
-    const minorAppearanceLinks = this.#characterAppearanceWalker.findAllLinksToIssuesAsync(await minorAppearanceWindow);
     const appearanceLinks = this.#characterAppearanceWalker.findAllLinksToIssuesAsync(await appearanceWindow);
     const mergedAppearanceLinks = await that.#mergeListsAndSortAsync(minorAppearanceLinks, appearanceLinks);
     let no = 0;

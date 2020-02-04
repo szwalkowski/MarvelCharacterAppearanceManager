@@ -80,7 +80,10 @@ module.exports = class {
 
   getMinorAppearancesUrl() {
     this.#findAppearances();
-    return this.#baseUrl + this.#minorAppearance.attributes["href"].value;
+    if (this.#minorAppearance.attributes["href"]) {
+      return this.#baseUrl + this.#minorAppearance.attributes["href"].value;
+    }
+    return null;
   };
 
   #findId = function () {

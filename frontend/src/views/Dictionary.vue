@@ -73,6 +73,19 @@
                 </div>
               </td>
               <td>
+                <div class="form-group form-inline form-control-sm">
+                  <button
+                    @click="addValueToRow(rowIdx, $event)"
+                    class="btn btn-primary btn-sm"
+                  >
+                    +
+                  </button>
+                  <input
+                    :ref="'newValueFor' + rowIdx"
+                    type="text"
+                    class="form-control-plaintext col-6"
+                  />
+                </div>
                 <div
                   v-for="(value, valueIdx) in row.values"
                   :key="value"
@@ -90,19 +103,6 @@
                     type="text"
                     class="form-control-plaintext col-6"
                     disabled
-                  />
-                </div>
-                <div class="form-group form-inline form-control-sm">
-                  <button
-                    @click="addValueToRow(rowIdx, $event)"
-                    class="btn btn-primary btn-sm"
-                  >
-                    +
-                  </button>
-                  <input
-                    :ref="'newValueFor' + rowIdx"
-                    type="text"
-                    class="form-control-plaintext col-6"
                   />
                 </div>
               </td>
