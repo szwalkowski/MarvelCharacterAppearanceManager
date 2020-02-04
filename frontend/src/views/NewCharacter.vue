@@ -128,7 +128,7 @@ export default {
       axios
         .post("confirmCharacter", this.characterInfo)
         .then(() => {
-          this.$alert("New character saved in database!");
+          this.$alert("New character request sent!");
           eventBus.$emit("reloadCharacters");
         })
         .catch(error => {

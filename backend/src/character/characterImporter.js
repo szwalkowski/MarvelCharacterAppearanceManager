@@ -4,6 +4,7 @@ const CharacterManager = require('./characterManager');
 const IssuePageModel = require('../issue/issuePageModel');
 const IssueModel = require('../issue/issueModel');
 const PageDownloader = require('../pageDownloader');
+const Async = require("async");
 
 let CharacterImporter = function () {
     this.pageDownloader = new PageDownloader();
@@ -17,37 +18,41 @@ CharacterImporter.prototype.provideCharacterBaseInfoFromPageAsync = async functi
 };
 
 CharacterImporter.prototype.downloadAndStoreConfirmedCharacterAsync = async function (baseCharacterInfo) {
+    const that = this;
     const minorAppearanceWindow = this.pageDownloader.downloadWindowFromUrlAsync(baseCharacterInfo.MinorAppearanceUrl);
     const appearanceWindow = this.pageDownloader.downloadWindowFromUrlAsync(baseCharacterInfo.AppearanceUrl);
     const minorAppearanceLinks = this.characterAppearanceWalker.findAllLinksToIssuesAsync(await minorAppearanceWindow);
     const appearanceLinks = this.characterAppearanceWalker.findAllLinksToIssuesAsync(await appearanceWindow);
     const mergedAppearanceLinks = await mergeListsAndSortAsync(minorAppearanceLinks, appearanceLinks);
     let no = 0;
-    let promisesToFindInfoAboutAllIssues = [];
     let characterAndIssues = baseCharacterInfo;
     characterAndIssues.issues = [];
     console.log(`Downloading of ${mergedAppearanceLinks.length} issues starting!`);
-    mergedAppearanceLinks.forEach(link => {
-        promisesToFindInfoAboutAllIssues.push(
-            this.pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
-                issuePage => {
-                    console.log(`${++no} page downloaded! ${link}`);
-                    const issuePageModel = new IssuePageModel(issuePage, baseCharacterInfo.CharacterId, link);
-                    if (issuePageModel.isIssue) {
-                        characterAndIssues.issues.push(parseIssuePageModelToIssueModel(issuePageModel));
-                    }
-                }
-            ).catch(reason => {
-                console.error(reason);
-                throw reason;
-            })
-        );
+    function downloadWindowFromUrlAsync(link, callback){
+        that.pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
+          issuePage => {
+              console.log(`${++no} page downloaded! ${link}`);
+              const issuePageModel = new IssuePageModel(issuePage, baseCharacterInfo.CharacterId, link);
+              if (issuePageModel.isIssue) {
+                  characterAndIssues.issues.push(parseIssuePageModelToIssueModel(issuePageModel));
+              }
+              callback();
+          }
+        ).catch(reason => {
+            console.error(`Problem downloading ${link}. ${reason}`);
+            console.error(reason);
+            throw reason;
+        });
+    }
+
+    let queue = Async.queue(downloadWindowFromUrlAsync, 7);
+
+    queue.drain(() => {
+        this.characterManager.saveCharacter(characterAndIssues);
+        console.log("All files are uploaded");
     });
-    await Promise.all(promisesToFindInfoAboutAllIssues).catch(reason => {
-        console.error(reason);
-        throw reason;
-    });
-    this.characterManager.saveCharacter(characterAndIssues);
+
+    queue.push(mergedAppearanceLinks);
 };
 
 async function mergeListsAndSortAsync(minorAppearanceLinks, appearanceLinks) {
