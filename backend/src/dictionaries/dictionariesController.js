@@ -2,8 +2,10 @@ const DictionaryManager = require('./dictionariesManager');
 
 module.exports = class {
   #dictionaryManager = new DictionaryManager();
+  #mongoClient;
 
-  constructor(server) {
+  constructor(server, mongoClient) {
+    this.#mongoClient = mongoClient;
     this.#createDictionaryEndpoints(server);
   };
 

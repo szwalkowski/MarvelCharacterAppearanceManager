@@ -4,12 +4,14 @@ const DictionariesController = require('./dictionaries/dictionariesController');
 const IssueController = require('./issue/issueController');
 const bodyParser = require('body-parser');
 const server = express();
+const MongoClient = require('./driver/mongoDriver');
 
 class App {
 
   constructor(server) {
+    const mongoClient = new MongoClient();
     this.#configureServerSettings(server);
-    this.#createDataEndpoints(server);
+    this.#createDataEndpoints(server, mongoClient);
     this.#startServer(server);
   }
 
@@ -23,10 +25,10 @@ class App {
     server.use(bodyParser.json());
   };
 
-  #createDataEndpoints = function (server) {
+  #createDataEndpoints = function (server, mongoClient) {
     this.#indexEndpoint(server);
     new CharacterController(server);
-    new DictionariesController(server);
+    new DictionariesController(server, mongoClient);
     new IssueController(server);
   };
 
