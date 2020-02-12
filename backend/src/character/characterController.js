@@ -1,23 +1,23 @@
 const CharacterImporter = require("./characterImporter");
 const CharacterManager = require("./characterManager");
-const DictionaryManager = require("../dictionaries/dictionariesManager");
+const DictionariesManager = require("../dictionaries/dictionariesManager");
 const DictionaryTranslator = require("../dictionaries/dictionaryTranslator");
 
 module.exports = class {
   #characterManager = new CharacterManager();
   #characterImporter = new CharacterImporter();
-  #dictionaryManager = new DictionaryManager();
   #dictionaryTranslator = new DictionaryTranslator();
 
-  constructor(server) {
-    this.#createCharacterEndpoints(server);
+  constructor(server, dbConnection) {
+    const dictionariesManager = new DictionariesManager(dbConnection);
+    this.#createCharacterEndpoints(server, dictionariesManager);
   };
 
-  #createCharacterEndpoints = function (server) {
+  #createCharacterEndpoints = function (server, dictionariesManager) {
     this.#prepareCharacterFromWikiPage(server);
     this.#prepareCharacterConfirmAction(server);
     this.#prepareGetAllCharactersAliases(server);
-    this.#prepareGetAllIssuesForCharacter(server);
+    this.#prepareGetAllIssuesForCharacter(server, dictionariesManager);
   };
 
   #prepareCharacterFromWikiPage = function (server) {
@@ -62,24 +62,38 @@ module.exports = class {
     });
   };
 
-  #prepareGetAllIssuesForCharacter = function (server) {
-    server.get("/getAllIssuesForCharacter", (req, res) => {
+  #prepareGetAllIssuesForCharacter = function (server, dictionariesManager) {
+    server.get("/getAllIssuesForCharacter", async (req, res) => {
       const data = this.#characterManager.loadIssuesAndAppearances(req.query.alias, req.query.universe);
-      const appearanceDictionary = this.#dictionaryManager.getDictionaryById("appearanceType");
-      const focusDictionary = this.#dictionaryManager.getDictionaryById("focusType");
-      data.setOfAppearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, appearanceDictionary, true);
-      data.setOfFocusTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfFocusTypes, focusDictionary, true);
-      data.characterData.issues.forEach(issue => {
-        issue.appearances.forEach(appearance => {
-          appearance.appearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, appearanceDictionary, true);
-        });
-      });
-      data.characterData.issues.forEach(issue => {
-        issue.appearances.forEach(appearance => {
-          appearance.focusType = this.#dictionaryTranslator.translateUsingDictionary(appearance.focusType, focusDictionary, true);
-        });
-      });
+      const appearanceDictionaryPromise = dictionariesManager.getDictionaryByIdAsync("appearanceType");
+      const focusDictionaryPromise = dictionariesManager.getDictionaryByIdAsync("focusType");
+      await Promise.all([
+        appearanceDictionaryPromise.then(dictionary => {
+          this.#translateAllAppearanceTypes(data, dictionary.dictionary);
+        }),
+        focusDictionaryPromise.then(dictionary => {
+          this.#translateAllFocusTypes(data, dictionary.dictionary);
+        })
+      ]);
       res.end(JSON.stringify(data));
+    });
+  };
+
+  #translateAllAppearanceTypes = function (data, dictionary) {
+    data.setOfAppearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, dictionary, true);
+    data.characterData.issues.forEach(issue => {
+      issue.appearances.forEach(appearance => {
+        appearance.appearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, dictionary, true);
+      });
+    });
+  };
+
+  #translateAllFocusTypes = function (data, dictionary) {
+    data.setOfFocusTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfFocusTypes, dictionary, true);
+    data.characterData.issues.forEach(issue => {
+      issue.appearances.forEach(appearance => {
+        appearance.focusType = this.#dictionaryTranslator.translateUsingDictionary(appearance.focusType, dictionary, true);
+      });
     });
   };
 };

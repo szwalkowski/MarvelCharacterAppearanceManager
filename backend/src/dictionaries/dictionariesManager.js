@@ -1,22 +1,20 @@
-const fs = require('fs');
+const DictionariesRepository = require('./dictionariesRepository');
 
 module.exports = class {
+  #dictionariesRepository;
+
+  constructor(dbConnection) {
+    this.#dictionariesRepository = new DictionariesRepository(dbConnection);
+  }
+
   async saveDictionaryAsync(dictionaryId, dictionaryContent) {
     dictionaryContent.forEach(record => {
       record.values = record.values.map(value => value.toUpperCase());
     });
-    const dictionaryContentAsString = JSON.stringify(dictionaryContent);
-    const fileName = `../../database/dictionaries/${dictionaryId}Dictionary.json`;
-    await fs.writeFile(fileName, dictionaryContentAsString, function (err) {
-      if (err) {
-        console.log(err);
-        throw err;
-      }
-    })
+    this.#dictionariesRepository.saveDictionaryAsync(dictionaryId, { _id: dictionaryId, dictionary: dictionaryContent });
   };
 
-  getDictionaryById(dictionaryId) {
-    const fileContent = fs.readFileSync(`../../database/dictionaries/${dictionaryId}Dictionary.json`, "utf-8");
-    return JSON.parse(fileContent);
+  async getDictionaryByIdAsync(dictionaryId) {
+    return this.#dictionariesRepository.getAsync(dictionaryId);
   };
 };

@@ -9,9 +9,9 @@ const MongoClient = require('./driver/mongoDriver');
 class App {
 
   constructor(server) {
-    const mongoClient = new MongoClient();
+    const dbConnection = new MongoClient();
     this.#configureServerSettings(server);
-    this.#createDataEndpoints(server, mongoClient);
+    this.#createDataEndpoints(server, dbConnection);
     this.#startServer(server);
   }
 
@@ -25,10 +25,10 @@ class App {
     server.use(bodyParser.json());
   };
 
-  #createDataEndpoints = function (server, mongoClient) {
+  #createDataEndpoints = function (server, dbConnection) {
     this.#indexEndpoint(server);
-    new CharacterController(server);
-    new DictionariesController(server, mongoClient);
+    new CharacterController(server, dbConnection);
+    new DictionariesController(server, dbConnection);
     new IssueController(server);
   };
 

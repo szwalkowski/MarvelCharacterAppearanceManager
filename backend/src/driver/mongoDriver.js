@@ -1,7 +1,7 @@
 const MongoClient = require("mongodb").MongoClient;
 
 module.exports = class {
-  #client;
+  #connection;
 
   constructor() {
     const ip = process.env.MCAM_DB_IP;
@@ -12,12 +12,16 @@ module.exports = class {
     const uri = `mongodb://${user}:${pwd}@${ip}:${port}/${dbName}?retryWrites=true&w=majority`;
     MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
       .connect()
-      .then(value => {
+      .then(connection => {
         console.log("Connected to Mongo");
-        this.#client = value;
+        this.#connection = connection;
       })
       .catch(err => {
         console.error(err);
       });
+  }
+
+  db() {
+    return this.#connection.db();
   }
 };

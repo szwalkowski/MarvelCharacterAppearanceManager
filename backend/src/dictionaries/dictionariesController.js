@@ -1,23 +1,21 @@
-const DictionaryManager = require('./dictionariesManager');
+const DictionariesManager = require('./dictionariesManager');
 
 module.exports = class {
-  #dictionaryManager = new DictionaryManager();
-  #mongoClient;
 
-  constructor(server, mongoClient) {
-    this.#mongoClient = mongoClient;
-    this.#createDictionaryEndpoints(server);
+  constructor(server, dbConnection) {
+    const dictionariesManager = new DictionariesManager(dbConnection);
+    this.#createDictionaryEndpoints(server, dictionariesManager);
   };
 
-  #createDictionaryEndpoints = function (server) {
-    this.#prepareGetDictionary(server);
-    this.#prepareSaveDictionary(server);
+  #createDictionaryEndpoints = function (server, dictionariesManager) {
+    this.#prepareGetDictionary(server, dictionariesManager);
+    this.#prepareSaveDictionary(server, dictionariesManager);
   };
 
-  #prepareGetDictionary = function (server) {
-    server.get("/getDictionary", (req, res) => {
-      const data = this.#dictionaryManager.getDictionaryById(req.query.dictionaryId);
-      data.sort((a, b) => {
+  #prepareGetDictionary = function (server, dictionariesManager) {
+    server.get("/getDictionary", async (req, res) => {
+      const data = (await dictionariesManager.getDictionaryByIdAsync(req.query.dictionaryId)).dictionary;
+      data && data.sort((a, b) => {
         if (a.label === '-hide-') return -1;
         if (b.label === '-hide-') return 1;
         if (a.label > b.label) {
@@ -25,14 +23,14 @@ module.exports = class {
         }
         return -1;
       });
-      data.forEach(d => d.values.sort((v1, v2) => v1 > v2 ? 1 : -1));
+      data && data.forEach(d => d.values.sort((v1, v2) => v1 > v2 ? 1 : -1));
       res.end(JSON.stringify(data));
     });
   };
 
-  #prepareSaveDictionary = function (server) {
+  #prepareSaveDictionary = function (server, dictionariesManager) {
     server.post("/saveDictionary", (req, res) => {
-      this.#dictionaryManager.saveDictionaryAsync(req.body["dictionaryId"], req.body["dictionaryContent"]).then(() => {
+      dictionariesManager.saveDictionaryAsync(req.body["dictionaryId"], req.body["dictionaryContent"]).then(() => {
         res.end();
       }, reason => {
         console.error(reason);
