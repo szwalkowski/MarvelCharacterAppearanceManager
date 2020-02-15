@@ -10,21 +10,23 @@ module.exports = class {
   #jQuery;
   #majorAppearance;
   #minorAppearance;
+  #id;
 
   constructor(baseUrl, characterPageWindow) {
     this.#baseUrl = baseUrl;
+    this.#id = characterPageWindow.location.pathname.replace("/wiki/", "");
     this.#jQuery = new JQuery(characterPageWindow);
   }
 
   getId() {
-    return this.#findId();
+    return this.#id;
   };
 
   getRealName() {
     const realNameElement = this.#findElementBySelector(realNameSelector);
     if (realNameElement.children[0] && realNameElement.children[0].innerHTML.trim() !== "") {
       if (realNameElement.children[0].localName === "sup") {
-        const nameWithSupLink = realNameElement.innerHTML.trim()
+        const nameWithSupLink = realNameElement.innerHTML.trim();
         return nameWithSupLink.substring(0, nameWithSupLink.indexOf('<'));
       }
       return realNameElement.children[0].innerHTML.trim();
@@ -60,7 +62,8 @@ module.exports = class {
   };
 
   getImage() {
-    return this.#findUrlOfImageBySelector(imageSelector);
+    const imageUrl = this.#findUrlOfImageBySelector(imageSelector);
+    return imageUrl && imageUrl.substring(0, imageUrl.indexOf(".jpg") + 4);
   };
 
   getAppearancesCount() {
@@ -86,16 +89,9 @@ module.exports = class {
     return null;
   };
 
-  #findId = function () {
-    if (this.id === undefined) {
-      this.id = this.#findInnerHtmlAndTrimBySelector(characterIdSelector);
-    }
-    return this.id;
-  };
-
   #findAppearances = function () {
     if (this.appearances === undefined) {
-      this.appearances = this.#jQuery(`li > :contains(Appearances of ${this.#findId()})`);
+      this.appearances = this.#jQuery(`li > :contains(Appearances of ${this.#findInnerHtmlAndTrimBySelector(characterIdSelector)})`);
     }
     this.#majorAppearance = this.appearances.filter((cos, el) => !el.innerHTML.includes("Minor"))[0];
     this.#minorAppearance = this.appearances.filter((cos, el) => el.innerHTML.includes("Minor"))[0];

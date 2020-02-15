@@ -4,12 +4,19 @@ const CharacterManager = require('./characterManager');
 const IssuePageModel = require('../issue/issuePageModel');
 const IssueModel = require('../issue/issueModel');
 const PageDownloader = require('../pageDownloader');
+const IssueManager = require("../issue/issueManager");
 const Async = require("async");
 
 module.exports = class {
   #pageDownloader = new PageDownloader();
   #characterAppearanceWalker = new CharacterAppearanceWalker();
-  #characterManager = new CharacterManager();
+  #characterManager;
+  #issueManager;
+
+  constructor(dbConnection) {
+    this.#characterManager = new CharacterManager(dbConnection);
+    this.#issueManager = new IssueManager(dbConnection);
+  }
 
   async provideCharacterBaseInfoFromPageAsync(url) {
     const wikiWindow = await this.#pageDownloader.downloadWindowFromUrlAsync(url);
@@ -54,8 +61,18 @@ module.exports = class {
   };
 
   #saveCharacterToFile = function (characterAndIssues) {
-    this.#characterManager.saveCharacter(characterAndIssues);
-    console.log("All files are uploaded");
+    const saveCharacterPromise = this.#characterManager.saveCharacterAsync(characterAndIssues);
+    const issueUpdatesPromises = [];
+    characterAndIssues.issues.forEach(issue => {
+      issueUpdatesPromises.push(this.#issueManager.addAppearanceToIssue(issue, characterAndIssues));
+    });
+    Promise.all([saveCharacterPromise, ...issueUpdatesPromises])
+      .then(() => {
+        console.log("All files are uploaded and saved");
+      })
+      .catch(err => {
+        console.error("Something went wrong with storing character. Investigate and retry!", err);
+      });
   };
 
   #mergeListsAndSortAsync = async function (minorAppearanceLinks, appearanceLinks) {

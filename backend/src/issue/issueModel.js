@@ -1,6 +1,6 @@
 module.exports = class {
 
-  constructor(id, url, name, volume, issueNo, publishDateTimestamp, appearances, read = null) {
+  constructor(id, url, name, volume, issueNo, publishDateTimestamp, appearances) {
     this.id = id;
     this.url = url;
     this.name = name;
@@ -8,7 +8,6 @@ module.exports = class {
     this.issueNo = issueNo;
     this.publishDateTimestamp = publishDateTimestamp;
     this.appearances = appearances;
-    this.read = read;
   };
 
   markAsRead() {

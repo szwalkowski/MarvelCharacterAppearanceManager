@@ -4,30 +4,30 @@ const DictionariesManager = require("../dictionaries/dictionariesManager");
 const DictionaryTranslator = require("../dictionaries/dictionaryTranslator");
 
 module.exports = class {
-  #characterManager = new CharacterManager();
-  #characterImporter = new CharacterImporter();
   #dictionaryTranslator = new DictionaryTranslator();
 
   constructor(server, dbConnection) {
+    const characterManager = new CharacterManager(dbConnection);
+    const characterImporter = new CharacterImporter(dbConnection);
     const dictionariesManager = new DictionariesManager(dbConnection);
-    this.#createCharacterEndpoints(server, dictionariesManager);
+    this.#createCharacterEndpoints(server, dictionariesManager, characterManager, characterImporter);
   };
 
-  #createCharacterEndpoints = function (server, dictionariesManager) {
-    this.#prepareCharacterFromWikiPage(server);
-    this.#prepareCharacterConfirmAction(server);
-    this.#prepareGetAllCharactersAliases(server);
-    this.#prepareGetAllIssuesForCharacter(server, dictionariesManager);
+  #createCharacterEndpoints = function (server, dictionariesManager, characterManager, characterImporter) {
+    this.#prepareCharacterFromWikiPage(server, characterImporter);
+    this.#prepareCharacterConfirmAction(server, characterImporter);
+    this.#prepareGetAllCharactersAliases(server, characterManager);
+    this.#prepareGetAllIssuesForCharacter(server, dictionariesManager, characterManager);
   };
 
-  #prepareCharacterFromWikiPage = function (server) {
+  #prepareCharacterFromWikiPage = function (server, characterImporter) {
     server.post("/newCharacter", (req, res) => {
-      this.#characterImporter.provideCharacterBaseInfoFromPageAsync(req.body["characterUrl"]).then(response => {
+      characterImporter.provideCharacterBaseInfoFromPageAsync(req.body["characterUrl"]).then(response => {
         res.end(JSON.stringify({
           CharacterId: response.getId(),
           Url: req.body["characterUrl"],
           OriginAlias: response.getCurrentAlias(),
-          SetAlias: req.body["customAlias"].trim() === "" ? response.getCurrentAlias().trim() : req.body["customAlias"],
+          Alias: req.body["customAlias"].trim() === "" ? response.getCurrentAlias().trim() : req.body["customAlias"],
           Universe: response.getUniverse(),
           RealName: response.getRealName(),
           AppearanceCount: response.getAppearancesCount(),
@@ -44,9 +44,9 @@ module.exports = class {
     });
   };
 
-  #prepareCharacterConfirmAction = function (server) {
+  #prepareCharacterConfirmAction = function (server, characterImporter) {
     server.post("/confirmCharacter", (req, res) => {
-      this.#characterImporter.downloadAndStoreConfirmedCharacterAsync(req.body).then(() => {
+      characterImporter.downloadAndStoreConfirmedCharacterAsync(req.body).then(() => {
         res.end();
       }, reason => {
         console.error(reason);
@@ -56,17 +56,19 @@ module.exports = class {
     });
   };
 
-  #prepareGetAllCharactersAliases = function (server) {
-    server.get("/getAllCharacters", (req, res) => {
-      res.end(JSON.stringify(this.#characterManager.provideAllCharactersAvailable()));
+  #prepareGetAllCharactersAliases = function (server, characterManager) {
+    server.get("/getAllCharacters", async (req, res) => {
+      const characters = await characterManager.provideAllCharactersAvailableAsync();
+      res.end(JSON.stringify(characters));
     });
   };
 
-  #prepareGetAllIssuesForCharacter = function (server, dictionariesManager) {
+  #prepareGetAllIssuesForCharacter = function (server, dictionariesManager, characterManager) {
     server.get("/getAllIssuesForCharacter", async (req, res) => {
-      const data = this.#characterManager.loadIssuesAndAppearances(req.query.alias, req.query.universe);
+      const characterDataPromise = characterManager.loadIssuesAndAppearancesAsync(req.query.characterId);
       const appearanceDictionaryPromise = dictionariesManager.getDictionaryByIdAsync("appearanceType");
       const focusDictionaryPromise = dictionariesManager.getDictionaryByIdAsync("focusType");
+      const data = await characterDataPromise;
       await Promise.all([
         appearanceDictionaryPromise.then(dictionary => {
           this.#translateAllAppearanceTypes(data, dictionary.dictionary);

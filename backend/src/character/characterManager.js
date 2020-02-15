@@ -1,35 +1,37 @@
-const fs = require('fs');
 const CharacterModel = require('./characterModel');
 
 module.exports = class {
-  provideAllCharactersAvailable() {
-    let characters = [];
-    fs.readdirSync('../../database/appearances').forEach(file => {
-      const alias = /[a-zA-Z/d_.\-]+/.exec(file)[0];
-      const universeWithBrackets = /\([a-zA-Z\d-]+\)/.exec(file)[0];
-      const universe = universeWithBrackets.substring(1, universeWithBrackets.length - 1);
-      let existingCharacterWithAliasIdx = characters.findIndex(character => character.alias === alias);
+  #dbConnection;
+
+  constructor(dbConnection) {
+    this.#dbConnection = dbConnection;
+  }
+
+  async provideAllCharactersAvailableAsync() {
+    const allCharactersCursor = await this.#dbConnection.findAsync("characters", {}, { alias: 1, universe: 1 });
+    const allCharacters = await allCharactersCursor.toArray();
+    const characters = [];
+    allCharacters.forEach(character => {
+      let existingCharacterWithAliasIdx = characters.findIndex(predicateCharacter => predicateCharacter.alias === character.alias);
       if (existingCharacterWithAliasIdx < 0) {
         existingCharacterWithAliasIdx = characters.length;
-        characters.push({ alias, universes: [] });
+        characters.push({ alias: character.alias, universes: [] });
       }
-      characters[existingCharacterWithAliasIdx].universes.push(universe);
+      characters[existingCharacterWithAliasIdx].universes.push({characterId: character._id, universe: character.universe});
     });
     return characters;
   };
 
-  saveCharacter(characterAndIssues) {
+  async saveCharacterAsync(characterAndIssues) {
     characterAndIssues.issues.sort((a, b) => this.#compareIssues(a, b));
-    const characterModel = new CharacterModel(characterAndIssues.CharacterId.replace(/ /g, "_"), characterAndIssues.Url, characterAndIssues.SetAlias,
+    const characterModel = new CharacterModel(characterAndIssues.CharacterId, characterAndIssues.Url, characterAndIssues.Alias,
       characterAndIssues.RealName, characterAndIssues.Universe, characterAndIssues.ImageUrl, characterAndIssues.issues,
       characterAndIssues.issues[characterAndIssues.issues.length - 1].publishDateTimestamp);
-    this.#saveToFile(characterModel);
+    return this.#dbConnection.saveAsync("characters", characterModel._id, characterModel);
   };
 
-  loadIssuesAndAppearances(alias, universe) {
-    const fileName = `${alias}(${universe}).json`;
-    const fileContent = fs.readFileSync(`../../database/appearances/${fileName}`, "utf-8");
-    const characterData = JSON.parse(fileContent);
+  async loadIssuesAndAppearancesAsync(characterId) {
+    const characterData = await this.#dbConnection.getByIdAsync("characters", characterId);
     const setOfAppearanceTypes = new Set();
     const setOfFocusTypes = new Set();
     characterData.issues.forEach(issue => {
@@ -41,17 +43,6 @@ module.exports = class {
       });
     });
     return { characterData, setOfAppearanceTypes: [...setOfAppearanceTypes].sort(), setOfFocusTypes: [...setOfFocusTypes].sort() };
-  };
-
-  #saveToFile = function (characterModel) {
-    const characterModelAsJson = JSON.stringify(characterModel);
-    const fileName = `../../database/appearances/${characterModel.alias.replace(/ /g, "_")}(${characterModel.world}).json`;
-    fs.writeFileSync(fileName, characterModelAsJson, function (err) {
-      if (err) {
-        console.log(err);
-        throw err;
-      }
-    })
   };
 
   #compareIssues = function (a, b) {

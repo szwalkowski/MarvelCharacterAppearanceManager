@@ -9,13 +9,13 @@
           <button
             type="button"
             class="btn btn-primary btn-block"
-            :key="universe"
+            :key="universe.universe"
             :class="{
               active: selectedUniverse && selectedUniverse === universe
             }"
             @click="selectUniverse(universe)"
           >
-            {{ universe }}
+            {{ universe.universe }}
           </button>
           <br :key="'_' + universe" />
         </template>
@@ -35,9 +35,9 @@ export default {
   },
   methods: {
     selectUniverse(universe) {
-      this.selectedUniverse = universe;
-      const newRoute = `/issues?characterAlias=${this.selectedCharacter.alias}&universe=${universe}`;
-      if (this.$route.fullPath !== newRoute) {
+      this.selectedUniverse = universe.universe;
+      const newRoute = `/issues?characterId=${universe.characterId}`;
+      if (decodeURIComponent(this.$route.fullPath) !== newRoute) {
         this.$router.push(newRoute);
       }
     }

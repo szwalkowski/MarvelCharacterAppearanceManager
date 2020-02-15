@@ -24,12 +24,12 @@ module.exports = class {
     this.#jquery = new JQuery(issuePageWindow);
     const allIssueDataElement = this.#jquery.find(SelectorWithAllIssueData)[0];
     if (allIssueDataElement) {
-      this.id = issuePageWindow.window.document.location.pathname;
+      this.id = issuePageWindow.window.document.location.pathname.replace("/wiki/", "");
       let issueTextInfo = allIssueDataElement.innerHTML.split("\n");
       this.isIssue = issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
       if (this.isIssue) {
         this.fullName = this.#jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
-        this.#readDataFromText(issueTextInfo, characterId);
+        this.#readDataFromText(issueTextInfo, characterId.replace(/_/g, " "));
       }
     } else {
       this.isIssue = false;
@@ -47,7 +47,7 @@ module.exports = class {
 
   getIssueNo() {
     const separatedWords = this.fullName.split(" ");
-    return parseInt(separatedWords[separatedWords.length - 1]);
+    return separatedWords[separatedWords.length - 1];
   };
 
   getPublishedDate() {

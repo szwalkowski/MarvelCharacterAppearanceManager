@@ -48,7 +48,7 @@
         </tr>
         <tr>
           <td>{{ characterInfo.RealName }}</td>
-          <td>{{ characterInfo.SetAlias }}</td>
+          <td>{{ characterInfo.Alias }}</td>
           <td>{{ characterInfo.Universe }}</td>
           <td>{{ characterInfo.AppearanceCount }}</td>
           <td>{{ characterInfo.MinorAppearanceCount }}</td>

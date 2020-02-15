@@ -143,19 +143,6 @@
         </tbody>
       </table>
     </section>
-    <div class="row">
-      <label for="alias-text-input">Alias: </label>
-      <input type="text" id="alias-text-input" :value="alias" />
-      <button type="button" class="btn btn-primary btn-sm">
-        Rename visible alias
-      </button>
-      <button type="button" class="btn btn-primary btn-sm">
-        Update character
-      </button>
-      <button type="button" class="btn btn-primary btn-sm">
-        Remove character
-      </button>
-    </div>
   </div>
 </template>
 <script>
@@ -164,6 +151,7 @@ import axios from "axios";
 export default {
   data() {
     return {
+      characterId: "",
       alias: "",
       universe: "",
       readStatuses: ["All", "Read", "Not read"],
@@ -229,9 +217,7 @@ export default {
     markAsRead(idx, issueId) {
       axios
         .post("markIssueAsRead", {
-          issueId: issueId,
-          characterAlias: this.alias,
-          characterUniverse: this.universe
+          issueId: issueId
         })
         .then(response => {
           this.characterData.issues[idx].read = response.data.readTime;
@@ -243,9 +229,7 @@ export default {
     markAsNotRead(idx, issueId) {
       axios
         .post("unmarkIssueAsRead", {
-          issueId: issueId,
-          characterAlias: this.alias,
-          characterUniverse: this.universe
+          issueId: issueId
         })
         .then(() => {
           this.characterData.issues[idx].read = null;
@@ -255,16 +239,14 @@ export default {
         });
     },
     loadIssuePage() {
-      this.alias = this.$route.query.characterAlias;
-      this.universe = this.$route.query.universe;
+      this.characterId = this.$route.query.characterId;
       this.selectedFocusTypes = this.focusTypes;
       this.showEmptyAppearanceTypes = true;
       this.showEmptyFocusTypes = true;
       axios
         .get("getAllIssuesForCharacter", {
           params: {
-            alias: this.alias,
-            universe: this.universe
+            characterId: this.characterId
           }
         })
         .then(response => {

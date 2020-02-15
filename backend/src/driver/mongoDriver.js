@@ -17,11 +17,33 @@ module.exports = class {
         this.#connection = connection;
       })
       .catch(err => {
-        console.error(err);
+        console.error("Error connecting mongo.", err);
       });
   }
 
   db() {
     return this.#connection.db();
+  }
+
+  async getByIdAsync(collection, id) {
+    return this
+      .db()
+      .collection(collection)
+      .findOne({ _id: id });
+  }
+
+  async saveAsync(collection, id, document) {
+    return this
+      .db()
+      .collection(collection)
+      .updateOne({ _id: id }, { $set: document }, { upsert: true });
+  }
+
+  async findAsync(collection, query, projection) {
+    return this
+      .db()
+      .collection(collection)
+      .find(query)
+      .project(projection);
   }
 };
