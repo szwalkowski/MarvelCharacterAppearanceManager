@@ -1,7 +1,7 @@
 const CharacterImporter = require("./characterImporter");
 const CharacterManager = require("./characterManager");
-const DictionariesManager = require("../dictionaries/dictionariesManager");
-const DictionaryTranslator = require("../dictionaries/dictionaryTranslator");
+const DictionaryManager = require("../dictionary/dictionaryManager");
+const DictionaryTranslator = require("../dictionary/dictionaryTranslator");
 
 module.exports = class {
   #dictionaryTranslator = new DictionaryTranslator();
@@ -9,15 +9,15 @@ module.exports = class {
   constructor(server, dbConnection) {
     const characterManager = new CharacterManager(dbConnection);
     const characterImporter = new CharacterImporter(dbConnection);
-    const dictionariesManager = new DictionariesManager(dbConnection);
-    this.#createCharacterEndpoints(server, dictionariesManager, characterManager, characterImporter);
+    const dictionaryManager = new DictionaryManager(dbConnection);
+    this.#createCharacterEndpoints(server, dictionaryManager, characterManager, characterImporter);
   };
 
-  #createCharacterEndpoints = function (server, dictionariesManager, characterManager, characterImporter) {
+  #createCharacterEndpoints = function (server, dictionaryManager, characterManager, characterImporter) {
     this.#prepareCharacterFromWikiPage(server, characterImporter);
     this.#prepareCharacterConfirmAction(server, characterImporter);
     this.#prepareGetAllCharactersAliases(server, characterManager);
-    this.#prepareGetAllIssuesForCharacter(server, dictionariesManager, characterManager);
+    this.#prepareGetAllIssuesForCharacter(server, dictionaryManager, characterManager);
   };
 
   #prepareCharacterFromWikiPage = function (server, characterImporter) {
@@ -63,11 +63,11 @@ module.exports = class {
     });
   };
 
-  #prepareGetAllIssuesForCharacter = function (server, dictionariesManager, characterManager) {
+  #prepareGetAllIssuesForCharacter = function (server, dictionaryManager, characterManager) {
     server.get("/getAllIssuesForCharacter", async (req, res) => {
       const characterDataPromise = characterManager.loadIssuesAndAppearancesAsync(req.query.characterId);
-      const appearanceDictionaryPromise = dictionariesManager.getDictionaryByIdAsync("appearanceType");
-      const focusDictionaryPromise = dictionariesManager.getDictionaryByIdAsync("focusType");
+      const appearanceDictionaryPromise = dictionaryManager.getDictionaryByIdAsync("appearanceType");
+      const focusDictionaryPromise = dictionaryManager.getDictionaryByIdAsync("focusType");
       const data = await characterDataPromise;
       await Promise.all([
         appearanceDictionaryPromise.then(dictionary => {

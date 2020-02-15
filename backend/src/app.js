@@ -1,6 +1,6 @@
 const express = require('express');
 const CharacterController = require('./character/characterController');
-const DictionariesController = require('./dictionaries/dictionariesController');
+const DictionaryController = require('./dictionary/dictionaryController');
 const IssueController = require('./issue/issueController');
 const bodyParser = require('body-parser');
 const server = express();
@@ -28,7 +28,7 @@ class App {
   #createDataEndpoints = function (server, dbConnection) {
     this.#indexEndpoint(server);
     new CharacterController(server, dbConnection);
-    new DictionariesController(server, dbConnection);
+    new DictionaryController(server, dbConnection);
     new IssueController(server);
   };
 
