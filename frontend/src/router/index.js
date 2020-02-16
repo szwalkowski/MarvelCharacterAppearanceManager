@@ -12,7 +12,7 @@ const routes = [
   },
   {
     path: "/add-new-character",
-    name: "about",
+    name: "new-character",
     component: () => import("../views/NewCharacter")
   },
   {
@@ -24,6 +24,11 @@ const routes = [
     path: "/issues",
     name: "issues",
     component: () => import("../views/Issues")
+  },
+  {
+    path: "/sign-up",
+    name: "sign-up",
+    component: () => import("../views/SignUp")
   }
 ];
 

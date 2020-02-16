@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div>
     <h2>Welcome to Marvel Character Appearance Manager!</h2>
     <p>
       Application is supposed to help you with reading Marvel Comics when
