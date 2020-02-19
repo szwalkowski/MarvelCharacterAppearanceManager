@@ -11,6 +11,7 @@ module.exports = class {
 
   #createUserEndpoints = function (server, userAccountManager) {
     this.#prepareCreateAccount(server, userAccountManager);
+    this.#prepareLogIn(server, userAccountManager);
   };
 
   #prepareCreateAccount = function (server, userAccountManager) {
@@ -28,6 +29,24 @@ module.exports = class {
         console.error(reason);
         res.status(500);
         res.end(`Error on creating user account. ${reason.response && reason.response.data.error.message}`);
+      });
+    })
+  };
+
+  #prepareLogIn = function (server, userAccountManager) {
+    server.post("/logIn", (req, res) => {
+      userAccountManager.logInUserAsync(req.body["userSingInData"]).then(response => {
+        res.end(JSON.stringify(response.data));
+      }, reason => {
+        const errorMsg = reason.response && reason.response.data.error.message;
+        if (errorMsg === "INVALID_PASSWORD" || errorMsg === "EMAIL_NOT_FOUND") {
+          res.status(401);
+          res.end(`Unauthorized`);
+        } else {
+          console.error(reason);
+          res.status(500);
+          res.end(`Error on login. ${reason.response && reason.response.data.error.message}`);
+        }
       });
     });
   };

@@ -18,4 +18,13 @@ module.exports = class {
       });
   }
 
+  async logInFirebaseAsync(userSingUpData) {
+    return await this.#axios
+      .post(`accounts:signInWithPassword?key=${process.env.FIREBASE_API_KEY}`, {
+        email: userSingUpData.email,
+        password: userSingUpData.password,
+        returnSecureToken: true
+      });
+  }
+
 };

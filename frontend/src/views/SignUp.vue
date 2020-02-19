@@ -163,8 +163,8 @@ export default {
         .post("createAccount", {
           userSingUpData: this.userSingUpData
         })
-        .then(response => {
-          console.log(response);
+        .then(() => {
+          this.$alert("Account created!");
         })
         .catch(error => {
           this.errors.push(error.response.data);

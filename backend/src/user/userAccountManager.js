@@ -8,6 +8,10 @@ module.exports = class {
   };
 
   async createUserAccountAsync(userSingUpData) {
-    await this.#userAuthenticationManager.singUpInFirebaseAsync(userSingUpData);
+    return await this.#userAuthenticationManager.singUpInFirebaseAsync(userSingUpData);
+  }
+
+  async logInUserAsync(userSingInData) {
+    return await this.#userAuthenticationManager.logInFirebaseAsync(userSingInData);
   }
 };
