@@ -1,10 +1,5 @@
 <template>
   <fieldset>
-    <div v-if="errors.length" style="color: red">
-      <ul style="padding-left: 1rem">
-        <li v-for="error in errors" :key="error">{{ error }}</li>
-      </ul>
-    </div>
     <form @submit.prevent="tryToSignUp">
       <legend>Create account</legend>
       <div class="form-group">
@@ -16,7 +11,7 @@
           id="userName"
           placeholder="Enter user name"
           @blur="$v.userSingUpData.userName.$touch()"
-          v-model="userSingUpData.userName"
+          v-model.trim="userSingUpData.userName"
           :class="{ 'is-invalid': $v.userSingUpData.userName.$error }"
         />
         <small
@@ -37,7 +32,7 @@
           aria-describedby="emailHelp"
           placeholder="Enter email"
           @blur="$v.userSingUpData.email.$touch()"
-          v-model="userSingUpData.email"
+          v-model.trim="userSingUpData.email"
           :class="{ 'is-invalid': $v.userSingUpData.email.$error }"
         />
         <small
@@ -71,7 +66,7 @@
           aria-describedby="passwordHelp"
           placeholder="Password"
           @blur="$v.userSingUpData.password.$touch()"
-          v-model="userSingUpData.password"
+          v-model.trim="userSingUpData.password"
           :class="{ 'is-invalid': $v.userSingUpData.password.$error }"
         />
         <small
@@ -106,7 +101,7 @@
           aria-describedby="passwordConfirmHelp"
           placeholder="Confirm password"
           @blur="$v.userSingUpData.confirmPassword.$touch()"
-          v-model="userSingUpData.confirmPassword"
+          v-model.trim="userSingUpData.confirmPassword"
           :class="{ 'is-invalid': $v.userSingUpData.confirmPassword.$error }"
         />
         <small
@@ -125,20 +120,26 @@
         Submit
       </button>
     </form>
+    <br />
+    <div v-if="errors.length" style="color: red">
+      <ul style="padding-left: 1rem">
+        <li v-for="error in errors" :key="error">{{ error }}</li>
+      </ul>
+    </div>
   </fieldset>
 </template>
 <script>
 import { mapGetters } from "vuex";
-import axiosAuth from "../axios-auth";
+import axios from "axios";
 import {
   required,
   email,
-  minLength,
   helpers,
-  maxLength,
+  minLength,
   sameAs
 } from "vuelidate/lib/validators";
-const userNameRegex = helpers.regex("userNameRegex", /^[a-zA-Z0-9_-]*$/);
+
+const userNameRegex = helpers.regex("userNameRegex", /^[a-zA-Z0-9_-]{6,32}$/);
 
 export default {
   data() {
@@ -158,29 +159,23 @@ export default {
   methods: {
     tryToSignUp() {
       this.errors = [];
-      if (!this.errors.length) {
-        axiosAuth
-          .post(`accounts:signUp?key=${process.env.VUE_APP_FIREBASE_API_KEY}`, {
-            email: this.userSingUpData.email,
-            password: this.userSingUpData.password,
-            returnSecureToken: true
-          })
-          .then(res => {
-            console.log(res);
-          })
-          .catch(err => {
-            this.errors.push(err.response.data.error.message);
-            console.error(err);
-          });
-      }
+      axios
+        .post("createAccount", {
+          userSingUpData: this.userSingUpData
+        })
+        .then(response => {
+          console.log(response);
+        })
+        .catch(error => {
+          this.errors.push(error.response.data);
+          console.error(error);
+        });
     }
   },
   validations: {
     userSingUpData: {
       userName: {
         required,
-        minLen: minLength(5),
-        maxLen: maxLength(32),
         userNameRegex
       },
       email: {

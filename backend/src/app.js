@@ -2,6 +2,7 @@ const express = require('express');
 const CharacterController = require('./character/characterController');
 const DictionaryController = require('./dictionary/dictionaryController');
 const IssueController = require('./issue/issueController');
+const UserController = require('./user/userController');
 const bodyParser = require('body-parser');
 const server = express();
 const MongoClient = require('./driver/mongoDriver');
@@ -29,6 +30,7 @@ class App {
     this.#indexEndpoint(server);
     new CharacterController(server, dbConnection);
     new DictionaryController(server, dbConnection);
+    new UserController(server);
     new IssueController(server);
   };
 
