@@ -66,7 +66,7 @@
   </fieldset>
 </template>
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import axios from "axios";
 import { required, email } from "vuelidate/lib/validators";
 
@@ -84,14 +84,18 @@ export default {
     ...mapGetters("user", ["userName"])
   },
   methods: {
+    ...mapMutations("user", ["authUser"]),
     tryToLogIn() {
       this.errors = [];
       axios
         .post("logIn", {
           userSingInData: this.userSingInData
         })
-        .then(() => {
-          this.$alert("Login with success!");
+        .then(response => {
+          this.authUser({ userData: response.data });
+          this.$alert("Login with success!").then(() => {
+            this.$router.push("/account");
+          });
         })
         .catch(error => {
           this.errors.push(error.response.data);
