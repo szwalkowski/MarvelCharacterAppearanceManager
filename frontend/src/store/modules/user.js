@@ -18,11 +18,16 @@ const mutations = {
     localStorage.setItem("mcam.idToken", userData.idToken);
     state.userData.idToken = userData.idToken;
     state.userData.userName = userData.userName;
+  },
+  clearAuthUser() {
+    localStorage.setItem("mcam.idToken", undefined);
+    state.userData.idToken = null;
+    state.userData.userName = null;
   }
 };
 
 const actions = {
-  tryAutoLogIn () {
+  tryAutoLogIn() {
     const idToken = localStorage.getItem("mcam.idToken");
     axios
       .get("autoLogIn", {

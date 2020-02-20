@@ -13,6 +13,7 @@ module.exports = class {
     this.#prepareCreateAccount(server, userAccountManager);
     this.#prepareLogIn(server, userAccountManager);
     this.#prepareAutoLogIn(server, userAccountManager);
+    this.#prepareLogOut(server, userAccountManager);
   };
 
   #prepareCreateAccount = function (server, userAccountManager) {
@@ -56,6 +57,13 @@ module.exports = class {
     server.get("/autoLogIn", async (req, res) => {
       const session = await userAccountManager.tryToAutoLoginAsync(req.query.idToken);
       res.end(JSON.stringify(session));
+    });
+  };
+
+  #prepareLogOut = function (server, userAccountManager) {
+    server.get("/logOut", async (req, res) => {
+      userAccountManager.logOutAsync(req.query.idToken);
+      res.end();
     });
   };
 };

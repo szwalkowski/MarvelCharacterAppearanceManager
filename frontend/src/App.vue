@@ -36,7 +36,7 @@ export default {
     CharactersBarNav,
     UniversesBarNav
   },
-  created () {
+  created() {
     this.$store.dispatch("user/tryAutoLogIn");
   }
 };

@@ -25,15 +25,19 @@ module.exports = class {
       expirationDate: new Date().getTime() + (logInData.expiresIn * 1000),
       userName: logInData.displayName
     };
-    await this.#dbConnection.updateAsync("users", logInData.localId, { sessionData })
+    await this.#dbConnection.updateAsync("users", { _id: logInData.localId }, { sessionData })
     return sessionData;
   }
 
   async tryToAutoLoginAsync(idToken) {
     const sessionData = await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { sessionData: 1 });
-    if (sessionData && sessionData.sessionData && sessionData.sessionData.expirationDate >= new Date().getTime()) {
+    if (sessionData && sessionData.sessionData.expirationDate >= new Date().getTime()) {
       return sessionData.sessionData;
     }
+  }
+
+  async logOutAsync(idToken) {
+    await this.#dbConnection.updateAsync("users", { "sessionData.idToken": idToken }, { sessionData: {} });
   }
 
   #createUserRecordAsync = async function (userAuthData) {

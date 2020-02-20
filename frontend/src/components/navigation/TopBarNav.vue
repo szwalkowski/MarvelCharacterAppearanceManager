@@ -43,17 +43,33 @@
           <router-link tag="a" class="nav-link pl-sm-1" to="/account">
             Hello, {{ userName }}!
           </router-link>
+          /
+          <a class="nav-link pl-sm-1" style="cursor: pointer" @click="logOut">
+            Log out
+          </a>
         </template>
       </ul>
     </div>
   </nav>
 </template>
 <script>
+import axios from "axios";
 import { mapGetters } from "vuex";
 
 export default {
   computed: {
     ...mapGetters("user", ["userName"])
+  },
+  methods: {
+    logOut() {
+      axios.get("logOut", {
+        params: {
+          idToken: localStorage.getItem("mcam.idToken")
+        }
+      });
+      this.$store.commit("user/clearAuthUser");
+      this.$router.push("log-in");
+    }
   }
 };
 </script>

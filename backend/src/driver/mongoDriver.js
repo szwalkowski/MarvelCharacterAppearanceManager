@@ -61,10 +61,10 @@ module.exports = class {
       .findOne(query);
   }
 
-  async updateAsync(collection, id, updateData) {
+  async updateAsync(collection, query, updateData) {
     return this
       .db()
       .collection(collection)
-      .updateOne({ _id: id }, { $set: updateData });
+      .updateOne(query, { $set: updateData });
   }
 };
