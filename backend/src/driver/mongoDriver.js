@@ -39,11 +39,32 @@ module.exports = class {
       .updateOne({ _id: id }, { $set: document }, { upsert: true });
   }
 
+  async insertAsync(collection, document) {
+    return this
+      .db()
+      .collection(collection)
+      .insertOne(document);
+  }
+
   async findAsync(collection, query, projection) {
     return this
       .db()
       .collection(collection)
       .find(query)
       .project(projection);
+  }
+
+  async findOneAsync(collection, query, projection) {
+    return this
+      .db()
+      .collection(collection)
+      .findOne(query);
+  }
+
+  async updateAsync(collection, id, updateData) {
+    return this
+      .db()
+      .collection(collection)
+      .updateOne({ _id: id }, { $set: updateData });
   }
 };

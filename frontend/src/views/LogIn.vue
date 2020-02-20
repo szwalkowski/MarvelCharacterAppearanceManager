@@ -88,8 +88,10 @@ export default {
     tryToLogIn() {
       this.errors = [];
       axios
-        .post("logIn", {
-          userSingInData: this.userSingInData
+        .get("logIn", {
+          params: {
+            userSingInData: this.userSingInData
+          }
         })
         .then(response => {
           this.authUser({ userData: response.data });

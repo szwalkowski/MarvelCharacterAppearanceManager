@@ -30,7 +30,7 @@ class App {
     this.#indexEndpoint(server);
     new CharacterController(server, dbConnection);
     new DictionaryController(server, dbConnection);
-    new UserController(server);
+    new UserController(server, dbConnection);
     new IssueController(server);
   };
 

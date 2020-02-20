@@ -4,14 +4,15 @@ const UserValidator = require("./userValidator");
 module.exports = class {
   #userValidator;
 
-  constructor(server) {
+  constructor(server, dbConnection) {
     this.#userValidator = new UserValidator();
-    this.#createUserEndpoints(server, new UserAccountManager());
+    this.#createUserEndpoints(server, new UserAccountManager(dbConnection));
   };
 
   #createUserEndpoints = function (server, userAccountManager) {
     this.#prepareCreateAccount(server, userAccountManager);
     this.#prepareLogIn(server, userAccountManager);
+    this.#prepareAutoLogIn(server, userAccountManager);
   };
 
   #prepareCreateAccount = function (server, userAccountManager) {
@@ -34,9 +35,9 @@ module.exports = class {
   };
 
   #prepareLogIn = function (server, userAccountManager) {
-    server.post("/logIn", (req, res) => {
-      userAccountManager.logInUserAsync(req.body["userSingInData"]).then(response => {
-        res.end(JSON.stringify(response.data));
+    server.get("/logIn", (req, res) => {
+      userAccountManager.logInUserAsync(JSON.parse(req.query.userSingInData)).then(response => {
+        res.end(JSON.stringify(response));
       }, reason => {
         const errorMsg = reason.response && reason.response.data.error.message;
         if (errorMsg === "INVALID_PASSWORD" || errorMsg === "EMAIL_NOT_FOUND") {
@@ -48,6 +49,13 @@ module.exports = class {
           res.end(`Error on login. ${reason.response && reason.response.data.error.message}`);
         }
       });
+    });
+  };
+
+  #prepareAutoLogIn = function (server, userAccountManager) {
+    server.get("/autoLogIn", async (req, res) => {
+      const session = await userAccountManager.tryToAutoLoginAsync(req.query.idToken);
+      res.end(JSON.stringify(session));
     });
   };
 };

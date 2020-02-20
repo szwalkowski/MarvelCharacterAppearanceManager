@@ -35,6 +35,9 @@ export default {
     McamTopBarNav,
     CharactersBarNav,
     UniversesBarNav
+  },
+  created () {
+    this.$store.dispatch("user/tryAutoLogIn");
   }
 };
 </script>

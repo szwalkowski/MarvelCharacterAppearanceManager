@@ -27,4 +27,13 @@ module.exports = class {
       });
   }
 
+  async setupDisplayName(userSingUpData, displayName) {
+    return await this.#axios
+      .post(`accounts:update?key=${process.env.FIREBASE_API_KEY}`, {
+        idToken: userSingUpData.idToken,
+        displayName,
+        returnSecureToken: false
+      });
+  }
+
 };
