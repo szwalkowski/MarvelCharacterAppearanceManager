@@ -20,7 +20,7 @@ const mutations = {
     state.userData.userName = userData.userName;
   },
   clearAuthUser() {
-    localStorage.setItem("mcam.idToken", undefined);
+    localStorage.removeItem("mcam.idToken");
     state.userData.idToken = null;
     state.userData.userName = null;
   }
@@ -29,18 +29,21 @@ const mutations = {
 const actions = {
   tryAutoLogIn() {
     const idToken = localStorage.getItem("mcam.idToken");
-    axios
-      .get("autoLogIn", {
-        params: {
-          idToken
-        }
-      })
-      .then(res => {
-        if (res.data.idToken) {
-          state.userData.idToken = res.data.idToken;
-          state.userData.userName = res.data.userName;
-        }
-      });
+    if (idToken) {
+      axios
+        .get("autoLogIn", {
+          params: {
+            idToken
+          }
+        })
+        .then(response => {
+          if (response.data.idToken) {
+            this.commit("user/authUser", { userData: response.data });
+          } else {
+            this.commit("user/clearAuthUser");
+          }
+        });
+    }
   }
 };
 
