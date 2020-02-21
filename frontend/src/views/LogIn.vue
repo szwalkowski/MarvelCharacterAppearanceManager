@@ -49,10 +49,21 @@
           Please provide a password
         </small>
       </div>
+      <div class="custom-control custom-checkbox">
+        <input
+          v-model="userSingInData.doNotLogOut"
+          type="checkbox"
+          class="custom-control-input"
+          id="doNotLogOut"
+        />
+        <label class="custom-control-label" for="doNotLogOut">
+          Do not log out
+        </label>
+      </div>
       <button
         :disabled="$v.userSingInData.$invalid"
         type="submit"
-        class="btn btn-primary"
+        class="btn btn-primary mt-sm-2"
       >
         Submit
       </button>
@@ -76,7 +87,8 @@ export default {
       errors: [],
       userSingInData: {
         email: null,
-        password: null
+        password: null,
+        doNotLogOut: false
       }
     };
   },

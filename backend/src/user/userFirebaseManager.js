@@ -2,10 +2,14 @@ const axios = require("axios");
 
 module.exports = class {
   #axios;
+  #axiosSecureToken;
 
   constructor() {
     this.#axios = axios.create({
       baseURL: "https://identitytoolkit.googleapis.com/v1/"
+    });
+    this.#axiosSecureToken = axios.create({
+      baseURL: "https://securetoken.googleapis.com/v1/"
     });
   }
 
@@ -36,4 +40,11 @@ module.exports = class {
       });
   }
 
+  async refreshIdToken(refreshToken) {
+    return await this.#axiosSecureToken
+      .post(`token?key=${process.env.FIREBASE_API_KEY}`, {
+        grant_type: "refresh_token",
+        refresh_token: refreshToken
+      });
+  }
 };
