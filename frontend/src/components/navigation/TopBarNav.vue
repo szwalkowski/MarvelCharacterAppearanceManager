@@ -62,10 +62,8 @@ export default {
   },
   methods: {
     logOut() {
-      axios.get("logOut", {
-        params: {
-          idToken: localStorage.getItem("mcam.idToken")
-        }
+      axios.post("logOut", {
+        idToken: localStorage.getItem("mcam.idToken")
       });
       this.$store.commit("user/clearAuthUser");
       this.$router.push("log-in");

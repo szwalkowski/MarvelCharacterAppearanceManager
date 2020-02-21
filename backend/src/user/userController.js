@@ -36,8 +36,8 @@ module.exports = class {
   };
 
   #prepareLogIn = function (server, userAccountManager) {
-    server.get("/logIn", (req, res) => {
-      userAccountManager.logInUserAsync(JSON.parse(req.query.userSingInData)).then(response => {
+    server.post("/logIn", (req, res) => {
+      userAccountManager.logInUserAsync(req.body["userSingInData"]).then(response => {
         res.end(JSON.stringify(response));
       }, reason => {
         const errorMsg = reason.response && reason.response.data.error.message;
@@ -54,15 +54,15 @@ module.exports = class {
   };
 
   #prepareAutoLogIn = function (server, userAccountManager) {
-    server.get("/autoLogIn", async (req, res) => {
-      const session = await userAccountManager.tryToAutoLoginAsync(req.query.idToken);
+    server.post("/autoLogIn", async (req, res) => {
+      const session = await userAccountManager.tryToAutoLoginAsync(req.body["idToken"]);
       res.end(JSON.stringify(session));
     });
   };
 
   #prepareLogOut = function (server, userAccountManager) {
-    server.get("/logOut", async (req, res) => {
-      userAccountManager.logOutAsync(req.query.idToken);
+    server.post("/logOut", async (req, res) => {
+      userAccountManager.logOutAsync(req.body["idToken"]);
       res.end();
     });
   };

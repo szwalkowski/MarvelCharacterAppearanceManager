@@ -38,7 +38,11 @@ module.exports = class {
   async tryToAutoLoginAsync(idToken) {
     const user = await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { sessionData: 1 });
     if (user && user.sessionData.expirationDate >= new Date().getTime()) {
-      return user.sessionData;
+      return {
+        idToken: user.sessionData.idToken,
+        userName: user.sessionData.userName,
+        doNotLogOut: user.sessionData.doNotLogOut
+      };
     } else if (user.sessionData.doNotLogOut) {
       return await this.#refreshTokenAsync(user);
     }

@@ -100,10 +100,8 @@ export default {
     tryToLogIn() {
       this.errors = [];
       axios
-        .get("logIn", {
-          params: {
-            userSingInData: this.userSingInData
-          }
+        .post("logIn", {
+          userSingInData: this.userSingInData
         })
         .then(response => {
           this.authUser({ userData: response.data });

@@ -31,10 +31,8 @@ const actions = {
     const idToken = localStorage.getItem("mcam.idToken");
     if (idToken) {
       axios
-        .get("autoLogIn", {
-          params: {
-            idToken
-          }
+        .post("autoLogIn", {
+          idToken
         })
         .then(response => {
           if (response.data.idToken) {
