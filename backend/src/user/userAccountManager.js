@@ -22,7 +22,7 @@ module.exports = class {
     const logInData = logInResponse.data;
     if (!await this.#checkIfUserHasConfirmedEmailAsync(logInData.localId, logInData.idToken)) {
       return {
-        message: "Please confirm your email first"
+        emailConfirmed: false
       };
     }
     const sessionData = {
@@ -70,6 +70,18 @@ module.exports = class {
     }
   }
 
+  async resendVerificationEmailAsync(userSingInData) {
+    try {
+      const logInResponse = await this.#userFirebaseManager.logInFirebaseAsync(userSingInData);
+      const logInData = logInResponse.data;
+      if (!await this.#checkIfUserHasConfirmedEmailAsync(logInData.localId, logInData.idToken)) {
+        return this.#userFirebaseManager.sendEmailVerificationAsync(logInData.idToken);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   #refreshTokenAsync = async function (user) {
     const refreshResponse = await this.#userFirebaseManager.refreshIdTokenAsync(user.sessionData.refreshToken);
     if (refreshResponse.status === 200 && refreshResponse.data.id_token) {
@@ -108,15 +120,19 @@ module.exports = class {
   };
 
   #checkIfUserHasConfirmedEmailAsync = async function (userId, idToken) {
-    const userInDb = await this.#dbConnection.findOneAsync("users", { _id: userId });
-    if (userInDb.hasConfirmedEmail) {
-      return true;
-    }
-    const responseUserData = await this.#userFirebaseManager.getUserDataAsync(idToken);
-    const user = responseUserData.data.users.find(user => user.localId === userId);
-    if (user.emailVerified) {
-      this.#dbConnection.updateAsync("users", { _id: userId }, { hasConfirmedEmail: true });
-      return true;
+    try {
+      const userInDb = await this.#dbConnection.findOneAsync("users", { _id: userId });
+      if (userInDb.hasConfirmedEmail) {
+        return true;
+      }
+      const responseUserData = await this.#userFirebaseManager.getUserDataAsync(idToken);
+      const user = responseUserData.data.users.find(user => user.localId === userId);
+      if (user.emailVerified) {
+        this.#dbConnection.updateAsync("users", { _id: userId }, { hasConfirmedEmail: true });
+        return true;
+      }
+    } catch (err) {
+      console.error(err);
     }
   }
 };

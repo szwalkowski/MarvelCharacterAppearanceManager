@@ -15,6 +15,7 @@ module.exports = class {
     this.#prepareAutoLogIn(server, userAccountManager);
     this.#prepareLogOut(server, userAccountManager);
     this.#prepareGoogleTokenVerification(server, userAccountManager);
+    this.#prepareResendVerificationEmail(server, userAccountManager);
   };
 
   #prepareCreateAccount = function (server, userAccountManager) {
@@ -72,6 +73,19 @@ module.exports = class {
     server.post("/verifyGoogleTokenId", async (req, res) => {
       const result = await userAccountManager.verifyIdTokenAsync(req.body["idToken"], req.body["sessionType"]);
       res.end(JSON.stringify(result));
+    });
+  };
+
+  #prepareResendVerificationEmail = function (server, userAccountManager) {
+    server.post("/resendVerificationEmail", (req, res) => {
+      userAccountManager.resendVerificationEmailAsync(req.body["userSingInData"]).then(response => {
+        if (response && response.code === 400) {
+          res.status(500);
+          res.end(JSON.stringify(response));
+        } else {
+          res.end();
+        }
+      });
     });
   };
 };

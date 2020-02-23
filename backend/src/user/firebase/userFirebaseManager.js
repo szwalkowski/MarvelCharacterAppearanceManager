@@ -31,7 +31,7 @@ module.exports = class {
         returnSecureToken: true
       });
     if (response && response.status === 200) {
-      this.#sendEmailVerification(response.data.idToken);
+      this.sendEmailVerificationAsync(response.data.idToken);
     }
     return response;
   }
@@ -77,11 +77,14 @@ module.exports = class {
       });
   }
 
-  #sendEmailVerification = function(idToken) {
-    this.#axios
+  async sendEmailVerificationAsync(idToken) {
+    return this.#axios
       .post(`accounts:sendOobCode?key=${process.env.FIREBASE_API_KEY}`, {
         requestType: "VERIFY_EMAIL",
         idToken
+      })
+      .catch(err => {
+        return err.response.data.error;
       });
   }
 };

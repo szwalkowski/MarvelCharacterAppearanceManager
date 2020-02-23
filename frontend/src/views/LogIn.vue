@@ -21,13 +21,6 @@
         >
           Please provide an email
         </small>
-        <small
-          v-else-if="!$v.userSingInData.email.email"
-          id="emailHelp"
-          class="form-text invalid-feedback"
-        >
-          Please provide valid email
-        </small>
       </div>
       <div class="form-group">
         <label for="password">Password</label>
@@ -68,6 +61,13 @@
         Submit
       </button>
     </form>
+    <button
+      v-if="resendEmailConfirmation"
+      @click="resendVerificationEmail"
+      class="btn btn-primary mt-sm-3"
+    >
+      Resend verification email
+    </button>
     <br />
     <div v-if="errors.length" style="color: red">
       <ul style="padding-left: 1rem">
@@ -81,7 +81,7 @@
 import GoogleSSO from "@/components/sso/GoogleSSO";
 import { mapGetters, mapMutations } from "vuex";
 import axios from "axios";
-import { required, email } from "vuelidate/lib/validators";
+import { required } from "vuelidate/lib/validators";
 
 export default {
   data() {
@@ -91,7 +91,8 @@ export default {
         email: null,
         password: null,
         doNotLogOut: false
-      }
+      },
+      resendEmailConfirmation: false
     };
   },
   computed: {
@@ -106,8 +107,9 @@ export default {
           userSingInData: this.userSingInData
         })
         .then(response => {
-          if (response.data.message) {
-            this.errors.push(response.data.message);
+          if (response.data.emailConfirmed === false) {
+            this.errors.push("Please confirm your email first");
+            this.resendEmailConfirmation = true;
           } else {
             this.authUser({ userData: response.data, isEmailPassword: true });
             localStorage.setItem("mcam.idToken", response.data.idToken);
@@ -120,13 +122,26 @@ export default {
           this.errors.push(error.response.data);
           console.error(error);
         });
+    },
+    resendVerificationEmail() {
+      this.errors = [];
+      this.resendEmailConfirmation = false;
+      axios
+        .post("resendVerificationEmail", {
+          userSingInData: this.userSingInData
+        })
+        .then(() => {
+          this.$alert("Verification email resent!");
+        })
+        .catch(error => {
+          this.errors.push(error.response.data.message);
+        });
     }
   },
   validations: {
     userSingInData: {
       email: {
-        required,
-        email
+        required
       },
       password: {
         required

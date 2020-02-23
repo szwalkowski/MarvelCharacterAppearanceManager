@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="!confirmationMailSent" class="pt-sm-4 pl-sm-4">
+    <div v-if="confirmationMailSent" class="pt-sm-4 pl-sm-4">
       <h4 class="pb-sm-2">Confirmation email sent on provided address.</h4>
       <h5>Please confirm account creation through sent link.</h5>
     </div>
