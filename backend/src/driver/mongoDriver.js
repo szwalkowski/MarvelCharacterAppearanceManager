@@ -54,7 +54,7 @@ module.exports = class {
       .project(projection);
   }
 
-  async findOneAsync(collection, query, projection) {
+  async findOneAsync(collection, query) {
     return this
       .db()
       .collection(collection)

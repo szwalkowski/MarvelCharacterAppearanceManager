@@ -1,4 +1,4 @@
-const UserFirebaseManager = require("./userFirebaseManager");
+const UserFirebaseManager = require("./firebase/userFirebaseManager");
 
 module.exports = class {
   #userFirebaseManager;
@@ -12,7 +12,7 @@ module.exports = class {
   async createUserAccountAsync(userSingUpData) {
     const signUpResponse = await this.#userFirebaseManager.singUpInFirebaseAsync(userSingUpData);
     const userRecordCreationPromise = this.#createUserRecordAsync(signUpResponse.data);
-    await this.#userFirebaseManager.setupDisplayName(signUpResponse.data, userSingUpData.userName);
+    await this.#userFirebaseManager.setupDisplayNameAsync(signUpResponse.data, userSingUpData.userName);
     await userRecordCreationPromise;
     return signUpResponse;
   }
@@ -25,7 +25,8 @@ module.exports = class {
       expirationDate: new Date().getTime() + parseInt(logInData.expiresIn) * 1000,
       userName: logInData.displayName,
       doNotLogOut: userSingInData.doNotLogOut,
-      refreshToken: logInData.refreshToken
+      refreshToken: logInData.refreshToken,
+      sessionType: "email"
     };
     this.#addNewSessionToDbAsync(logInData.localId, sessionData);
     return {
@@ -36,14 +37,14 @@ module.exports = class {
   }
 
   async tryToAutoLoginAsync(idToken) {
-    const user = await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { sessionData: 1 });
+    const user = await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken });
     if (user && user.sessionData.expirationDate >= new Date().getTime()) {
       return {
         idToken: user.sessionData.idToken,
         userName: user.sessionData.userName,
         doNotLogOut: user.sessionData.doNotLogOut
       };
-    } else if (user.sessionData.doNotLogOut) {
+    } else if (user && user.sessionData.doNotLogOut) {
       return await this.#refreshTokenAsync(user);
     }
   }
@@ -52,22 +53,44 @@ module.exports = class {
     await this.#dbConnection.updateAsync("users", { "sessionData.idToken": idToken }, { sessionData: {} });
   }
 
+  async verifyIdTokenAsync(idToken, sessionType) {
+    const verificationData = await this.#userFirebaseManager.verifyIdTokenAsync(idToken);
+    if (verificationData) {
+      this.#addSessionWithUserCreationAsync(idToken, sessionType, verificationData);
+      return {
+        idToken: idToken,
+        userName: verificationData.name,
+        doNotLogOut: false
+      }
+    }
+  }
+
   #refreshTokenAsync = async function (user) {
-    const refreshResponse = await this.#userFirebaseManager.refreshIdToken(user.sessionData.refreshToken);
+    const refreshResponse = await this.#userFirebaseManager.refreshIdTokenAsync(user.sessionData.refreshToken);
     if (refreshResponse.status === 200 && refreshResponse.data.id_token) {
       const refreshData = refreshResponse.data;
       this.#addNewSessionToDbAsync(refreshData.user_id, {
         idToken: refreshData.id_token,
         expirationDate: new Date().getTime() + parseInt(refreshData.expires_in) * 1000,
         userName: user.sessionData.userName,
-        doNotLogOut: true,
+        doNotLogOut: false,
         refreshToken: user.sessionData.refreshToken
       });
       return {
         idToken: refreshData.id_token,
         userName: user.sessionData.userName,
-        doNotLogOut: true
+        doNotLogOut: false
       };
+    }
+  };
+
+  #addSessionWithUserCreationAsync = async function (tokenId, sessionType, verificationData) {
+    const userInDb = await this.#dbConnection.findOneAsync("users", { _id: verificationData.user_id });
+    const sessionData = { idToken: tokenId, expirationDate: verificationData.exp, userName: verificationData.name, sessionType };
+    if (userInDb) {
+      return this.#addNewSessionToDbAsync(verificationData.user_id, { sessionData })
+    } else {
+      return this.#dbConnection.insertAsync("users", { _id: verificationData.user_id, sessionData, issuesStatuses: [] });
     }
   };
 

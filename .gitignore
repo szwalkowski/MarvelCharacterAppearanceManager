@@ -21,3 +21,5 @@ yarn-error.log*
 *.sw?
 
 frontend/.env
+
+backend/src/user/firebase/firebase_admin_sdk.json

@@ -1,4 +1,6 @@
 const axios = require("axios");
+const serviceAccount = require("./firebase_admin_sdk.json");
+const fireBaseAdmin = require('firebase-admin');
 
 module.exports = class {
   #axios;
@@ -11,6 +13,14 @@ module.exports = class {
     this.#axiosSecureToken = axios.create({
       baseURL: "https://securetoken.googleapis.com/v1/"
     });
+    if (serviceAccount) {
+      fireBaseAdmin.initializeApp({
+        credential: fireBaseAdmin.credential.cert(serviceAccount),
+        databaseURL: process.env.MCAM_FIREBASE_DB_URL
+      });
+    } else {
+      console.warn("No firebase admin config!");
+    }
   }
 
   async singUpInFirebaseAsync(userSingUpData) {
@@ -31,7 +41,7 @@ module.exports = class {
       });
   }
 
-  async setupDisplayName(userSingUpData, displayName) {
+  async setupDisplayNameAsync(userSingUpData, displayName) {
     return await this.#axios
       .post(`accounts:update?key=${process.env.FIREBASE_API_KEY}`, {
         idToken: userSingUpData.idToken,
@@ -40,11 +50,19 @@ module.exports = class {
       });
   }
 
-  async refreshIdToken(refreshToken) {
+  async refreshIdTokenAsync(refreshToken) {
     return await this.#axiosSecureToken
       .post(`token?key=${process.env.FIREBASE_API_KEY}`, {
         grant_type: "refresh_token",
         refresh_token: refreshToken
       });
+  }
+
+  async verifyIdTokenAsync(idToken) {
+    try {
+      return await fireBaseAdmin.auth().verifyIdToken(idToken);
+    } catch (err) {
+      console.error(err);
+    }
   }
 };

@@ -37,6 +37,7 @@ export default {
     UniversesBarNav
   },
   created() {
+    this.$store.dispatch("user/initFirebase");
     this.$store.dispatch("user/tryAutoLogIn");
   }
 };

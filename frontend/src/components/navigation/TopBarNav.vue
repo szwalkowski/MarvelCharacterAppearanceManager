@@ -40,7 +40,11 @@
           </router-link>
         </template>
         <template v-else>
-          <router-link tag="a" class="nav-link pl-sm-1" to="/account">
+          <router-link
+            tag="a"
+            class="nav-link pl-sm-1"
+            :to="isEmailPassword ? '/account' : ''"
+          >
             Hello, {{ userName }}!
           </router-link>
           /
@@ -58,7 +62,7 @@ import { mapGetters } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters("user", ["userName"])
+    ...mapGetters("user", ["userName", "isEmailPassword"])
   },
   methods: {
     logOut() {

@@ -1,5 +1,6 @@
 <template>
   <fieldset>
+    <GoogleSSO class="pb-sm-4" />
     <form @submit.prevent="tryToSignUp">
       <legend>Create account</legend>
       <div class="form-group">
@@ -129,6 +130,7 @@
   </fieldset>
 </template>
 <script>
+import GoogleSSO from "@/components/sso/GoogleSSO";
 import { mapGetters } from "vuex";
 import axios from "axios";
 import {
@@ -190,6 +192,9 @@ export default {
         sameAs: sameAs("password")
       }
     }
+  },
+  components: {
+    GoogleSSO
   },
   created() {
     if (this.userName) {

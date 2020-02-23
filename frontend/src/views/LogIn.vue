@@ -1,5 +1,6 @@
 <template>
   <fieldset>
+    <GoogleSSO class="pb-sm-4" />
     <form @submit.prevent="tryToLogIn">
       <legend>Sign in</legend>
       <div class="form-group">
@@ -77,6 +78,7 @@
   </fieldset>
 </template>
 <script>
+import GoogleSSO from "@/components/sso/GoogleSSO";
 import { mapGetters, mapMutations } from "vuex";
 import axios from "axios";
 import { required, email } from "vuelidate/lib/validators";
@@ -104,7 +106,8 @@ export default {
           userSingInData: this.userSingInData
         })
         .then(response => {
-          this.authUser({ userData: response.data });
+          this.authUser({ userData: response.data, isEmailPassword: true });
+          localStorage.setItem("mcam.idToken", response.data.idToken);
           this.$alert("Login with success!").then(() => {
             this.$router.push("/account");
           });
@@ -125,6 +128,9 @@ export default {
         required
       }
     }
+  },
+  components: {
+    GoogleSSO
   },
   created() {
     if (this.userName) {

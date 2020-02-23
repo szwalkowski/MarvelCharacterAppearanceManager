@@ -14,6 +14,7 @@ module.exports = class {
     this.#prepareLogIn(server, userAccountManager);
     this.#prepareAutoLogIn(server, userAccountManager);
     this.#prepareLogOut(server, userAccountManager);
+    this.#prepareGoogleTokenVerification(server, userAccountManager);
   };
 
   #prepareCreateAccount = function (server, userAccountManager) {
@@ -64,6 +65,13 @@ module.exports = class {
     server.post("/logOut", async (req, res) => {
       userAccountManager.logOutAsync(req.body["idToken"]);
       res.end();
+    });
+  };
+
+  #prepareGoogleTokenVerification = function (server, userAccountManager) {
+    server.post("/verifyGoogleTokenId", async (req, res) => {
+      const result = await userAccountManager.verifyIdTokenAsync(req.body["idToken"], req.body["sessionType"]);
+      res.end(JSON.stringify(result));
     });
   };
 };
