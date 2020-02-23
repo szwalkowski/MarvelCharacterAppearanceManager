@@ -43,7 +43,7 @@ const actions = {
       apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
       authDomain: process.env.VUE_APP_FIREBASE_AUTH_DOMAIN
     });
-    if (!this.state.user.userName) {
+    if (!this.state.user.userName && !localStorage.getItem("mcam.idToken")) {
       tryToLogInUsingFirebase(firebase, this);
     }
   },
