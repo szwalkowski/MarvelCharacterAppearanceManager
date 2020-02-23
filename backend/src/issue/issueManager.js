@@ -58,8 +58,8 @@ module.exports = class {
   };
 
   #removeAppearanceOfCharacter = function (issue, characterId) {
-    const previousAppearanceIndex = issue.appearances.indexOf(appearance => appearance.characterId === characterId);
-    if (previousAppearanceIndex > -1) {
+    const previousAppearanceIndex = issue.appearances.find(appearance => appearance.characterId === characterId);
+    if (previousAppearanceIndex) {
       issue.appearances.splice(previousAppearanceIndex, 1);
     }
   };
