@@ -1,8 +1,7 @@
 <template>
   <fieldset>
-    <GoogleSSO class="pb-sm-4" />
     <form @submit.prevent="tryToLogIn">
-      <legend>Sign in</legend>
+      <legend>Log in</legend>
       <div class="form-group">
         <label for="email">Email address</label>
         <input
@@ -75,6 +74,7 @@
         <li v-for="error in errors" :key="error">{{ error }}</li>
       </ul>
     </div>
+    <GoogleSSO class="pt-sm-4" />
   </fieldset>
 </template>
 <script>
@@ -98,7 +98,7 @@ export default {
     ...mapGetters("user", ["userName"])
   },
   methods: {
-    ...mapMutations("user", ["authUser"]),
+    ...mapMutations("user", ["authUser", "isEmailPassword"]),
     tryToLogIn() {
       this.errors = [];
       axios
@@ -106,11 +106,15 @@ export default {
           userSingInData: this.userSingInData
         })
         .then(response => {
-          this.authUser({ userData: response.data, isEmailPassword: true });
-          localStorage.setItem("mcam.idToken", response.data.idToken);
-          this.$alert("Login with success!").then(() => {
-            this.$router.push("/account");
-          });
+          if (response.data.message) {
+            this.errors.push(response.data.message);
+          } else {
+            this.authUser({ userData: response.data, isEmailPassword: true });
+            localStorage.setItem("mcam.idToken", response.data.idToken);
+            this.$alert("Login with success!").then(() => {
+              this.$router.push("/account");
+            });
+          }
         })
         .catch(error => {
           this.errors.push(error.response.data);
@@ -134,7 +138,11 @@ export default {
   },
   created() {
     if (this.userName) {
-      this.$router.push("/account");
+      if (this.isEmailPassword) {
+        this.$router.push("/account");
+      } else {
+        this.$router.push("/");
+      }
     }
   }
 };

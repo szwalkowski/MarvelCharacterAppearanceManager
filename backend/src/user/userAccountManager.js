@@ -20,6 +20,11 @@ module.exports = class {
   async logInUserAsync(userSingInData) {
     const logInResponse = await this.#userFirebaseManager.logInFirebaseAsync(userSingInData);
     const logInData = logInResponse.data;
+    if (!await this.#checkIfUserHasConfirmedEmailAsync(logInData.localId, logInData.idToken)) {
+      return {
+        message: "Please confirm your email first"
+      };
+    }
     const sessionData = {
       idToken: logInData.idToken,
       expirationDate: new Date().getTime() + parseInt(logInData.expiresIn) * 1000,
@@ -101,4 +106,17 @@ module.exports = class {
   #createUserRecordAsync = async function (userAuthData) {
     return this.#dbConnection.insertAsync("users", { _id: userAuthData.localId, issuesStatuses: [] });
   };
+
+  #checkIfUserHasConfirmedEmailAsync = async function (userId, idToken) {
+    const userInDb = await this.#dbConnection.findOneAsync("users", { _id: userId });
+    if (userInDb.hasConfirmedEmail) {
+      return true;
+    }
+    const responseUserData = await this.#userFirebaseManager.getUserDataAsync(idToken);
+    const user = responseUserData.data.users.find(user => user.localId === userId);
+    if (user.emailVerified) {
+      this.#dbConnection.updateAsync("users", { _id: userId }, { hasConfirmedEmail: true });
+      return true;
+    }
+  }
 };

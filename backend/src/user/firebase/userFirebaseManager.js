@@ -24,12 +24,16 @@ module.exports = class {
   }
 
   async singUpInFirebaseAsync(userSingUpData) {
-    return await this.#axios
+    const response = await this.#axios
       .post(`accounts:signUp?key=${process.env.FIREBASE_API_KEY}`, {
         email: userSingUpData.email,
         password: userSingUpData.password,
         returnSecureToken: true
       });
+    if (response && response.status === 200) {
+      this.#sendEmailVerification(response.data.idToken);
+    }
+    return response;
   }
 
   async logInFirebaseAsync(userSingUpData) {
@@ -64,5 +68,20 @@ module.exports = class {
     } catch (err) {
       console.error(err);
     }
+  }
+
+  async getUserDataAsync(idToken) {
+    return this.#axios
+      .post(`accounts:lookup?key=${process.env.FIREBASE_API_KEY}`, {
+        idToken
+      });
+  }
+
+  #sendEmailVerification = function(idToken) {
+    this.#axios
+      .post(`accounts:sendOobCode?key=${process.env.FIREBASE_API_KEY}`, {
+        requestType: "VERIFY_EMAIL",
+        idToken
+      });
   }
 };
