@@ -4,7 +4,6 @@ const CharacterManager = require('./characterManager');
 const IssuePageModel = require('../issue/issuePageModel');
 const IssueModel = require('../issue/issueModel');
 const PageDownloader = require('../pageDownloader');
-const IssueManager = require("../issue/issueManager");
 const Async = require("async");
 
 module.exports = class {
@@ -13,9 +12,9 @@ module.exports = class {
   #characterManager;
   #issueManager;
 
-  constructor(dbConnection) {
+  constructor(issueManager, dbConnection) {
     this.#characterManager = new CharacterManager(dbConnection);
-    this.#issueManager = new IssueManager(dbConnection);
+    this.#issueManager = issueManager;
   }
 
   async provideCharacterBaseInfoFromPageAsync(url) {

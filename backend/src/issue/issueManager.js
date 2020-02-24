@@ -1,10 +1,11 @@
-const fs = require('fs');
 const collectionName = "issues";
 
 module.exports = class {
   #dbConnection;
+  #userAccountManager;
 
-  constructor(dbConnection) {
+  constructor(userAccountManager, dbConnection) {
+    this.#userAccountManager = userAccountManager;
     this.#dbConnection = dbConnection;
   }
 
@@ -17,21 +18,35 @@ module.exports = class {
     return await this.#dbConnection.saveAsync(collectionName, issue._id, issue);
   }
 
-  async markIssueAsReadAsync(issueId, characterAlias, characterUniverse) {
-    const fileName = `../../database/appearances/${characterAlias.replace(/ /g, '_')}(${characterUniverse}).json`;
-    const characterIssues = JSON.parse(fs.readFileSync(fileName, "utf-8"));
-    const readTimestamp = new Date().getTime();
-    characterIssues.issues.find(issue => issue.id === issueId).read = readTimestamp;
-    fs.writeFileSync(fileName, JSON.stringify(characterIssues));
-    return readTimestamp;
-  };
-
-  async markIssueAsNotReadAsync(issueId, characterAlias, characterUniverse) {
-    const fileName = `../../database/appearances/${characterAlias.replace(/ /g, '_')}(${characterUniverse}).json`;
-    const characterIssues = JSON.parse(fs.readFileSync(fileName, "utf-8"));
-    characterIssues.issues.find(issue => issue.id === issueId).read = null;
-    fs.writeFileSync(fileName, JSON.stringify(characterIssues));
-  };
+  async changeIssueStatusAsync(issueId, newStatus, userIdToken, characterId) {
+    const user = await this.#userAccountManager.findUserByIdTokenAsync(userIdToken);
+    if (!user) {
+      throw new Error("Not allowed to call this method");
+    }
+    let issueStatus = user.issuesStatuses.find(iStatus => iStatus.issueId === issueId);
+    if (!issueStatus) {
+      issueStatus = {
+        issueId,
+        characters: []
+      };
+      user.issuesStatuses.push(issueStatus);
+    }
+    if (characterId) {
+      this.#resolveCharacterId(issueStatus, newStatus, characterId);
+    }
+    if (newStatus === "clear") {
+      issueStatus.timestamp = null;
+    } else {
+      issueStatus.status = newStatus;
+      issueStatus.timestamp = new Date().getTime();
+    }
+    if (!issueStatus.characters.length) {
+      user.issuesStatuses = user.issuesStatuses.filter(iStatus => iStatus.issueId !== issueId);
+    }
+    await this.#dbConnection.saveAsync("users", user._id, user);
+    issueStatus.status = newStatus;
+    return issueStatus;
+  }
 
   #createIssue = function (issue) {
     return {
@@ -63,4 +78,13 @@ module.exports = class {
       issue.appearances.splice(previousAppearanceIndex, 1);
     }
   };
+
+  #resolveCharacterId = function (issueStatus, newStatus, characterId) {
+    const existingCharacterId = issueStatus.characters.find(char => char === characterId);
+    if (!existingCharacterId && ["read", "character"]) {
+      issueStatus.characters.push(characterId);
+    } else if (newStatus === "clear") {
+      issueStatus.characters = issueStatus.characters.filter(char => char !== characterId);
+    }
+  }
 };

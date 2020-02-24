@@ -3,6 +3,8 @@ const CharacterController = require('./character/characterController');
 const DictionaryController = require('./dictionary/dictionaryController');
 const IssueController = require('./issue/issueController');
 const UserController = require('./user/userController');
+const IssueManager = require("./issue/issueManager");
+const UserAccountManager = require("./user/userAccountManager");
 const bodyParser = require('body-parser');
 const server = express();
 const MongoClient = require('./driver/mongoDriver');
@@ -28,10 +30,12 @@ class App {
 
   #createDataEndpoints = function (server, dbConnection) {
     this.#indexEndpoint(server);
-    new CharacterController(server, dbConnection);
+    const userAccountManager = new UserAccountManager(dbConnection);
+    const issueManager = new IssueManager(userAccountManager, dbConnection);
+    new CharacterController(server, issueManager, userAccountManager, dbConnection);
     new DictionaryController(server, dbConnection);
-    new UserController(server, dbConnection);
-    new IssueController(server);
+    new UserController(server, userAccountManager);
+    new IssueController(server, issueManager);
   };
 
   #startServer = function (server) {

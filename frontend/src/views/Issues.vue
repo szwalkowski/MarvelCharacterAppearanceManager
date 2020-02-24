@@ -6,15 +6,18 @@
       </h4>
       <form class="row">
         <div class="col-sm">
-          <div class="row form-group">
+          <div class="row form-group" v-if="userName">
             <label for="read-dr" class="col-sm-1 pl-sm-0">
-              Read:
+              Status:
             </label>
             <select id="read-dr" class="col-sm-1" v-model="selectedReadStatus">
               <option v-for="status in readStatuses" :key="status">
                 {{ status }}
               </option>
             </select>
+          </div>
+          <div v-else>
+            <p style="color: orange">Please log in to mark issues as read</p>
           </div>
           <div class="row form-group">
             <label class="col-sm-1 pl-sm-0">Focus types:</label>
@@ -83,16 +86,53 @@
       <table class="table table-bordered table-striped table-sm">
         <thead>
           <tr>
+            <th v-if="userName">Read:</th>
             <th>Issue name:</th>
             <th>Publication date:</th>
             <th>Volume:</th>
             <th>Issue no:</th>
             <th>Stories:</th>
-            <th>Read:</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(issue, idx) in issues" :key="idx">
+            <td v-if="userName">
+              <IconLoading v-if="issue.status === 'wait'" />
+              <div v-else class="btn-group">
+                <button
+                  v-if="issue.status === 'read' || issue.status === 'character'"
+                  @click="changeStatus(idx, issue.id, 'clear')"
+                  class="btn btn-primary"
+                >
+                  Unread
+                </button>
+                <template v-else>
+                  <button
+                    @click="changeStatus(idx, issue.id, 'read')"
+                    class="btn btn-primary"
+                  >
+                    Read
+                  </button>
+                  <div class="btn-group">
+                    <button
+                      class="btn btn-primary dropdown-toggle"
+                      data-toggle="dropdown"
+                    />
+                    <div class="dropdown-menu">
+                      <button
+                        class="dropdown-item"
+                        @click="changeStatus(idx, issue.id, 'character')"
+                      >
+                        Mark read for this character
+                      </button>
+                    </div>
+                  </div>
+                </template>
+              </div>
+              <label v-if="issue.readTime" class="small">
+                {{ issue.readTime | timestampToTime }}
+              </label>
+            </td>
             <td>
               <a :href="issue.url">{{ issue.name }}</a>
             </td>
@@ -121,24 +161,6 @@
                 </tbody>
               </table>
             </td>
-            <td>
-              <template v-if="issue.read">
-                <button
-                  class="btn btn-primary btn-sm"
-                  @click="markAsNotRead(idx, issue.id)"
-                >
-                  x
-                </button>
-                <label>{{ issue.read | timestampToTime }}</label>
-              </template>
-              <button
-                class="btn btn-primary btn-sm"
-                v-else
-                @click="markAsRead(idx, issue.id)"
-              >
-                Read!
-              </button>
-            </td>
           </tr>
         </tbody>
       </table>
@@ -146,7 +168,9 @@
   </div>
 </template>
 <script>
+import IconLoading from "@/components/icon/IconLoading";
 import axios from "axios";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
@@ -168,6 +192,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("user", ["userName", "idToken"]),
     issues() {
       if (!this.characterData) {
         return {};
@@ -177,8 +202,8 @@ export default {
       const selectedAppearances = this.selectedAppearances;
       return this.characterData.issues.filter(issue => {
         if (
-          (selectedReadStatus === "Read" && !issue.read) ||
-          (selectedReadStatus === "Not read" && issue.read)
+          (selectedReadStatus === "Read" && !issue.status) ||
+          (selectedReadStatus === "Not read" && issue.status)
         ) {
           return false;
         }
@@ -214,29 +239,31 @@ export default {
     }
   },
   methods: {
-    markAsRead(idx, issueId) {
-      axios
-        .post("markIssueAsRead", {
-          issueId: issueId
-        })
-        .then(response => {
-          this.characterData.issues[idx].read = response.data.readTime;
-        })
-        .catch(error => {
-          console.error(error);
+    changeStatus(idx, issueId, status) {
+      if (this.idToken) {
+        const previousStatus = this.characterData.issues[idx].status;
+        this.characterData.issues[idx].status = "wait";
+        axios
+          .post("changeIssueStatus", {
+            issueId: issueId,
+            status: status,
+            idToken: this.idToken,
+            characterId: this.characterId
+          })
+          .then(response => {
+            this.characterData.issues[idx].status = response.data.status;
+            this.characterData.issues[idx].readTime = response.data.timestamp;
+          })
+          .catch(error => {
+            console.error(error);
+            this.characterData.issues[idx].status = previousStatus;
+          });
+      } else {
+        this.$fire({
+          text: "You are not authorized to do such action",
+          type: "error"
         });
-    },
-    markAsNotRead(idx, issueId) {
-      axios
-        .post("unmarkIssueAsRead", {
-          issueId: issueId
-        })
-        .then(() => {
-          this.characterData.issues[idx].read = null;
-        })
-        .catch(error => {
-          console.error(error);
-        });
+      }
     },
     loadIssuePage() {
       this.characterId = this.$route.query.characterId;
@@ -246,7 +273,10 @@ export default {
       axios
         .get("getAllIssuesForCharacter", {
           params: {
-            characterId: this.characterId
+            characterId: this.characterId,
+            idToken:
+              localStorage.getItem("mcam.idToken") ||
+              localStorage.getItem("mcam.firebase.idToken")
           }
         })
         .then(response => {
@@ -306,6 +336,9 @@ export default {
   beforeRouteUpdate(to, from, next) {
     next();
     this.loadIssuePage();
+  },
+  components: {
+    IconLoading
   }
 };
 </script>

@@ -82,6 +82,10 @@ module.exports = class {
     }
   }
 
+  async findUserByIdTokenAsync(idToken) {
+    return this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken });
+  }
+
   #refreshTokenAsync = async function (user) {
     const refreshResponse = await this.#userFirebaseManager.refreshIdTokenAsync(user.sessionData.refreshToken);
     if (refreshResponse.status === 200 && refreshResponse.data.id_token) {

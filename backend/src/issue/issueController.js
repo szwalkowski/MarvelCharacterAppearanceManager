@@ -1,37 +1,23 @@
-const IssueManager = require('./issueManager');
-
 module.exports = class {
-  #issueManager = new IssueManager();
+  #issueManager;
 
-  constructor(server) {
+  constructor(server, issueManager) {
+    this.#issueManager = issueManager;
     this.#setupEndpoints(server);
   }
 
   #setupEndpoints = function (server) {
-    this.#prepareMarkAsReadEndpoint(server);
-    this.#prepareUnmarkAsReadEndpoint(server);
+    this.#prepareChangeStatusEndpoint(server);
   };
 
-  #prepareMarkAsReadEndpoint = function (server) {
-    server.post("/markIssueAsRead", (req, res) => {
-      this.#issueManager.markIssueAsReadAsync(req.body["issueId"], req.body["characterAlias"], req.body["characterUniverse"]).then(response => {
-        res.end(JSON.stringify({ issueId: req.body["issueId"], readTime: response }));
+  #prepareChangeStatusEndpoint = function (server) {
+    server.post("/changeIssueStatus", (req, res) => {
+      this.#issueManager.changeIssueStatusAsync(req.body["issueId"], req.body["status"], req.body["idToken"], req.body["characterId"]).then(response => {
+        res.end(JSON.stringify(response));
       }, reason => {
         console.error(reason);
         res.status(500);
-        res.end("Error on marking as read an issue");
-      });
-    });
-  };
-
-  #prepareUnmarkAsReadEndpoint = function (server) {
-    server.post("/unmarkIssueAsRead", (req, res) => {
-      this.#issueManager.markIssueAsNotReadAsync(req.body["issueId"], req.body["characterAlias"], req.body["characterUniverse"]).then(() => {
-        res.end(JSON.stringify({ issueId: req.body["issueId"] }));
-      }, reason => {
-        console.error(reason);
-        res.status(500);
-        res.end("Error on marking as read an issue");
+        res.end("Error on changing status of an issue");
       });
     });
   };

@@ -6,18 +6,18 @@ const DictionaryTranslator = require("../dictionary/dictionaryTranslator");
 module.exports = class {
   #dictionaryTranslator = new DictionaryTranslator();
 
-  constructor(server, dbConnection) {
+  constructor(server, issueManager, userAccountManager, dbConnection) {
     const characterManager = new CharacterManager(dbConnection);
-    const characterImporter = new CharacterImporter(dbConnection);
+    const characterImporter = new CharacterImporter(issueManager, dbConnection);
     const dictionaryManager = new DictionaryManager(dbConnection);
-    this.#createCharacterEndpoints(server, dictionaryManager, characterManager, characterImporter);
+    this.#createCharacterEndpoints(server, dictionaryManager, characterManager, characterImporter, userAccountManager);
   };
 
-  #createCharacterEndpoints = function (server, dictionaryManager, characterManager, characterImporter) {
+  #createCharacterEndpoints = function (server, dictionaryManager, characterManager, characterImporter, userAccountManager) {
     this.#prepareCharacterFromWikiPage(server, characterImporter);
     this.#prepareCharacterConfirmAction(server, characterImporter);
     this.#prepareGetAllCharactersAliases(server, characterManager);
-    this.#prepareGetAllIssuesForCharacter(server, dictionaryManager, characterManager);
+    this.#prepareGetAllIssuesForCharacter(server, dictionaryManager, characterManager, userAccountManager);
   };
 
   #prepareCharacterFromWikiPage = function (server, characterImporter) {
@@ -63,39 +63,46 @@ module.exports = class {
     });
   };
 
-  #prepareGetAllIssuesForCharacter = function (server, dictionaryManager, characterManager) {
+  #prepareGetAllIssuesForCharacter = function (server, dictionaryManager, characterManager, userAccountManager) {
     server.get("/getAllIssuesForCharacter", async (req, res) => {
       const characterDataPromise = characterManager.loadIssuesAndAppearancesAsync(req.query.characterId);
       const appearanceDictionaryPromise = dictionaryManager.getDictionaryByIdAsync("appearanceType");
       const focusDictionaryPromise = dictionaryManager.getDictionaryByIdAsync("focusType");
-      const data = await characterDataPromise;
-      await Promise.all([
-        appearanceDictionaryPromise.then(dictionary => {
-          this.#translateAllAppearanceTypes(data, dictionary.dictionary);
-        }),
-        focusDictionaryPromise.then(dictionary => {
-          this.#translateAllFocusTypes(data, dictionary.dictionary);
+      const userCharacterReadsPromise = req.query.idToken && userAccountManager.findUserByIdTokenAsync(req.query.idToken);
+      await Promise.all([appearanceDictionaryPromise, focusDictionaryPromise, characterDataPromise, userCharacterReadsPromise])
+        .then(values => {
+          const appearanceDictionary = values[0].dictionary;
+          const focusDictionary = values[1].dictionary;
+          const data = values[2];
+          const userCharacterReads = values[3].issuesStatuses;
+
+          data.setOfAppearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, appearanceDictionary, true);
+          data.setOfFocusTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfFocusTypes, focusDictionary, true);
+
+          data.characterData.issues.forEach(issue => {
+            issue.appearances.forEach(appearance => {
+              appearance.appearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, appearanceDictionary, true);
+              appearance.focusType = this.#dictionaryTranslator.translateUsingDictionary(appearance.focusType, focusDictionary, true);
+            });
+            const issueStatus = userCharacterReads.find(status => status.issueId === issue.id);
+            if (issueStatus &&
+              (issueStatus.status === "read" ||
+                (issueStatus.status === "character" && issueStatus.characters.find(char => char === data.characterData._id)))
+            ) {
+              issue.status = issueStatus.status;
+              issue.readTime = issueStatus.timestamp;
+            } else {
+              issue.status = null;
+              issue.readTime = null;
+            }
+          });
+          res.end(JSON.stringify(data));
         })
-      ]);
-      res.end(JSON.stringify(data));
-    });
-  };
-
-  #translateAllAppearanceTypes = function (data, dictionary) {
-    data.setOfAppearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, dictionary, true);
-    data.characterData.issues.forEach(issue => {
-      issue.appearances.forEach(appearance => {
-        appearance.appearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, dictionary, true);
-      });
-    });
-  };
-
-  #translateAllFocusTypes = function (data, dictionary) {
-    data.setOfFocusTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfFocusTypes, dictionary, true);
-    data.characterData.issues.forEach(issue => {
-      issue.appearances.forEach(appearance => {
-        appearance.focusType = this.#dictionaryTranslator.translateUsingDictionary(appearance.focusType, dictionary, true);
-      });
+        .catch(err => {
+          console.error(err);
+          res.status(500);
+          res.end();
+        });
     });
   };
 };

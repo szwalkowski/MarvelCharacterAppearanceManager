@@ -1,12 +1,11 @@
-const UserAccountManager = require("./userAccountManager");
 const UserValidator = require("./userValidator");
 
 module.exports = class {
   #userValidator;
 
-  constructor(server, dbConnection) {
+  constructor(server, userAccountManager) {
     this.#userValidator = new UserValidator();
-    this.#createUserEndpoints(server, new UserAccountManager(dbConnection));
+    this.#createUserEndpoints(server, userAccountManager);
   };
 
   #createUserEndpoints = function (server, userAccountManager) {

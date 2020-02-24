@@ -16,6 +16,9 @@ const getters = {
   userName: state => {
     return state.userData && state.userData.userName;
   },
+  idToken: state => {
+    return state.userData && state.userData.idToken;
+  },
   isEmailPassword: state => {
     return state.userData && state.userData.isEmailPassword;
   }
