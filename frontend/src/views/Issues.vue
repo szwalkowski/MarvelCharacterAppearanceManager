@@ -200,10 +200,15 @@ export default {
       const selectedReadStatus = this.selectedReadStatus;
       const selectedFocusTypes = this.selectedFocusTypes;
       const selectedAppearances = this.selectedAppearances;
+      debugger;
       return this.characterData.issues.filter(issue => {
         if (
-          (selectedReadStatus === "Read" && !issue.status) ||
-          (selectedReadStatus === "Not read" && issue.status)
+          (selectedReadStatus === "Read" &&
+            (!issue.status || issue.status === "clear")) ||
+          (selectedReadStatus === "Not read" &&
+            issue.status &&
+            issue.status !== "wait" &&
+            issue.status !== "clear")
         ) {
           return false;
         }
@@ -241,8 +246,9 @@ export default {
   methods: {
     changeStatus(idx, issueId, status) {
       if (this.idToken) {
-        const previousStatus = this.characterData.issues[idx].status;
-        this.characterData.issues[idx].status = "wait";
+        const issues = this.issues;
+        const previousStatus = issues[idx].status;
+        issues[idx].status = "wait";
         axios
           .post("changeIssueStatus", {
             issueId: issueId,
@@ -251,12 +257,13 @@ export default {
             characterId: this.characterId
           })
           .then(response => {
-            this.characterData.issues[idx].status = response.data.status;
-            this.characterData.issues[idx].readTime = response.data.timestamp;
+            console.log(response.data);
+            issues[idx].status = response.data.status;
+            issues[idx].readTime = response.data.timestamp;
           })
           .catch(error => {
             console.error(error);
-            this.characterData.issues[idx].status = previousStatus;
+            issues[idx].status = previousStatus;
           });
       } else {
         this.$fire({

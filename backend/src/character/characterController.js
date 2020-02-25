@@ -74,7 +74,7 @@ module.exports = class {
           const appearanceDictionary = values[0].dictionary;
           const focusDictionary = values[1].dictionary;
           const data = values[2];
-          const userCharacterReads = values[3].issuesStatuses;
+          const userCharacterReads = values[3] && values[3].issuesStatuses;
 
           data.setOfAppearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, appearanceDictionary, true);
           data.setOfFocusTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfFocusTypes, focusDictionary, true);
@@ -84,7 +84,7 @@ module.exports = class {
               appearance.appearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, appearanceDictionary, true);
               appearance.focusType = this.#dictionaryTranslator.translateUsingDictionary(appearance.focusType, focusDictionary, true);
             });
-            const issueStatus = userCharacterReads.find(status => status.issueId === issue.id);
+            const issueStatus = userCharacterReads && userCharacterReads.find(status => status.issueId === issue.id);
             if (issueStatus &&
               (issueStatus.status === "read" ||
                 (issueStatus.status === "character" && issueStatus.characters.find(char => char === data.characterData._id)))
