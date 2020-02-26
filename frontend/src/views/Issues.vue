@@ -181,7 +181,7 @@ export default {
       readStatuses: ["All", "Read", "Not read"],
       focusTypes: [],
       selectedFocusTypes: [],
-      selectedReadStatus: "All",
+      selectedReadStatus: "Not read",
       characterData: undefined,
       appearanceTypes: [],
       selectedAppearances: [],
