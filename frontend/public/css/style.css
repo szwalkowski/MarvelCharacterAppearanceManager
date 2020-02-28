@@ -22,6 +22,14 @@ input[type="checkbox"]:hover {
     border-right: 1px solid #979798;
 }
 
+.v--modal-overlay {
+    background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.v--modal {
+    background: #171717 !important;
+}
+
 .swal2-popup {
     background-color: #464646 !important;
 }

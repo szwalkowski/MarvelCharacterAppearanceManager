@@ -8,6 +8,7 @@ module.exports = class {
 
   #setupEndpoints = function (server) {
     this.#prepareChangeStatusEndpoint(server);
+    this.#provideGetIssueDetails(server);
   };
 
   #prepareChangeStatusEndpoint = function (server) {
@@ -19,6 +20,13 @@ module.exports = class {
         res.status(500);
         res.end("Error on changing status of an issue");
       });
+    });
+  };
+
+  #provideGetIssueDetails = function (server) {
+    server.get("/issueDetails", async (req, res) => {
+      const issue = await this.#issueManager.getIssueAsync(req.query.issueId);
+      res.end(JSON.stringify(issue));
     });
   };
 };

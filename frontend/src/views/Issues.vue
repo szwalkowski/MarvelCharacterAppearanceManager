@@ -134,7 +134,13 @@
               </label>
             </td>
             <td>
-              <a :href="issue.url">{{ issue.name }}</a>
+              <a
+                type="button"
+                class="text-info"
+                @click="showIssueDetails(issue.id)"
+              >
+                {{ issue.name }}
+              </a>
             </td>
             <td>{{ issue.publishDateTimestamp | timestampToDate }}</td>
             <td>{{ issue.volume }}</td>
@@ -169,6 +175,7 @@
 </template>
 <script>
 import IconLoading from "@/components/icon/IconLoading";
+import IssuePreview from "@/components/issue/IssuePreview";
 import axios from "axios";
 import { mapGetters } from "vuex";
 
@@ -200,7 +207,6 @@ export default {
       const selectedReadStatus = this.selectedReadStatus;
       const selectedFocusTypes = this.selectedFocusTypes;
       const selectedAppearances = this.selectedAppearances;
-      debugger;
       return this.characterData.issues.filter(issue => {
         if (
           (selectedReadStatus === "Read" &&
@@ -297,6 +303,13 @@ export default {
         .catch(error => {
           console.error(error);
         });
+    },
+    showIssueDetails(issueId) {
+      this.$modal.show(
+        IssuePreview,
+        { issueId },
+        { height: "auto", scrollable: true, width: 800 }
+      );
     }
   },
   filters: {

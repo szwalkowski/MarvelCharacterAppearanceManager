@@ -48,6 +48,10 @@ module.exports = class {
     return issueStatus;
   }
 
+  async getIssueAsync(issueId) {
+    return this.#dbConnection.findOneAsync("issues", { _id: issueId });
+  }
+
   #createIssue = function (issue) {
     return {
       _id: issue.id,
