@@ -42,12 +42,11 @@ module.exports = class {
 
   getVolume() {
     const separatedWords = this.fullName.split(" ");
-    return parseInt(separatedWords[separatedWords.length - 2]);
+    return parseInt(separatedWords[separatedWords.indexOf("Vol") + 1]);
   };
 
   getIssueNo() {
-    const separatedWords = this.fullName.split(" ");
-    return separatedWords[separatedWords.length - 1];
+    return this.fullName.split(/ Vol [0-9]+ /)[1];
   };
 
   getPublishedDate() {

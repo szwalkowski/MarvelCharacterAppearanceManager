@@ -262,4 +262,20 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(issue.getAppearances()[1], undefined);
   });
 
+  it("Some problems for appearances cause of longer volume and issue string with spaces", function () {
+    const filePath = `${__dirname}/resources/issues/Free_Comic_Book_Day_Vol_2016_(Captain_America)edit.html`;
+    const page = fs.readFileSync(filePath, "utf-8");
+    const pageWindow = new JSDOM(page).window;
+    const issue = new IssuePageModel(pageWindow, "Steven Rogers (Earth-61311)");
+    assert.equal(issue.isIssue, true);
+    assert.equal(issue.getName(), "Free Comic Book Day");
+    assert.equal(issue.getVolume(), 2016);
+    assert.equal(issue.getIssueNo(), "(Captain America)");
+    assert.equal(issue.getPublishedDate(), new Date(2016, 4).getTime());
+    assert.equal(issue.getAppearances()[0].title, "");
+    assert.equal(issue.getAppearances()[0].focusType, "Featured Characters");
+    assert.equal(issue.getAppearances()[0].typesOfAppearance[0], "Flashback");
+    assert.equal(issue.getAppearances()[1], undefined);
+  });
+
 });
