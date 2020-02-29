@@ -35,10 +35,9 @@ module.exports = class {
         if (issueStatus.status === "read") {
           issueDetails.read = true;
         } else if (issueStatus.status === "character") {
+          issueDetails.read = false;
           issueDetails.appearances.forEach(appearance => {
-            if (issueStatus.characters.indexOf(appearance.characterId) >= 0) {
-              appearance.read = true;
-            }
+            appearance.read = issueStatus.characters.indexOf(appearance.characterId) >= 0;
           });
         }
       }

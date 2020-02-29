@@ -33,8 +33,21 @@
           v-for="character in characters.characters"
           :key="character.characterId"
         >
-          <div v-if="character.read" class="pt-sm-1">
-            <p class="text-info">READ</p>
+          <div v-if="userName && !issue.read">
+            <button
+              v-if="character.read"
+              @click="changeStatus('clear', character.characterId)"
+              class="btn btn-danger btn-sm"
+            >
+              UNREAD
+            </button>
+            <button
+              v-else
+              @click="changeStatus('character', character.characterId)"
+              class="btn btn-primary btn-sm"
+            >
+              READ
+            </button>
           </div>
           <h4 class="col-sm-6">
             <a href="#" @click="navigateToCharacter(character.characterId)">
@@ -46,10 +59,23 @@
         </div>
       </div>
     </div>
+    <div v-if="userName" class="modal-footer pr-sm-5">
+      <button
+        v-if="issue.read"
+        @click="changeStatus('clear')"
+        class="btn btn-sm btn-dark"
+      >
+        UNREAD ISSUE
+      </button>
+      <button v-else class="btn btn-sm btn-dark" @click="changeStatus('read')">
+        READ ISSUE
+      </button>
+    </div>
   </div>
 </template>
 <script>
 import axios from "axios";
+import { mapGetters } from "vuex";
 
 export default {
   data() {
@@ -59,6 +85,9 @@ export default {
     };
   },
   props: ["issueId"],
+  computed: {
+    ...mapGetters("user", ["userName", "idToken"]),
+  },
   methods: {
     updateStories() {
       const stories = {};
@@ -90,6 +119,31 @@ export default {
         this.$router.push(newRoute);
       }
       this.$emit("close");
+    },
+    changeStatus(status, characterId) {
+      axios
+        .post("changeIssueStatus", {
+          issueId: this.issue._id,
+          status: status,
+          idToken: this.idToken,
+          characterId
+        })
+        .then(response => {
+          if (response.data.status === "read") {
+            this.issue.read = true;
+          } else if (response.data.status === "clear") {
+            this.issue.read = false;
+          }
+          for (const story in this.stories) {
+            this.stories[story].characters.forEach(character => {
+              character.read = response.data.characters.indexOf(character.characterId) >= 0;
+            });
+          }
+          this.updateStories();
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
   },
   filters: {

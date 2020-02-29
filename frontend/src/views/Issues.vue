@@ -263,7 +263,6 @@ export default {
             characterId: this.characterId
           })
           .then(response => {
-            console.log(response.data);
             issues[idx].status = response.data.status;
             issues[idx].readTime = response.data.timestamp;
           })

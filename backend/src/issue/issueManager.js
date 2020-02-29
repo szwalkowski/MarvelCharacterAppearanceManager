@@ -42,6 +42,8 @@ module.exports = class {
     }
     if (!issueStatus.characters.length) {
       user.issuesStatuses = user.issuesStatuses.filter(iStatus => iStatus.issueId !== issueId);
+    } else if (newStatus === "clear") {
+      issueStatus.status = "character";
     }
     await this.#dbConnection.saveAsync("users", user._id, user);
     issueStatus.status = newStatus;
@@ -56,7 +58,7 @@ module.exports = class {
     return this.#dbConnection.findAsync(
       "users",
       { "sessionData.idToken": idToken, "issuesStatuses.issueId": issueId },
-      {"issuesStatuses.$": 1});
+      { "issuesStatuses.$": 1 });
   }
 
   #createIssue = function (issue) {
