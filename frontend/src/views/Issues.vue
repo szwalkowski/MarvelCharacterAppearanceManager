@@ -308,7 +308,7 @@ export default {
       this.$modal.show(
         IssuePreview,
         { issueId },
-        { height: "auto", scrollable: true, width: 800 }
+        { height: "auto", scrollable: true, width: 1000 }
       );
     }
   },

@@ -1,19 +1,17 @@
 module.exports = class {
-  #issueManager;
 
   constructor(server, issueManager) {
-    this.#issueManager = issueManager;
-    this.#setupEndpoints(server);
+    this.#setupEndpoints(server, issueManager);
   }
 
-  #setupEndpoints = function (server) {
-    this.#prepareChangeStatusEndpoint(server);
-    this.#provideGetIssueDetails(server);
+  #setupEndpoints = function (server, issueManager) {
+    this.#prepareChangeStatusEndpoint(server, issueManager);
+    this.#provideGetIssueDetails(server, issueManager);
   };
 
-  #prepareChangeStatusEndpoint = function (server) {
+  #prepareChangeStatusEndpoint = function (server, issueManager) {
     server.post("/changeIssueStatus", (req, res) => {
-      this.#issueManager.changeIssueStatusAsync(req.body["issueId"], req.body["status"], req.body["idToken"], req.body["characterId"]).then(response => {
+      issueManager.changeIssueStatusAsync(req.body["issueId"], req.body["status"], req.body["idToken"], req.body["characterId"]).then(response => {
         res.end(JSON.stringify(response));
       }, reason => {
         console.error(reason);
@@ -23,10 +21,28 @@ module.exports = class {
     });
   };
 
-  #provideGetIssueDetails = function (server) {
+  #provideGetIssueDetails = function (server, issueManager) {
     server.get("/issueDetails", async (req, res) => {
-      const issue = await this.#issueManager.getIssueAsync(req.query.issueId);
-      res.end(JSON.stringify(issue));
+      const issuePromise = issueManager.getIssueAsync(req.query.issueId);
+      let readStatus;
+      if (req.query.idToken) {
+        const iterator = await issueManager.getIssueStatusForUserAsync(req.query.issueId, req.query.idToken);
+        readStatus = (await iterator.toArray())[0];
+      }
+      const issueDetails = await issuePromise;
+      if (readStatus && readStatus.issuesStatuses[0]) {
+        const issueStatus = readStatus.issuesStatuses[0];
+        if (issueStatus.status === "read") {
+          issueDetails.read = true;
+        } else if (issueStatus.status === "character") {
+          issueDetails.appearances.forEach(appearance => {
+            if (issueStatus.characters.indexOf(appearance.characterId) >= 0) {
+              appearance.read = true;
+            }
+          });
+        }
+      }
+      res.end(JSON.stringify(await issueDetails));
     });
   };
 };

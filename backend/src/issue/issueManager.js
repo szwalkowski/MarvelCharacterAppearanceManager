@@ -52,6 +52,13 @@ module.exports = class {
     return this.#dbConnection.findOneAsync("issues", { _id: issueId });
   }
 
+  async getIssueStatusForUserAsync(issueId, idToken) {
+    return this.#dbConnection.findAsync(
+      "users",
+      { "sessionData.idToken": idToken, "issuesStatuses.issueId": issueId },
+      {"issuesStatuses.$": 1});
+  }
+
   #createIssue = function (issue) {
     return {
       _id: issue.id,
