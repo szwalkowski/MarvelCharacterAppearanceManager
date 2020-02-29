@@ -102,7 +102,7 @@
                 <button
                   v-if="issue.status === 'read' || issue.status === 'character'"
                   @click="changeStatus(idx, issue.id, 'clear')"
-                  class="btn btn-primary"
+                  class="btn btn-danger"
                 >
                   Unread
                 </button>
@@ -129,9 +129,6 @@
                   </div>
                 </template>
               </div>
-              <label v-if="issue.readTime" class="small">
-                {{ issue.readTime | timestampToTime }}
-              </label>
             </td>
             <td>
               <a
@@ -264,7 +261,6 @@ export default {
           })
           .then(response => {
             issues[idx].status = response.data.status;
-            issues[idx].readTime = response.data.timestamp;
           })
           .catch(error => {
             console.error(error);
@@ -320,33 +316,6 @@ export default {
         month = "0" + month;
       }
       return [year, month].join("-");
-    },
-    timestampToTime(timestamp) {
-      const date = new Date(timestamp);
-      const yyyy = date.getFullYear();
-      let mm = date.getMonth() + 1;
-      if (mm < 10) {
-        mm = "0" + mm;
-      }
-      let dd = date.getDate();
-      if (dd < 10) {
-        dd = "0" + dd;
-      }
-      let hours = date.getHours();
-      if (hours < 10) {
-        hours = "0" + hours;
-      }
-      let minutes = date.getMinutes();
-      if (minutes < 10) {
-        minutes = "0" + minutes;
-      }
-      let seconds = date.getSeconds();
-      if (seconds < 10) {
-        seconds = "0" + seconds;
-      }
-      return (
-        yyyy + "-" + mm + "-" + dd + " " + hours + ":" + minutes + ":" + seconds
-      );
     }
   },
   created() {

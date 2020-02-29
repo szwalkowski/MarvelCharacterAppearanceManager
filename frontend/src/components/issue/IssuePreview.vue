@@ -39,14 +39,14 @@
               @click="changeStatus('clear', character.characterId)"
               class="btn btn-danger btn-sm"
             >
-              UNREAD
+              Unread
             </button>
             <button
               v-else
               @click="changeStatus('character', character.characterId)"
               class="btn btn-primary btn-sm"
             >
-              READ
+              Read
             </button>
           </div>
           <h4 class="col-sm-6">
@@ -65,10 +65,10 @@
         @click="changeStatus('clear')"
         class="btn btn-sm btn-dark"
       >
-        UNREAD ISSUE
+        Unread issue
       </button>
       <button v-else class="btn btn-sm btn-dark" @click="changeStatus('read')">
-        READ ISSUE
+        Read issue
       </button>
     </div>
   </div>
@@ -86,7 +86,7 @@ export default {
   },
   props: ["issueId"],
   computed: {
-    ...mapGetters("user", ["userName", "idToken"]),
+    ...mapGetters("user", ["userName", "idToken"])
   },
   methods: {
     updateStories() {
@@ -136,7 +136,8 @@ export default {
           }
           for (const story in this.stories) {
             this.stories[story].characters.forEach(character => {
-              character.read = response.data.characters.indexOf(character.characterId) >= 0;
+              character.read =
+                response.data.characters.indexOf(character.characterId) >= 0;
             });
           }
           this.updateStories();

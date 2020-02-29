@@ -90,10 +90,8 @@ module.exports = class {
                 (issueStatus.status === "character" && issueStatus.characters.find(char => char === data.characterData._id)))
             ) {
               issue.status = issueStatus.status;
-              issue.readTime = issueStatus.timestamp;
             } else {
               issue.status = null;
-              issue.readTime = null;
             }
           });
           res.end(JSON.stringify(data));

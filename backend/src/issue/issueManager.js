@@ -34,11 +34,8 @@ module.exports = class {
     if (characterId) {
       this.#resolveCharacterId(issueStatus, newStatus, characterId);
     }
-    if (newStatus === "clear") {
-      issueStatus.timestamp = null;
-    } else {
+    if (newStatus !== "clear") {
       issueStatus.status = newStatus;
-      issueStatus.timestamp = new Date().getTime();
     }
     if (!issueStatus.characters.length) {
       user.issuesStatuses = user.issuesStatuses.filter(iStatus => iStatus.issueId !== issueId);
