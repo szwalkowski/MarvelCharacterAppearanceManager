@@ -30,7 +30,9 @@
         :key="character.characterId"
       >
         <h4 class="col-sm-6">
-          {{ character.characterAlias }} ({{ character.characterUniverse }})
+          <a href="#" @click="navigateToCharacter(character.characterId)">
+            {{ character.characterAlias }} ({{ character.characterUniverse }})
+          </a>
         </h4>
         <p class="col-sm-auto">{{ character.characterFocusType }}</p>
         <p class="col-sm-auto">{{ character.characterAppearanceTypes }}</p>
@@ -72,6 +74,13 @@ export default {
         });
       });
       return stories;
+    },
+    navigateToCharacter(characterId) {
+      const newRoute = `/issues?characterId=${characterId}`;
+      if (decodeURIComponent(this.$route.fullPath) !== newRoute) {
+        this.$router.push(newRoute);
+      }
+      this.$emit("close");
     }
   },
   filters: {
