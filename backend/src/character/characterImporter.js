@@ -77,6 +77,13 @@ module.exports = class {
   #mergeListsAndSortAsync = async function (minorAppearanceLinks, appearanceLinks) {
     const allAppearanceLinks = (await minorAppearanceLinks).concat(await appearanceLinks);
     allAppearanceLinks.sort();
+    let appearanceCount = allAppearanceLinks.length;
+    for (let i = 0; i < allAppearanceLinks.length - 1; i++) {
+      if (allAppearanceLinks[i] === allAppearanceLinks[i + 1]) {
+        allAppearanceLinks.splice(i, 1);
+        appearanceCount--;
+      }
+    }
     return allAppearanceLinks;
   };
 
