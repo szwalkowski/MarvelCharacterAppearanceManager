@@ -114,7 +114,7 @@ module.exports = class {
 
   #resolveFocusType = function (allAppearings, ordinal, line) {
     const appearing = this.#prepareAppearing(allAppearings, ordinal);
-    appearing.focusType = line.substring(3, line.length - 4);
+    appearing.focusType = line.substring(3, line.length - 4).trim();
   };
 
   #prepareAppearing = function (allAppearings, idx) {
