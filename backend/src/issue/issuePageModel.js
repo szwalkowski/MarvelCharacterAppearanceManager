@@ -24,7 +24,7 @@ module.exports = class {
     this.#jquery = new JQuery(issuePageWindow);
     const allIssueDataElement = this.#jquery.find(SelectorWithAllIssueData)[0];
     if (allIssueDataElement) {
-      this.id = issuePageWindow.window.document.location.pathname.replace("/wiki/", "");
+      this.id = decodeURI(issuePageWindow.window.document.location.pathname.replace("/wiki/", ""));
       let issueTextInfo = allIssueDataElement.innerHTML.split("\n");
       this.isIssue = issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
       if (this.isIssue) {

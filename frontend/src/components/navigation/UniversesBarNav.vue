@@ -17,7 +17,7 @@
           >
             {{ universe.universe }}
           </button>
-          <br :key="'_' + universe" />
+          <br :key="'_' + universe.universe" />
         </template>
       </ol>
     </form>

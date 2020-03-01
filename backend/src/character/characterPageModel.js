@@ -14,7 +14,7 @@ module.exports = class {
 
   constructor(baseUrl, characterPageWindow) {
     this.#baseUrl = baseUrl;
-    this.#id = characterPageWindow.location.pathname.replace("/wiki/", "");
+    this.#id = decodeURI(characterPageWindow.location.pathname.replace("/wiki/", ""));
     this.#jQuery = new JQuery(characterPageWindow);
   }
 
