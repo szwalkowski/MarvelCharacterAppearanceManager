@@ -49,7 +49,7 @@ module.exports = class {
     }
     const aliasesElement = this.#findElementBySelector(aliasesSelector);
     if (!aliasesElement) {
-      return getRealName();
+      return this.getRealName();
     }
     if (aliasesElement.children[0]) {
       return aliasesElement.children[0].innerHTML.trim();
