@@ -17,7 +17,7 @@ module.exports = class {
         existingCharacterWithAliasIdx = characters.length;
         characters.push({ alias: character.alias, universes: [] });
       }
-      characters[existingCharacterWithAliasIdx].universes.push({characterId: character._id, universe: character.universe});
+      characters[existingCharacterWithAliasIdx].universes.push({ characterId: character._id, universe: character.universe });
     });
     return characters;
   };
@@ -42,17 +42,18 @@ module.exports = class {
         setOfFocusTypes.add(appearanceInIssue.focusType);
       });
     });
+    characterData.issues.sort((a, b) => this.#compareIssues(a, b));
     return { characterData, setOfAppearanceTypes: [...setOfAppearanceTypes].sort(), setOfFocusTypes: [...setOfFocusTypes].sort() };
   };
 
   #compareIssues = function (a, b) {
     if (a.publishDateTimestamp !== b.publishDateTimestamp) {
       return a.publishDateTimestamp > b.publishDateTimestamp ? 1 : -1
-    } else if (a.name === b.name) {
-      return 0;
     } else if (a.volume !== b.volume) {
       return a.volume > b.volume ? 1 : -1
+    } else if (a.issueNo !== b.issueNo) {
+      return a.issueNo > b.issueNo ? 1 : -1;
     }
-    return a.issueNo > b.issueNo ? 1 : -1
+    return 0;
   };
 };
