@@ -6,6 +6,7 @@ const RegexStoryTitleTag = /^\|[ ]+StoryTitle/;
 const RegexAppearingTag = /^\|[ ]+Appearing/;
 const RegexYearTag = /^\|[ ]+Year/;
 const RegexMonthTag = /^\|[ ]+Month/;
+const RegexImageTag = /^\|[ ]+Image /;
 const RegexForAppearanceTypeOptionOne = /[{\\|][a-zA-Z\d ']+}}/g;
 const RegexForAppearanceTypeOptionTwo = /{[a-zA-Z\d ']+\|/;
 const InvalidTypeAppearances = ["A", "APN", "G", "CHRONOLOGY", "CHRONOFB"];
@@ -70,6 +71,13 @@ module.exports = class {
     return this.appearances;
   };
 
+  getImage() {
+    if (this.image) {
+      return encodeURI(this.image.replace(/ /g, "_"));
+    }
+    return encodeURI(`${this.id}.jpg`);
+  };
+
   #readDataFromText = function (issueTextInfo, characterId) {
     let allAppearings = [];
     let appearingNumber = -1;
@@ -100,6 +108,8 @@ module.exports = class {
         this.year = this.#getValueAfterEqualsSign(line);
       } else if (RegexMonthTag.exec(line)) {
         this.month = this.#getValueAfterEqualsSign(line);
+      } else if (RegexImageTag.exec(line)) {
+        this.image = this.#getValueAfterEqualsSign(line);
       }
     }
     allAppearings = this.#cleanupEmptyAppearings(allAppearings);

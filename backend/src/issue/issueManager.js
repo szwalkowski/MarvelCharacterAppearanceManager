@@ -65,6 +65,7 @@ module.exports = class {
       url: issue.url,
       volume: issue.volume,
       issueNo: issue.issueNo,
+      image: issue.image,
       publishDateTimestamp: issue.publishDateTimestamp,
       appearances: []
     };

@@ -55,11 +55,11 @@ module.exports = class {
     }
 
     const downloadingQueue = Async.queue(downloadWindowFromUrl, 7);
-    downloadingQueue.drain(() => this.#saveCharacterToFile(characterAndIssues));
+    downloadingQueue.drain(() => this.#saveCharacterToDb(characterAndIssues));
     downloadingQueue.push(mergedAppearanceLinks);
   };
 
-  #saveCharacterToFile = function (characterAndIssues) {
+  #saveCharacterToDb = function (characterAndIssues) {
     const saveCharacterPromise = this.#characterManager.saveCharacterAsync(characterAndIssues);
     const issueUpdatesPromises = [];
     characterAndIssues.issues.forEach(issue => {
@@ -97,6 +97,6 @@ module.exports = class {
       });
     });
     return new IssueModel(issuePageModel.id, issuePageModel.url, issuePageModel.getName(), issuePageModel.getVolume(), issuePageModel.getIssueNo(),
-      issuePageModel.getPublishedDate(), appearancesInIssue);
+      issuePageModel.getPublishedDate(), issuePageModel.getImage(), appearancesInIssue);
   }
 };

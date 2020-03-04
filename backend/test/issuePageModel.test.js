@@ -14,8 +14,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(rhinoPage.getName(), "Amazing Spider-Man");
     assert.equal(rhinoPage.getVolume(), 1);
     assert.equal(rhinoPage.getIssueNo(), 41);
-    //assert.equal(rhinoPage.getImage(),
-    // "https://vignette.wikia.nocookie.net/marveldatabase/images/d/d0/Amazing_Spider-Man_Vol_1_41.jpg/revision/latest/scale-to-width-down/300?cb=20171229055342");
+    assert.equal(rhinoPage.getImage(), "Amazing_Spider-Man_Vol_1_41.jpg");
     assert.equal(rhinoPage.getPublishedDate(), new Date(1966, 9).getTime());
     assert.equal(rhinoPage.getAppearances()[0].title, "The Horns of the Rhino!");
     assert.equal(rhinoPage.getAppearances()[0].focusType, "Antagonists");
@@ -32,6 +31,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(rhinoPage.getName(), "Unbeatable Squirrel Girl");
     assert.equal(rhinoPage.getVolume(), 2);
     assert.equal(rhinoPage.getIssueNo(), 49);
+    assert.equal(rhinoPage.getImage(), "Unbeatable_Squirrel_Girl_Vol_2_49.jpg");
     assert.equal(rhinoPage.getPublishedDate(), new Date(2019, 11).getTime());
     assert.equal(rhinoPage.getAppearances()[0].title, "");
     assert.equal(rhinoPage.getAppearances()[0].focusType, "Supporting Characters");
@@ -56,6 +56,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(spiderIssue.getName(), "The Spectacular Spider-Man");
     assert.equal(spiderIssue.getVolume(), 1);
     assert.equal(spiderIssue.getIssueNo(), 210);
+    assert.equal(spiderIssue.getImage(), "The_Spectacular_Spider-Man_Vol_1_210.jpg");
     assert.equal(spiderIssue.getPublishedDate(), new Date(1994, 2).getTime());
     assert.equal(spiderIssue.getAppearances()[0].title, "Truth and Consequences");
     assert.equal(spiderIssue.getAppearances()[0].focusType, "Featured Characters");
@@ -72,6 +73,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(spiderIssue.getName(), "Silver Sable and the Wild Pack");
     assert.equal(spiderIssue.getVolume(), 1);
     assert.equal(spiderIssue.getIssueNo(), 18);
+    assert.equal(spiderIssue.getImage(), "Silver_Sable_and_the_Wild_Pack_Vol_1_18.jpg");
     assert.equal(spiderIssue.getPublishedDate(), new Date(1993, 10).getTime());
     assert.equal(spiderIssue.getAppearances()[0].title, "Recouping Losses");
     assert.equal(spiderIssue.getAppearances()[0].focusType, "Featured Characters");
@@ -90,6 +92,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(maryJaneIssue.getName(), "Amazing Mary Jane");
     assert.equal(maryJaneIssue.getVolume(), 1);
     assert.equal(maryJaneIssue.getIssueNo(), 1);
+    assert.equal(maryJaneIssue.getImage(), "Amazing_Mary_Jane_Vol_1_1.jpg");
     assert.equal(maryJaneIssue.getPublishedDate(), new Date(2019, 11).getTime());
     assert.equal(maryJaneIssue.getAppearances()[0].title, "");
     assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Other Characters");
@@ -106,6 +109,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(maryJaneIssue.getName(), "Official Handbook of the Marvel Universe");
     assert.equal(maryJaneIssue.getVolume(), 2);
     assert.equal(maryJaneIssue.getIssueNo(), 12);
+    assert.equal(maryJaneIssue.getImage(), "Official_Handbook_of_the_Marvel_Universe_Vol_2_12.jpg");
     assert.equal(maryJaneIssue.getPublishedDate(), new Date(1986, 10).getTime());
     assert.equal(maryJaneIssue.getAppearances()[0].title, undefined);
     assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Featured Characters");
@@ -122,6 +126,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(maryJaneIssue.getName(), "Marvel Tsum Tsum");
     assert.equal(maryJaneIssue.getVolume(), 1);
     assert.equal(maryJaneIssue.getIssueNo(), 2);
+    assert.equal(maryJaneIssue.getImage(), "Marvel_Tsum_Tsum_Vol_1_2.jpg");
     assert.equal(maryJaneIssue.getPublishedDate(), new Date(2016, 10).getTime());
     assert.equal(maryJaneIssue.getAppearances()[0].title, "Part 2: The Tsum is Off the Rose!");
     assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Other Characters");
@@ -138,6 +143,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(maryJaneIssue.getName(), "Savage Hulk");
     assert.equal(maryJaneIssue.getVolume(), 1);
     assert.equal(maryJaneIssue.getIssueNo(), 1);
+    assert.equal(maryJaneIssue.getImage(), "Savage_Hulk_Vol_1_1.jpg");
     assert.equal(maryJaneIssue.getPublishedDate(), new Date(1996, 0).getTime());
     assert.equal(maryJaneIssue.getAppearances()[0].title, "Courtroom Sequence");
     assert.equal(maryJaneIssue.getAppearances()[0].focusType, "Antagonists");
@@ -160,6 +166,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(spiderManIssue.getName(), "Amazing Spider-Man");
     assert.equal(spiderManIssue.getVolume(), 1);
     assert.equal(spiderManIssue.getIssueNo(), 2);
+    assert.equal(spiderManIssue.getImage(), "Amazing_Spider-Man_Vol_1_2.jpg");
     assert.equal(spiderManIssue.getPublishedDate(), new Date(1963, 4).getTime());
     assert.equal(spiderManIssue.getAppearances()[0].title, "Duel to the Death with the Vulture!");
     assert.equal(spiderManIssue.getAppearances()[0].focusType, "Antagonists");
@@ -176,6 +183,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(spiderManIssue.getName(), "Questprobe");
     assert.equal(spiderManIssue.getVolume(), 1);
     assert.equal(spiderManIssue.getIssueNo(), 2);
+    assert.equal(spiderManIssue.getImage(), "Questprobe_Vol_1_2.jpg");
     assert.equal(spiderManIssue.getPublishedDate(), new Date(1985, 0).getTime());
     assert.equal(spiderManIssue.getAppearances()[0].title, "Mysterio Times Two!");
     assert.equal(spiderManIssue.getAppearances()[0].focusType, "Other Characters");
@@ -192,6 +200,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(spiderManIssue.getName(), "Girl Comics");
     assert.equal(spiderManIssue.getVolume(), 2);
     assert.equal(spiderManIssue.getIssueNo(), 3);
+    assert.equal(spiderManIssue.getImage(), "Girl_Comics_Vol_2_3.jpg");
     assert.equal(spiderManIssue.getPublishedDate(), new Date(2010, 8).getTime());
     assert.equal(spiderManIssue.getAppearances()[0], undefined);
   });
@@ -205,6 +214,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(spiderManIssue.getName(), "Friendly Neighborhood Spider-Man");
     assert.equal(spiderManIssue.getVolume(), 2);
     assert.equal(spiderManIssue.getIssueNo(), 6);
+    assert.equal(spiderManIssue.getImage(), "Friendly_Neighborhood_Spider-Man_Vol_2_6.jpg");
     assert.equal(spiderManIssue.getPublishedDate(), new Date(2019, 6).getTime());
     assert.equal(spiderManIssue.getAppearances()[0].title, "Spider-Bite");
     assert.equal(spiderManIssue.getAppearances()[0].focusType, "Antagonists");
@@ -222,6 +232,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(issue.getName(), "Amazing Spider-Man");
     assert.equal(issue.getVolume(), 1);
     assert.equal(issue.getIssueNo(), 255);
+    assert.equal(issue.getImage(), "Amazing_Spider-Man_Vol_1_255.jpg");
     assert.equal(issue.getPublishedDate(), new Date(1984, 7).getTime());
     assert.equal(issue.getAppearances()[0].title, "Even a Ghost Can Fear the Night!");
     assert.equal(issue.getAppearances()[0].focusType, "Other Characters");
@@ -239,6 +250,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(issue.getName(), "Avengers Spotlight");
     assert.equal(issue.getVolume(), 1);
     assert.equal(issue.getIssueNo(), 25);
+    assert.equal(issue.getImage(), "Avengers_Spotlight_Vol_1_25.jpg");
     assert.equal(issue.getPublishedDate(), new Date(1989, 10).getTime());
     assert.equal(issue.getAppearances()[0].title, "Forewarned and Disarmed!");
     assert.equal(issue.getAppearances()[0].focusType, "Supporting Characters");
@@ -255,6 +267,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(issue.getName(), "Amazing Spider-Man");
     assert.equal(issue.getVolume(), 1);
     assert.equal(issue.getIssueNo(), 587);
+    assert.equal(issue.getImage(), "Amazing_Spider-Man_Vol_1_587.jpg");
     assert.equal(issue.getPublishedDate(), new Date(2009, 3).getTime());
     assert.equal(issue.getAppearances()[0].title, "Character Assassination: Part 3");
     assert.equal(issue.getAppearances()[0].focusType, "Other Characters");
@@ -271,10 +284,46 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(issue.getName(), "Free Comic Book Day");
     assert.equal(issue.getVolume(), 2016);
     assert.equal(issue.getIssueNo(), "(Captain America)");
+    assert.equal(issue.getImage(), "Free_Comic_Book_Day_Vol_2016_Captain_America.jpg");
     assert.equal(issue.getPublishedDate(), new Date(2016, 4).getTime());
     assert.equal(issue.getAppearances()[0].title, "");
     assert.equal(issue.getAppearances()[0].focusType, "Featured Characters");
     assert.equal(issue.getAppearances()[0].typesOfAppearance[0], "Flashback");
+    assert.equal(issue.getAppearances()[1], undefined);
+  });
+
+  it("issue with apostrophe", function () {
+    const filePath = `${__dirname}/resources/issues/Season's_Beating_Vol_1_1edit.html`;
+    const page = fs.readFileSync(filePath, "utf-8");
+    const pageWindow = new JSDOM(page).window;
+    const issue = new IssuePageModel(pageWindow, "Wade Wilson (Earth-616)");
+    assert.equal(issue.isIssue, true);
+    assert.equal(issue.getName(), "Season's Beating");
+    assert.equal(issue.getVolume(), 1);
+    assert.equal(issue.getIssueNo(), "1");
+    assert.equal(issue.getImage(), "Season's_Beating_Vol_1_1.jpg");
+    assert.equal(issue.getPublishedDate(), new Date(2019, 1).getTime());
+    assert.equal(issue.getAppearances()[0].title, "");
+    assert.equal(issue.getAppearances()[0].focusType, "Featured Characters");
+    assert.equal(issue.getAppearances()[0].typesOfAppearance.length, 0);
+    assert.equal(issue.getAppearances()[1], undefined);
+  });
+
+  it("issue without image should find default file by id", function () {
+    const filePath = `${__dirname}/resources/issues/Amazing_Spider-Man_Vol_1_533edit.html`;
+    const page = fs.readFileSync(filePath, "utf-8");
+    const pageWindow = new JSDOM(page).window;
+    const issue = new IssuePageModel(pageWindow, "Criti Noll (Clone) (Earth-616)");
+    assert.equal(issue.isIssue, true);
+    assert.equal(issue.getName(), "Amazing Spider-Man");
+    assert.equal(issue.getVolume(), 1);
+    assert.equal(issue.getIssueNo(), "533");
+    issue.id = "Amazing_Spider-Man_Vol_1_533";
+    assert.equal(issue.getImage(), "Amazing_Spider-Man_Vol_1_533.jpg");
+    assert.equal(issue.getPublishedDate(), new Date(2006, 7).getTime());
+    assert.equal(issue.getAppearances()[0].title, "The Night the War Came Home: Part Two of Six");
+    assert.equal(issue.getAppearances()[0].focusType, "Other Characters");
+    assert.equal(issue.getAppearances()[0].typesOfAppearance[0], "Cameo");
     assert.equal(issue.getAppearances()[1], undefined);
   });
 
