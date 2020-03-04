@@ -324,6 +324,7 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(issue.getAppearances()[0].title, "The Night the War Came Home: Part Two of Six");
     assert.equal(issue.getAppearances()[0].focusType, "Other Characters");
     assert.equal(issue.getAppearances()[0].typesOfAppearance[0], "Cameo");
+    assert.equal(issue.getAppearances()[0].typesOfAppearance[1], "Impersonates");
     assert.equal(issue.getAppearances()[1], undefined);
   });
 

@@ -8,7 +8,7 @@ const RegexYearTag = /^\|[ ]+Year/;
 const RegexMonthTag = /^\|[ ]+Month/;
 const RegexImageTag = /^\|[ ]+Image /;
 const RegexForAppearanceTypeOptionOne = /[{\\|][a-zA-Z\d ']+}}/g;
-const RegexForAppearanceTypeOptionTwo = /{[a-zA-Z\d ']+\|/;
+const RegexForAppearanceTypeOptionTwo = /{[a-zA-Z\d ']+\|/g;
 const InvalidTypeAppearances = ["A", "APN", "G", "CHRONOLOGY", "CHRONOFB"];
 
 module.exports = class {
@@ -158,19 +158,23 @@ module.exports = class {
     if (regexResolution) {
       regexResolution.forEach(type => {
         const appearanceType = type.substring(1, type.length - 2).trim();
-        if (this.#isValidTypeAppearance(appearanceType)) {
-          appearanceTypes.push(appearanceType);
-        }
+        this.#addToAppearancesIfValidType(appearanceTypes, appearanceType);
       });
     }
-    regexResolution = RegexForAppearanceTypeOptionTwo.exec(line);
+    regexResolution = line.match(RegexForAppearanceTypeOptionTwo);
     if (regexResolution) {
-      const appearanceType = regexResolution[0].substring(1, regexResolution[0].length - 1).trim();
-      if (this.#isValidTypeAppearance(appearanceType)) {
-        appearanceTypes.push(appearanceType);
-      }
+      regexResolution.forEach(type => {
+        const appearanceType = type.substring(1, type.length - 1).trim();
+        this.#addToAppearancesIfValidType(appearanceTypes, appearanceType);
+      });
     }
     appearing.typesOfAppearance = appearanceTypes;
+  };
+
+  #addToAppearancesIfValidType = function (appearanceTypes, appearanceType) {
+    if (this.#isValidTypeAppearance(appearanceType)) {
+      appearanceTypes.push(appearanceType);
+    }
   };
 
   #isValidTypeAppearance = function (typeAppearance) {
