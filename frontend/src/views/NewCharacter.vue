@@ -14,7 +14,7 @@
             Upload character
           </button>
           <div class="col-5">
-            <label for="url">Url to new character: </label>
+            <label for="url">Url or ID of new character: </label>
             <input
               type="text"
               class="form-control"
@@ -69,6 +69,7 @@ import { eventBus } from "../main";
 const marvelWikiUrl = "https://marvel.fandom.com/wiki/";
 const maxAliasLength = 20;
 const aliasRegexp = /[a-zA-Z0-9 ]+/;
+const urlStartRegex = /^https:\/\/|http:\/\/|www./i;
 
 export default {
   data() {
@@ -86,14 +87,16 @@ export default {
     selectAll(event) {
       event.target.select();
     },
-    checkForm() {
+    async checkForm() {
       this.characterInfo = undefined;
       this.errors = [];
-      const url = this.newCharacterData.url;
+      let url = this.newCharacterData.url.trim();
       if (!url.trim() || url === marvelWikiUrl) {
-        this.errors.push("Please provide url to character");
-      } else if (!url.startsWith(marvelWikiUrl)) {
-        this.errors.push(`Please provide url to ${marvelWikiUrl} wiki`);
+        this.errors.push("Please provide url or id of character");
+      } else if (urlStartRegex.test(url) && !url.startsWith(marvelWikiUrl)) {
+        this.errors.push(
+          `Please provide url to ${marvelWikiUrl} wiki. Or use character ID.`
+        );
       }
       const alias = this.newCharacterData.customAlias;
       if (alias) {
@@ -107,6 +110,9 @@ export default {
             "Custom alias can only contain a-z letters, numbers and spaces."
           );
         }
+      }
+      if (!this.errors.length && !urlStartRegex.test(url)) {
+        url = marvelWikiUrl + encodeURI(url.replace(/ /g, "_"));
       }
       if (!this.errors.length) {
         this.characterIsLoading = true;
