@@ -20,6 +20,14 @@
           <div class="col">
             <p>#{{ issue.issueNo }}</p>
           </div>
+          <div class="col">
+            <button
+              @click="showImage(issue._id, issue.image)"
+              class="btn btn-sm btn-info"
+            >
+              Image
+            </button>
+          </div>
         </div>
       </div>
       <div
@@ -74,6 +82,7 @@
   </div>
 </template>
 <script>
+import IssueImage from "@/components/issue/IssueImage";
 import axios from "axios";
 import { mapGetters } from "vuex";
 
@@ -141,6 +150,25 @@ export default {
             });
           }
           this.updateStories();
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    },
+    showImage(issueId, imageId) {
+      axios
+        .get(`issueImageUrl`, {
+          params: {
+            issueId,
+            imageId
+          }
+        })
+        .then(response => {
+          this.$modal.show(
+            IssueImage,
+            { imageUrl: response.data.imageUrl },
+            { height: 582, width: 410 }
+          );
         })
         .catch(error => {
           console.error(error);

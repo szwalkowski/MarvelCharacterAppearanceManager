@@ -1,3 +1,5 @@
+const IssueImageFinder = require('./issueImageFinder');
+
 module.exports = class {
 
   constructor(server, issueManager) {
@@ -7,6 +9,7 @@ module.exports = class {
   #setupEndpoints = function (server, issueManager) {
     this.#prepareChangeStatusEndpoint(server, issueManager);
     this.#provideGetIssueDetails(server, issueManager);
+    this.#provideUrlToIssueImage(server, new IssueImageFinder());
   };
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
@@ -43,5 +46,12 @@ module.exports = class {
       }
       res.end(JSON.stringify(await issueDetails));
     });
+  };
+
+  #provideUrlToIssueImage = function (server, issueImageFinder) {
+    server.get("/issueImageUrl", async (req, res) => {
+      const imageUrl = await issueImageFinder.getImageUrlForImageIdAsync(req.query.issueId, req.query.imageId);
+      res.end(JSON.stringify({ imageUrl }));
+    })
   };
 };

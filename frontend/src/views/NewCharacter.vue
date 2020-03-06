@@ -87,7 +87,7 @@ export default {
     selectAll(event) {
       event.target.select();
     },
-    async checkForm() {
+    checkForm() {
       this.characterInfo = undefined;
       this.errors = [];
       let url = this.newCharacterData.url.trim();
