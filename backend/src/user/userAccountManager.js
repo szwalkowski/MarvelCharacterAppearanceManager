@@ -20,7 +20,11 @@ module.exports = class {
   async logInUserAsync(userSingInData) {
     const logInResponse = await this.#userFirebaseManager.logInFirebaseAsync(userSingInData);
     const logInData = logInResponse.data;
-    if (!await this.#checkIfUserHasConfirmedEmailAsync(logInData.localId, logInData.idToken)) {
+    let userInDb = await this.#dbConnection.findOneAsync("users", { _id: logInData.localId });
+    if (!userInDb) {
+      userInDb = this.#createUserRecordAsync(logInData);
+    }
+    if (!await this.#checkIfUserHasConfirmedEmailAsync(userInDb, logInData.localId, logInData.idToken)) {
       return {
         emailConfirmed: false
       };
@@ -74,7 +78,8 @@ module.exports = class {
     try {
       const logInResponse = await this.#userFirebaseManager.logInFirebaseAsync(userSingInData);
       const logInData = logInResponse.data;
-      if (!await this.#checkIfUserHasConfirmedEmailAsync(logInData.localId, logInData.idToken)) {
+      const userInDb = await this.#dbConnection.findOneAsync("users", { _id: logInData.localId });
+      if (!await this.#checkIfUserHasConfirmedEmailAsync(userInDb, logInData.localId, logInData.idToken)) {
         return this.#userFirebaseManager.sendEmailVerificationAsync(logInData.idToken);
       }
     } catch (err) {
@@ -123,9 +128,8 @@ module.exports = class {
     return this.#dbConnection.insertAsync("users", { _id: userAuthData.localId, issuesStatuses: [] });
   };
 
-  #checkIfUserHasConfirmedEmailAsync = async function (userId, idToken) {
+  #checkIfUserHasConfirmedEmailAsync = async function (userInDb, userId, idToken) {
     try {
-      const userInDb = await this.#dbConnection.findOneAsync("users", { _id: userId });
       if (userInDb.hasConfirmedEmail) {
         return true;
       }

@@ -98,7 +98,9 @@ export default {
           `Please provide url to ${marvelWikiUrl} wiki. Or use character ID.`
         );
       }
-      const alias = this.newCharacterData.customAlias;
+      const alias =
+        this.newCharacterData.customAlias &&
+        this.newCharacterData.customAlias.trim();
       if (alias) {
         if (alias.length > maxAliasLength) {
           this.errors.push(
