@@ -79,21 +79,26 @@ module.exports = class {
           data.setOfAppearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfAppearanceTypes, appearanceDictionary, true);
           data.setOfFocusTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(data.setOfFocusTypes, focusDictionary, true);
 
+          const filteredAndMarkedIssues = [];
           data.characterData.issues.forEach(issue => {
             issue.appearances.forEach(appearance => {
               appearance.appearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, appearanceDictionary, true);
               appearance.focusType = this.#dictionaryTranslator.translateUsingDictionary(appearance.focusType, focusDictionary, true);
             });
             const issueStatus = userCharacterReads && userCharacterReads.find(status => status.issueId === issue.id);
-            if (issueStatus &&
-              (issueStatus.status === "read" ||
-                (issueStatus.status === "character" && issueStatus.characters.find(char => char === data.characterData._id)))
-            ) {
-              issue.status = issueStatus.status;
-            } else {
-              issue.status = null;
+            if (!issueStatus || issueStatus.status !== "ignore") {
+              if (issueStatus &&
+                (issueStatus.status === "read" ||
+                  (issueStatus.status === "character" && issueStatus.characters.find(char => char === data.characterData._id)))) {
+                issue.status = issueStatus.status;
+                filteredAndMarkedIssues.push(issue);
+              } else {
+                issue.status = null;
+                filteredAndMarkedIssues.push(issue);
+              }
             }
           });
+          data.characterData.issues = filteredAndMarkedIssues;
           res.end(JSON.stringify(data));
         })
         .catch(err => {

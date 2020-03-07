@@ -96,74 +96,84 @@
         </thead>
         <tbody>
           <tr v-for="(issue, idx) in issues" :key="idx">
-            <td v-if="userName">
-              <IconLoading v-if="issue.status === 'wait'" />
-              <div v-else class="btn-group">
-                <button
-                  v-if="issue.status === 'read' || issue.status === 'character'"
-                  @click="changeStatus(idx, issue.id, 'clear')"
-                  class="btn btn-danger"
-                >
-                  Unread
-                </button>
-                <template v-else>
+            <template v-if="issue.status !== 'ignore'">
+              <td v-if="userName">
+                <IconLoading v-if="issue.status === 'wait'" />
+                <div v-else class="btn-group">
                   <button
-                    @click="changeStatus(idx, issue.id, 'read')"
-                    class="btn btn-primary"
+                    v-if="
+                      issue.status === 'read' || issue.status === 'character'
+                    "
+                    @click="changeStatus(idx, issue.id, 'clear')"
+                    class="btn btn-danger"
                   >
-                    Read
+                    Unread
                   </button>
-                  <div class="btn-group">
+                  <template v-else>
                     <button
-                      class="btn btn-primary dropdown-toggle"
-                      data-toggle="dropdown"
-                    />
-                    <div class="dropdown-menu">
+                      @click="changeStatus(idx, issue.id, 'read')"
+                      class="btn btn-primary"
+                    >
+                      Read
+                    </button>
+                    <div class="btn-group">
                       <button
-                        class="dropdown-item"
-                        @click="changeStatus(idx, issue.id, 'character')"
-                      >
-                        Mark read for this character
-                      </button>
+                        class="btn btn-primary dropdown-toggle"
+                        data-toggle="dropdown"
+                      />
+                      <div class="dropdown-menu">
+                        <button
+                          class="dropdown-item"
+                          @click="changeStatus(idx, issue.id, 'character')"
+                        >
+                          Mark read for this character
+                        </button>
+                        <button
+                          class="dropdown-item"
+                          @click="changeStatus(idx, issue.id, 'ignore')"
+                        >
+                          Ignore
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                </template>
-              </div>
-            </td>
-            <td>
-              <a
-                type="button"
-                class="text-info"
-                @click="showIssueDetails(issue.id)"
-              >
-                {{ issue.name }}
-              </a>
-            </td>
-            <td>{{ issue.publishDateTimestamp | timestampToDate }}</td>
-            <td>{{ issue.volume }}</td>
-            <td>{{ issue.issueNo }}</td>
-            <td>
-              <table class="table">
-                <thead>
-                  <tr style="background-color: inherit">
-                    <th>title</th>
-                    <th>focus type</th>
-                    <th>appearance type</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr
-                    style="background-color: inherit"
-                    v-for="(appearance, idx) in issue.appearances"
-                    :key="idx"
-                  >
-                    <td>{{ appearance.subtitle }}</td>
-                    <td>{{ appearance.focusType }}</td>
-                    <td>{{ appearance.appearanceTypes }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </td>
+                  </template>
+                </div>
+              </td>
+              <td>
+                <a
+                  type="button"
+                  class="text-info"
+                  @click="showIssueDetails(issue.id)"
+                >
+                  {{ issue.name }}
+                </a>
+              </td>
+              <td>{{ issue.publishDateTimestamp | timestampToDate }}</td>
+              <td>{{ issue.volume }}</td>
+              <td>{{ issue.issueNo }}</td>
+              <td>
+                <table class="table">
+                  <thead>
+                    <tr style="background-color: inherit">
+                      <th>title</th>
+                      <th>focus type</th>
+                      <th>appearance type</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr
+                      style="background-color: inherit"
+                      v-for="(appearance, idx) in issue.appearances"
+                      :key="idx"
+                    >
+                      <td>{{ appearance.subtitle }}</td>
+                      <td>{{ appearance.focusType }}</td>
+                      <td>{{ appearance.appearanceTypes }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </template>
           </tr>
         </tbody>
       </table>
@@ -260,7 +270,10 @@ export default {
             characterId: this.characterId
           })
           .then(response => {
-            issues[idx].status = response.data.status;
+            if (response.data.status === "ignore") {
+              this.totalIssues -= 1;
+            }
+            this.issues[idx].status = response.data.status;
           })
           .catch(error => {
             console.error(error);
