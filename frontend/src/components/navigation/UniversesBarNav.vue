@@ -1,14 +1,12 @@
 <template>
-  <div class="actions_left">
-    <form class="form-group pl-1">
-      <ol class="row-cols-1 pl-0">
-        <h4>Universes:</h4>
-      </ol>
-      <ol class="pl-0" v-if="selectedCharacter">
+  <div class="flex-fill">
+    <form class="form-group pl-sm-5 pr-sm-5">
+      <ol class="row" v-if="selectedCharacter">
+        <h4 class="pt-sm-3">Universes:</h4>
         <template v-for="universe in selectedCharacter.universes">
           <button
             type="button"
-            class="btn btn-primary btn-block"
+            class="btn btn-primary btn-group-sm ml-sm-2 mt-sm-2"
             :key="universe.universe"
             :class="{
               active: selectedUniverse && selectedUniverse === universe

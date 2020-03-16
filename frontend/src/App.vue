@@ -1,5 +1,5 @@
 <template>
-  <div id="app" class="container-fluid">
+  <div id="app" class="container-sm">
     <div class="header_div row">
       <div class="col-sm pl-sm-5 p-sm-3">
         <h1 class="header_title row" @click="navigateToHome">
@@ -11,17 +11,15 @@
       </div>
     </div>
     <McamTopBarNav class="row" />
-    <div class="row flex-xl-nowrap">
-      <CharactersBarNav class="col-2 py-4 pl-0" />
-      <UniversesBarNav class="col-1 py-4 pl-2" />
-      <router-view class="col-9 py-4 pl-4" />
+    <div>
+      <CharactersBarNav class="row" />
+      <router-view />
     </div>
   </div>
 </template>
 <script>
 import McamTopBarNav from "@/components/navigation/TopBarNav";
 import CharactersBarNav from "@/components/navigation/CharactersBarNav";
-import UniversesBarNav from "@/components/navigation/UniversesBarNav";
 
 export default {
   methods: {
@@ -33,8 +31,7 @@ export default {
   },
   components: {
     McamTopBarNav,
-    CharactersBarNav,
-    UniversesBarNav
+    CharactersBarNav
   },
   created() {
     this.$store.dispatch("user/initFirebase");

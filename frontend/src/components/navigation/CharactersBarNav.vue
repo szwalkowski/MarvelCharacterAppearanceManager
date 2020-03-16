@@ -1,14 +1,16 @@
 <template>
-  <div class="actions_left">
-    <form class="form-group pr-3">
-      <ol class="row-cols-1">
-        <h4>Characters:</h4>
-      </ol>
-      <ol class="row-cols-1">
+  <div class="bg-secondary flex-fill" v-click-outside="collapse">
+    <div class="text-center flex-fill">
+      <button class="btn btn-sm btn-secondary" @click.stop="show = !show">
+        {{ (show ? "Collapse" : "Expand") + " characters" }}
+      </button>
+    </div>
+    <form v-if="show" class="form-group">
+      <ol class="row pl-sm-5 pr-sm-5">
         <template v-for="character in characterList">
           <button
             type="button"
-            class="btn btn-primary btn-block"
+            class="btn btn-primary btn-group-sm ml-sm-2 mt-sm-2"
             :key="character.alias"
             :class="{
               active:
@@ -21,15 +23,21 @@
         </template>
       </ol>
     </form>
+    <div class="flex-fill" v-if="show">
+      <UniversesBarNav />
+    </div>
   </div>
 </template>
 <script>
 import axios from "axios";
 import { eventBus } from "../../main";
+import vClickOutside from "v-click-outside";
+import UniversesBarNav from "./UniversesBarNav";
 
 export default {
   data() {
     return {
+      show: false,
       characterList: [],
       selectedCharacter: undefined
     };
@@ -49,7 +57,17 @@ export default {
           });
         })
         .catch(error => console.log(error));
+    },
+    collapse() {
+      this.show = false;
+      this.selectedCharacter = null;
+    },
+    expand() {
+      this.show = true;
     }
+  },
+  directives: {
+    clickOutside: vClickOutside.directive
   },
   filters: {
     underscoresToSpaces(value) {
@@ -64,6 +82,9 @@ export default {
     eventBus.$on("reloadCharacters", () => {
       this.getAllCharacters();
     });
+  },
+  components: {
+    UniversesBarNav
   }
 };
 </script>

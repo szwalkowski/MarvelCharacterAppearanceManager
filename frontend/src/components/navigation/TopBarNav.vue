@@ -1,6 +1,6 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary pl-sm-4">
-    <div class="collapse navbar-collapse">
+  <nav class="navbar navbar-expand-sm navbar-dark bg-primary pl-sm-4">
+    <div class="navbar-collapse">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
           <router-link tag="a" class="nav-link" to="/add-new-character">
