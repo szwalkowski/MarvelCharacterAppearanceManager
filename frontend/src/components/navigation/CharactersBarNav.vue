@@ -2,7 +2,15 @@
   <div class="bg-secondary flex-fill" v-click-outside="collapse">
     <div class="text-center flex-fill">
       <button class="btn btn-sm btn-secondary" @click.stop="show = !show">
-        {{ (show ? "Collapse" : "Expand") + " characters" }}
+        <img
+          :src="`/img/${show ? 'Collapse' : 'Expand'}Icon.png`"
+          style="width: 15px"
+        />
+        {{ (show ? "Collapse" : "Expand") + " character list" }}
+        <img
+          :src="`/img/${show ? 'Collapse' : 'Expand'}Icon.png`"
+          style="width: 15px"
+        />
       </button>
     </div>
     <form v-if="show" class="form-group">
