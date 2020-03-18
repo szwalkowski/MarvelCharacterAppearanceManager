@@ -3,6 +3,11 @@
     <div class="navbar-collapse">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item">
+          <router-link tag="a" class="nav-link" to="/characters">
+            Characters
+          </router-link>
+        </li>
+        <li class="nav-item">
           <router-link tag="a" class="nav-link" to="/add-new-character">
             Add new character
           </router-link>
