@@ -311,6 +311,43 @@ export default {
         .catch(error => {
           console.error(error);
         });
+      this.addOccurrenceToLastVisitedCharacter(this.characterId);
+    },
+    addOccurrenceToLastVisitedCharacter(characterId) {
+      let lastCharacters = JSON.parse(localStorage.getItem("lastCharacters"));
+      if (!lastCharacters) {
+        lastCharacters = [];
+      }
+      let characterOccurrence = lastCharacters.find(character => character.id === characterId);
+      if (!characterOccurrence) {
+        characterOccurrence = { id: characterId, occurrence: 0 };
+        lastCharacters.push(characterOccurrence);
+      }
+      characterOccurrence.occurrence++;
+      characterOccurrence.timestamp = new Date().getTime();
+      const maxOccurrences = 30;
+      if (lastCharacters.length > maxOccurrences) {
+        lastCharacters.sort((lc1, lc2) => {
+          if (lc1.timestamp > lc2.timestamp) {
+            return -1;
+          }
+          return 1;
+        });
+        lastCharacters.splice(maxOccurrences, lastCharacters.length - maxOccurrences);
+      }
+      lastCharacters.sort((lc1, lc2) => {
+        if (lc1.occurrence > lc2.occurrence) {
+          return -1;
+        }
+        if (lc1.occurrence < lc2.occurrence) {
+          return 1;
+        }
+        if (lc1.timestamp > lc2.timestamp) {
+          return -1;
+        }
+        return 1;
+      });
+      localStorage.setItem("lastCharacters", JSON.stringify(lastCharacters));
     },
     showIssueDetails(issueId) {
       this.$modal.show(

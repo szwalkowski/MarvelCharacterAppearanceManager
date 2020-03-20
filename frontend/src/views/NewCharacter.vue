@@ -137,7 +137,6 @@ export default {
         .post("confirmCharacter", this.characterInfo)
         .then(() => {
           this.$alert("New character request sent!");
-          eventBus.$emit("reloadCharacters");
         })
         .catch(error => {
           this.errors.push(error.message);
