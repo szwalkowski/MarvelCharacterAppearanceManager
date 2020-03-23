@@ -38,23 +38,19 @@ module.exports = class {
     return realNameInnerHTML;
   };
 
-  getCurrentAlias() {
-    const currentAlias = this.#jQuery.find("*[data-source='CurrentAlias'] > .pi-data-value > a");
-    if (currentAlias.length > 0) {
-      return currentAlias[0].innerHTML.trim();
+  getAliases() {
+    const aliases = [];
+    const currentAlias = this.#jQuery("*[data-source='CurrentAlias'] > .pi-data-value").text();
+    if (currentAlias) {
+      aliases.push(currentAlias.replace(/\[[0-9a-z ]+\]/g, "").trim());
     }
-    const currentAliasWithoutLink = this.#jQuery.find("*[data-source='CurrentAlias'] > .pi-data-value");
-    if (currentAliasWithoutLink.length > 0) {
-      return currentAliasWithoutLink[0].innerHTML.trim();
+    const otherAliases = this.#jQuery("*[data-source='Aliases'] > .pi-data-value").text();
+    if (otherAliases) {
+      otherAliases.split(",").forEach(alias => {
+        aliases.push(alias.replace(/\[[0-9a-z ]+\]/g, "").trim());
+      });
     }
-    const aliasesElement = this.#findElementBySelector(aliasesSelector);
-    if (!aliasesElement) {
-      return this.getRealName();
-    }
-    if (aliasesElement.children[0]) {
-      return aliasesElement.children[0].innerHTML.trim();
-    }
-    return aliasesElement.innerHTML.trim();
+    return aliases;
   };
 
   getUniverse() {
@@ -103,7 +99,7 @@ module.exports = class {
    */
   #findElementBySelector = function (selector) {
     try {
-      return this.#jQuery.find(selector)[0];
+      return this.#jQuery(selector)[0];
     } catch (error) {
       console.error(`Error during finding element by ${selector}`);
       throw error;
@@ -116,7 +112,7 @@ module.exports = class {
    */
   #findInnerHtmlAndTrimBySelector = function (selector) {
     try {
-      return this.#jQuery.find(selector)[0].innerHTML.trim();
+      return this.#jQuery(selector)[0].innerHTML.trim();
     } catch (error) {
       console.error(`Error during finding element by ${selector}`);
       throw error;
@@ -129,7 +125,7 @@ module.exports = class {
    */
   #findUrlOfImageBySelector = function (selector) {
     try {
-      return this.#jQuery.find(selector)[0].attributes["src"]["value"];
+      return this.#jQuery(selector)[0].attributes["src"]["value"];
     } catch (error) {
       console.error(`Error during finding element by ${selector}`);
       throw error;

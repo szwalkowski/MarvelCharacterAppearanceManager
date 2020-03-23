@@ -15,10 +15,10 @@
       class="text-center row bg-secondary p-sm-2 h-100"
       style="border: 1px dotted #82cc6f;"
       v-for="character in visibleCharacters"
-      :key="character.alias"
+      :key="character.realName"
     >
       <div class="col-sm my-auto font-weight-bold text-info">
-        {{ character.alias }}
+        {{ character.realName }}
       </div>
       <div class="col-sm my-auto text-center font-italic font-weight-bold">
         <div
@@ -52,7 +52,13 @@ export default {
       const filteredCharacters = [];
       this.characterList.forEach(character => {
         if (
-          character.alias
+          character.realName
+            .toLowerCase()
+            .includes(this.characterFilter.toLowerCase())
+        ) {
+          filteredCharacters.push(character);
+        } else if (
+          character.aliases
             .toLowerCase()
             .includes(this.characterFilter.toLowerCase())
         ) {
@@ -79,7 +85,7 @@ export default {
       .then(res => {
         this.characterList = [];
         res.data.sort((character1, character2) => {
-          if (character1.alias < character2.alias) {
+          if (character1.realName < character2.realName) {
             return -1;
           }
           return 1;

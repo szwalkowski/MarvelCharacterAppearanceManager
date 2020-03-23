@@ -24,15 +24,6 @@
               name="url"
             />
           </div>
-          <div class="col-3">
-            <label for="alias">Custom alias: </label>
-            <input
-              type="text"
-              id="alias"
-              class="form-control"
-              v-model="newCharacterData.customAlias"
-            />
-          </div>
         </div>
       </form>
     </fieldset>
@@ -40,7 +31,7 @@
       <table class="table table-dark">
         <tr>
           <th>Real name</th>
-          <th>Alias</th>
+          <th>Aliases</th>
           <th>Universe</th>
           <th>Appearances</th>
           <th>Minor appearances</th>
@@ -48,7 +39,7 @@
         </tr>
         <tr>
           <td>{{ characterInfo.RealName }}</td>
-          <td>{{ characterInfo.Alias }}</td>
+          <td>{{ characterInfo.Aliases.join(", ") }}</td>
           <td>{{ characterInfo.Universe }}</td>
           <td>{{ characterInfo.AppearanceCount }}</td>
           <td>{{ characterInfo.MinorAppearanceCount }}</td>
@@ -67,8 +58,6 @@ import axios from "axios";
 import { eventBus } from "../main";
 
 const marvelWikiUrl = "https://marvel.fandom.com/wiki/";
-const maxAliasLength = 20;
-const aliasRegexp = /[a-zA-Z0-9 ]+/;
 const urlStartRegex = /^https:\/\/|http:\/\/|www./i;
 
 export default {
@@ -77,8 +66,7 @@ export default {
       characterInfo: undefined,
       errors: [],
       newCharacterData: {
-        url: marvelWikiUrl,
-        customAlias: ""
+        url: marvelWikiUrl
       },
       characterIsLoading: false
     };
@@ -98,28 +86,13 @@ export default {
           `Please provide url to ${marvelWikiUrl} wiki. Or use character ID.`
         );
       }
-      const alias =
-        this.newCharacterData.customAlias &&
-        this.newCharacterData.customAlias.trim();
-      if (alias) {
-        if (alias.length > maxAliasLength) {
-          this.errors.push(
-            `Custom alias max length (${maxAliasLength}) exceeded.`
-          );
-        }
-        if (!aliasRegexp.test(alias)) {
-          this.errors.push(
-            "Custom alias can only contain a-z letters, numbers and spaces."
-          );
-        }
-      }
       if (!this.errors.length && !urlStartRegex.test(url)) {
         url = marvelWikiUrl + encodeURI(url.replace(/ /g, "_"));
       }
       if (!this.errors.length) {
         this.characterIsLoading = true;
         axios
-          .post("newCharacter", { characterUrl: url, customAlias: alias })
+          .post("newCharacter", { characterUrl: url })
           .then(response => {
             this.characterInfo = response.data;
           })

@@ -11,7 +11,7 @@ describe("Page model test based on downloaded html", function () {
     const pageWindow = new JSDOM(page).window;
     const rhinoPage = new CharacterPageModel("https://marvel.fandom.com", pageWindow);
     assert.equal(rhinoPage.getRealName(), "Aleksei Mikhailovich Sytsevich");
-    assert.equal(rhinoPage.getCurrentAlias(), "Rhino");
+    assert.includeMembers(rhinoPage.getAliases(), ["Rhino", "Aleksei Popov", "Macha-Rhino", "Alex O'Hirn"]);
     assert.equal(rhinoPage.getUniverse(), "Earth-616");
     assert.equal(rhinoPage.getImage(), "https://vignette.wikia.nocookie.net/marveldatabase/images/1/18/Aleksei_Sytsevich_%28Earth-616%29_from_Miles_Morales_Spider-Man_Vol_1_1_001.jpg");
     assert.equal(rhinoPage.getAppearancesCount(), 252);
@@ -26,7 +26,7 @@ describe("Page model test based on downloaded html", function () {
     const pageWindow = new JSDOM(page).window;
     const rhinoPage = new CharacterPageModel("https://marvel.fandom.com", pageWindow);
     assert.equal(rhinoPage.getRealName(), "Maybelle \"May\" Parker-Jameson");
-    assert.equal(rhinoPage.getCurrentAlias(), "Aunt May");
+    assert.includeMembers(rhinoPage.getAliases(), ["Aunt May", "May Reilly", "May Parker", "May Fitzgerald", "Golden Oldie", "May Morgan"]);
     assert.equal(rhinoPage.getUniverse(), "Earth-616");
     assert.equal(rhinoPage.getImage(), "https://vignette.wikia.nocookie.net/marveldatabase/images/7/76/May_Reilly_%28Earth-616%29_from_Howard_the_Duck_Vol_6_1_001.jpg");
     assert.equal(rhinoPage.getAppearancesCount(), 768);
@@ -41,7 +41,9 @@ describe("Page model test based on downloaded html", function () {
     const pageWindow = new JSDOM(page).window;
     const rhinoPage = new CharacterPageModel("https://marvel.fandom.com", pageWindow);
     assert.equal(rhinoPage.getRealName(), "Felicia Sara Hardy");
-    assert.equal(rhinoPage.getCurrentAlias(), "Black Cat");
+    assert.includeMembers(rhinoPage.getAliases(), [
+      "Black Cat", "Ashley Moon", "Felicity Harmon", "Cat", "Licia", "Leesh", "Fee-Fee", "Kitten", "\"Miss Kyle\"", "Francesca Featherbottom"
+    ]);
     assert.equal(rhinoPage.getUniverse(), "Earth-616");
     assert.equal(rhinoPage.getImage(), "https://vignette.wikia.nocookie.net/marveldatabase/images/f/fd/Amazing_Spider-Man_Vol_5_1_Crain_Exclusive_Black_Cat_Variant.jpg");
     assert.equal(rhinoPage.getAppearancesCount(), 380);
@@ -56,7 +58,7 @@ describe("Page model test based on downloaded html", function () {
     const pageWindow = new JSDOM(page).window;
     const rhinoPage = new CharacterPageModel("https://marvel.fandom.com", pageWindow);
     assert.equal(rhinoPage.getRealName(), "Joseph(last name unrevealed)");
-    assert.equal(rhinoPage.getCurrentAlias(), "Hammerhead");
+    assert.includeMembers(rhinoPage.getAliases(), ["Hammerhead", "Mr. H"]);
     assert.equal(rhinoPage.getUniverse(), "Earth-616");
     assert.equal(rhinoPage.getImage(), "https://vignette.wikia.nocookie.net/marveldatabase/images/1/15/Amazing_Spider-Man_Vol_3_17.1_Textless.jpg");
     assert.equal(rhinoPage.getAppearancesCount(), 150);
@@ -71,7 +73,7 @@ describe("Page model test based on downloaded html", function () {
     const pageWindow = new JSDOM(page).window;
     const rhinoPage = new CharacterPageModel("https://marvel.fandom.com", pageWindow);
     assert.equal(rhinoPage.getRealName(), "Ulysses S. Klaw");
-    assert.equal(rhinoPage.getCurrentAlias(), "Klaw");
+    assert.includeMembers(rhinoPage.getAliases(), ["Klaw"]);
     assert.equal(rhinoPage.getUniverse(), "Earth-616");
     assert.equal(rhinoPage.getImage(), "https://vignette.wikia.nocookie.net/marveldatabase/images/1/10/Ulysses_Klaw_%28Earth-616%29_from_Superior_Carnage_Vol_1_1_001.jpg");
     assert.equal(rhinoPage.getAppearancesCount(), 165);

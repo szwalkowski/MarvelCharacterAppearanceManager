@@ -26,8 +26,7 @@ module.exports = class {
         res.end(JSON.stringify({
           CharacterId: response.getId(),
           Url: req.body["characterUrl"],
-          OriginAlias: response.getCurrentAlias(),
-          Alias: req.body["customAlias"].trim() === "" ? response.getCurrentAlias().trim() : req.body["customAlias"],
+          Aliases: response.getAliases(),
           Universe: response.getUniverse(),
           RealName: response.getRealName(),
           AppearanceCount: response.getAppearancesCount(),

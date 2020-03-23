@@ -76,7 +76,7 @@ module.exports = class {
     this.#removeAppearanceOfCharacter(issue, characterId);
     issue.appearances.push({
       characterId,
-      characterAlias: characterData.Alias,
+      characterAliases: characterData.Aliases,
       characterRealName: characterData.RealName,
       characterUniverse: characterData.Universe,
       characterAppearance: issueWithAppearance.appearances
