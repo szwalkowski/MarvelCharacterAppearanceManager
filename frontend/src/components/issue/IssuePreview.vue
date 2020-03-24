@@ -59,7 +59,9 @@
           </div>
           <h4 class="col-sm-6">
             <a href="#" @click="navigateToCharacter(character.characterId)">
-              {{ character.characterAlias }} ({{ character.characterUniverse }})
+              {{ character.characterDisplayName }} ({{
+                character.characterUniverse
+              }})
             </a>
           </h4>
           <p class="col-sm-auto">{{ character.characterFocusType }}</p>
@@ -111,7 +113,7 @@ export default {
           }
           subStory.characters.push({
             characterId: appearance.characterId,
-            characterAlias: appearance.characterAlias,
+            characterDisplayName: appearance.characterDisplayName,
             characterRealName: appearance.characterRealName,
             characterUniverse: appearance.characterUniverse,
             characterFocusType: storyAppearance.focusType,

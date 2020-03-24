@@ -25,7 +25,7 @@ describe("Page model test based on downloaded html", function () {
     const page = fs.readFileSync(filePath, "utf-8");
     const pageWindow = new JSDOM(page).window;
     const rhinoPage = new CharacterPageModel("https://marvel.fandom.com", pageWindow);
-    assert.equal(rhinoPage.getRealName(), "Maybelle \"May\" Parker-Jameson");
+    assert.equal(rhinoPage.getRealName(), "Maybelle \"May\" Parker-Jameson, née Reilly");
     assert.includeMembers(rhinoPage.getAliases(), ["Aunt May", "May Reilly", "May Parker", "May Fitzgerald", "Golden Oldie", "May Morgan"]);
     assert.equal(rhinoPage.getUniverse(), "Earth-616");
     assert.equal(rhinoPage.getImage(), "https://vignette.wikia.nocookie.net/marveldatabase/images/7/76/May_Reilly_%28Earth-616%29_from_Howard_the_Duck_Vol_6_1_001.jpg");
@@ -57,7 +57,7 @@ describe("Page model test based on downloaded html", function () {
     const page = fs.readFileSync(filePath, "utf-8");
     const pageWindow = new JSDOM(page).window;
     const rhinoPage = new CharacterPageModel("https://marvel.fandom.com", pageWindow);
-    assert.equal(rhinoPage.getRealName(), "Joseph(last name unrevealed)");
+    assert.equal(rhinoPage.getRealName(), "Joseph");
     assert.includeMembers(rhinoPage.getAliases(), ["Hammerhead", "Mr. H"]);
     assert.equal(rhinoPage.getUniverse(), "Earth-616");
     assert.equal(rhinoPage.getImage(), "https://vignette.wikia.nocookie.net/marveldatabase/images/1/15/Amazing_Spider-Man_Vol_3_17.1_Textless.jpg");

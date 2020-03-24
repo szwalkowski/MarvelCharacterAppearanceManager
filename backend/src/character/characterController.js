@@ -16,7 +16,7 @@ module.exports = class {
   #createCharacterEndpoints = function (server, dictionaryManager, characterManager, characterImporter, userAccountManager) {
     this.#prepareCharacterFromWikiPage(server, characterImporter);
     this.#prepareCharacterConfirmAction(server, characterImporter);
-    this.#prepareGetAllCharactersAliases(server, characterManager);
+    this.#prepareGetAllCharacters(server, characterManager);
     this.#prepareGetAllIssuesForCharacter(server, dictionaryManager, characterManager, userAccountManager);
   };
 
@@ -33,7 +33,8 @@ module.exports = class {
           MinorAppearanceCount: response.getMinorAppearancesCount(),
           AppearanceUrl: response.getAppearancesUrl(),
           MinorAppearanceUrl: response.getMinorAppearancesUrl(),
-          ImageUrl: response.getImage()
+          ImageUrl: response.getImage(),
+          DisplayName: response.getCurrentAlias() || response.getRealName()
         }));
       }, reason => {
         console.error(reason);
@@ -55,7 +56,7 @@ module.exports = class {
     });
   };
 
-  #prepareGetAllCharactersAliases = function (server, characterManager) {
+  #prepareGetAllCharacters = function (server, characterManager) {
     server.get("/getAllCharacters", async (req, res) => {
       const characters = await characterManager.provideAllCharactersAvailableAsync();
       res.end(JSON.stringify(characters));

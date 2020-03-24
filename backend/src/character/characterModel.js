@@ -1,7 +1,8 @@
 module.exports = class {
 
-  constructor(id, url, aliases, realName, universe, image, issues, newestIssueTimestamp) {
+  constructor(id, displayName, url, aliases, realName, universe, image, issues, newestIssueTimestamp) {
     this._id = id;
+    this.displayName = displayName;
     this.url = url;
     this.aliases = aliases;
     this.realName = realName;

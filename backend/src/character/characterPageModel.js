@@ -23,26 +23,24 @@ module.exports = class {
   };
 
   getRealName() {
-    const realNameElement = this.#findElementBySelector(realNameSelector);
-    if (realNameElement.children[0] && realNameElement.children[0].innerHTML.trim() !== "") {
-      if (realNameElement.children[0].localName === "sup") {
-        const nameWithSupLink = realNameElement.innerHTML.trim();
-        return nameWithSupLink.substring(0, nameWithSupLink.indexOf('<'));
-      }
-      return realNameElement.children[0].innerHTML.trim();
+    const realName = this.#jQuery("*[data-source='RealName'] > .pi-data-value").text();
+    if (realName) {
+      return realName.replace(/\[[0-9a-z ]+\]/g, "").replace(/\([0-9a-zA-Z ]+\)/g, "").trim();
     }
-    const realNameInnerHTML = realNameElement.innerHTML.trim();
-    if (realNameInnerHTML.indexOf('<') > 0) {
-      return realNameInnerHTML.substring(0, realNameInnerHTML.indexOf('<')).trim();
-    }
-    return realNameInnerHTML;
   };
+
+  getCurrentAlias() {
+    const currentAlias = this.#jQuery("*[data-source='CurrentAlias'] > .pi-data-value").text();
+    if (currentAlias) {
+      return currentAlias.replace(/\[[0-9a-z ]+\]/g, "").trim();
+    }
+  }
 
   getAliases() {
     const aliases = [];
-    const currentAlias = this.#jQuery("*[data-source='CurrentAlias'] > .pi-data-value").text();
+    const currentAlias = this.getCurrentAlias();
     if (currentAlias) {
-      aliases.push(currentAlias.replace(/\[[0-9a-z ]+\]/g, "").trim());
+      aliases.push(currentAlias);
     }
     const otherAliases = this.#jQuery("*[data-source='Aliases'] > .pi-data-value").text();
     if (otherAliases) {

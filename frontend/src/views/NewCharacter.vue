@@ -24,6 +24,15 @@
               name="url"
             />
           </div>
+          <div v-if="characterInfo" class="col-3">
+            <label for="displayName">Display name: </label>
+            <input
+              type="text"
+              id="displayName"
+              class="form-control"
+              v-model.trim="characterInfo.DisplayName"
+            />
+          </div>
         </div>
       </form>
     </fieldset>
@@ -58,6 +67,8 @@ import axios from "axios";
 import { eventBus } from "../main";
 
 const marvelWikiUrl = "https://marvel.fandom.com/wiki/";
+const maxDisplayNameLength = 20;
+const displayNameRegexp = /^[a-zA-Z0-9- ]+$/;
 const urlStartRegex = /^https:\/\/|http:\/\/|www./i;
 
 export default {
@@ -106,15 +117,33 @@ export default {
       }
     },
     confirmCharacter() {
-      axios
-        .post("confirmCharacter", this.characterInfo)
-        .then(() => {
-          this.$alert("New character request sent!");
-        })
-        .catch(error => {
-          this.errors.push(error.message);
-          console.log(error);
-        });
+      this.errors = [];
+      const displayName =
+        this.characterInfo.DisplayName && this.characterInfo.DisplayName.trim();
+      if (displayName) {
+        if (displayName.length > maxDisplayNameLength) {
+          this.errors.push(
+            `Display name max length (${maxDisplayNameLength}) exceeded.`
+          );
+        }
+        if (!displayNameRegexp.test(displayName)) {
+          this.errors.push(
+            "Display name can only contain a-z letters, numbers, spaces and dashes."
+          );
+        }
+      }
+      if (!this.errors.length) {
+        axios
+          .post("confirmCharacter", this.characterInfo)
+          .then(() => {
+            this.$alert("New character request sent!");
+            this.characterInfo = null;
+          })
+          .catch(error => {
+            this.errors.push(error.message);
+            console.log(error);
+          });
+      }
     }
   },
   beforeRouteLeave(to, from, next) {
