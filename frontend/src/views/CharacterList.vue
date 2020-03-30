@@ -26,7 +26,7 @@
           v-for="universe in character.universes"
           :key="universe.universe"
         >
-          <a :href="`/issues?characterId=${universe.characterId}`">
+          <a :href="`/character?characterId=${universe.characterId}`">
             {{ universe.universe }}
           </a>
         </div>

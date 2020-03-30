@@ -52,7 +52,7 @@ export default {
   methods: {
     selectCharacter(character) {
       this.collapse();
-      const newRoute = `/issues?characterId=${character}`;
+      const newRoute = `/character?characterId=${character}`;
       if (decodeURIComponent(this.$route.fullPath) !== newRoute) {
         this.$router.push(newRoute);
       }
