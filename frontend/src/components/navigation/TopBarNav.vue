@@ -8,6 +8,11 @@
           </router-link>
         </li>
         <li class="nav-item">
+          <router-link tag="a" class="nav-link" to="/issues">
+            Issues
+          </router-link>
+        </li>
+        <li class="nav-item">
           <router-link tag="a" class="nav-link" to="/add-new-character">
             Add new character
           </router-link>

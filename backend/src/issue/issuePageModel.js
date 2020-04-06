@@ -43,11 +43,19 @@ module.exports = class {
 
   getVolume() {
     const separatedWords = this.fullName.split(" ");
-    return parseInt(separatedWords[separatedWords.indexOf("Vol") + 1]);
+    const volIndex = separatedWords.indexOf("Vol");
+    if (volIndex < 0) {
+      return null;
+    }
+    return parseInt(separatedWords[volIndex + 1]);
   };
 
   getIssueNo() {
-    return this.fullName.split(/ Vol [0-9]+ /)[1];
+    const titleAndIssueNumber = this.fullName.split(/ Vol [0-9]+ /);
+    if (titleAndIssueNumber.length === 1) {
+      return null;
+    }
+    return titleAndIssueNumber[1];
   };
 
   getPublishedDate() {

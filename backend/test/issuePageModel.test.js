@@ -328,4 +328,22 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(issue.getAppearances()[1], undefined);
   });
 
+  it("issue without volume", function () {
+    const filePath = `${__dirname}/resources/issues/Spider-Man:_Doctor_Octopus_(Promo)edit.html`;
+    const page = fs.readFileSync(filePath, "utf-8");
+    const pageWindow = new JSDOM(page).window;
+    const issue = new IssuePageModel(pageWindow, "Benjamin Grimm (Earth-616)");
+    assert.equal(issue.isIssue, true);
+    assert.equal(issue.getName(), "Spider-Man: Doctor Octopus (Promo)");
+    assert.equal(issue.getVolume(), null);
+    assert.equal(issue.getIssueNo(), null);
+    issue.id = "Spider-Man:_Doctor_Octopus_(Promo)";
+    assert.equal(issue.getImage(), "Spider-Man_Doctor_Octopus_(Promo).jpg");
+    assert.equal(issue.getPublishedDate(), new Date(2005, 0).getTime());
+    assert.equal(issue.getAppearances()[0].title, "Spider-Man versus Doctor Octopus");
+    assert.equal(issue.getAppearances()[0].focusType, "Supporting Characters");
+    assert.equal(issue.getAppearances()[0].typesOfAppearance[0], undefined);
+    assert.equal(issue.getAppearances()[1], undefined);
+  });
+
 });

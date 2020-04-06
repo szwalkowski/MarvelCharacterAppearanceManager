@@ -47,6 +47,39 @@ module.exports = class {
     return issueStatus;
   }
 
+  async getAllIssuesAndPackThemByVolumes() {
+    const allIssuesIterator = await this.#dbConnection.findAsync("issues", {}, { name: 1, issueNo: 1, volume: 1, publishDateTimestamp: 1 });
+    const allIssues = await allIssuesIterator.toArray();
+    const packedIssued = {};
+    allIssues.forEach(issue => {
+      const nameWithoutAnnualAtEnd = issue.name.replace(/ Annual$/, "");
+      let volumePack = packedIssued[nameWithoutAnnualAtEnd];
+      if (!volumePack) {
+        volumePack = {};
+        packedIssued[nameWithoutAnnualAtEnd] = volumePack;
+      }
+      let volume = volumePack[issue.volume];
+      if (!volume) {
+        volume = [];
+        volumePack[issue.volume] = volume;
+      }
+      volume.push(issue);
+    });
+    const orderedPack = {};
+    Object.keys(packedIssued).sort().forEach(key => {
+      orderedPack[key] = packedIssued[key];
+      Object.values(orderedPack[key]).forEach(volume => {
+        volume.sort((issue1, issue2) => {
+          if (issue1.publishDateTimestamp > issue2.publishDateTimestamp) {
+            return 1;
+          }
+          return -1;
+        });
+      });
+    });
+    return orderedPack;
+  }
+
   async getIssueAsync(issueId) {
     return this.#dbConnection.findOneAsync("issues", { _id: issueId });
   }

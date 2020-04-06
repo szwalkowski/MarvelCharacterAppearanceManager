@@ -125,7 +125,7 @@ export default {
       return stories;
     },
     navigateToCharacter(characterId) {
-      const newRoute = `/issues?characterId=${characterId}`;
+      const newRoute = `/character?characterId=${characterId}`;
       if (decodeURIComponent(this.$route.fullPath) !== newRoute) {
         this.$router.push(newRoute);
       }

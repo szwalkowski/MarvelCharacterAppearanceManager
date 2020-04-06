@@ -10,6 +10,7 @@ module.exports = class {
     this.#prepareChangeStatusEndpoint(server, issueManager);
     this.#provideGetIssueDetails(server, issueManager);
     this.#provideUrlToIssueImage(server, new IssueImageFinder());
+    this.#provideUrlToIssues(server, issueManager);
   };
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
@@ -52,6 +53,13 @@ module.exports = class {
     server.get("/issueImageUrl", async (req, res) => {
       const imageUrl = await issueImageFinder.getImageUrlForImageIdAsync(req.query.issueId, req.query.imageId);
       res.end(JSON.stringify({ imageUrl }));
+    })
+  };
+
+  #provideUrlToIssues = function (server, issueManager) {
+    server.get("/issues", async (req, res) => {
+      const allIssuesPackedInVolumes = await issueManager.getAllIssuesAndPackThemByVolumes();
+      res.end(JSON.stringify(allIssuesPackedInVolumes));
     })
   };
 };
