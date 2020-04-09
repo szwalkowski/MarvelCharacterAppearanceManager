@@ -61,7 +61,9 @@ export default {
       const lastCharacters = JSON.parse(localStorage.getItem("lastCharacters"));
       if (lastCharacters) {
         for (let i = 0; i < 11 && i < lastCharacters.length; i++) {
-          this.characterList.push(lastCharacters[i].id);
+          if (lastCharacters[i].id) {
+            this.characterList.push(lastCharacters[i].id);
+          }
         }
       }
     },

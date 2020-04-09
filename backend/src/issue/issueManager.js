@@ -37,7 +37,7 @@ module.exports = class {
     if (newStatus !== "clear") {
       issueStatus.status = newStatus;
     }
-    if (!issueStatus.characters.length) {
+    if (!issueStatus.characters.length && newStatus !== "read") {
       user.issuesStatuses = user.issuesStatuses.filter(iStatus => iStatus.issueId !== issueId);
     } else if (newStatus === "clear") {
       issueStatus.status = "character";
@@ -91,6 +91,18 @@ module.exports = class {
       { "issuesStatuses.$": 1 });
   }
 
+  async getAllIssuesByVolume(issueName, issueVolume) {
+    const iteratorOfVolumes = await this.#dbConnection.findAsync(
+      "issues",
+      { "name": issueName, "volume": issueVolume && parseInt(issueVolume) },
+      { "issueNo": 1, "name": 1, "publishDateTimestamp": 1, "volume": 1, "appearances.characterAppearance.subtitle": 1 }
+    );
+    const volumes = await iteratorOfVolumes.toArray();
+    volumes.sort((a, b) => this.#compareIssues(a, b));
+    this.#reduceAndSortSubtitles(volumes);
+    return volumes;
+  }
+
   #createIssue = function (issue) {
     return {
       _id: issue.id,
@@ -124,10 +136,36 @@ module.exports = class {
 
   #resolveCharacterId = function (issueStatus, newStatus, characterId) {
     const existingCharacterId = issueStatus.characters.find(char => char === characterId);
-    if (!existingCharacterId && ["read", "character"]) {
+    if (!existingCharacterId && ["character"] && newStatus !== "clear") {
       issueStatus.characters.push(characterId);
     } else if (newStatus === "clear") {
       issueStatus.characters = issueStatus.characters.filter(char => char !== characterId);
     }
-  }
+  };
+
+  #compareIssues = function (a, b) {
+    if (a.publishDateTimestamp !== b.publishDateTimestamp) {
+      return a.publishDateTimestamp > b.publishDateTimestamp ? 1 : -1
+    } else if (a.issueNo !== b.issueNo) {
+      return a.issueNo > b.issueNo ? 1 : -1;
+    }
+    return 0;
+  };
+
+  #reduceAndSortSubtitles = function (volumes) {
+    volumes.forEach(issue => {
+      issue.subtitles = [];
+      if (issue.appearances) {
+        issue.appearances.forEach(appearance => {
+          appearance.characterAppearance.forEach(characterAppearance => {
+            if (issue.subtitles.indexOf(characterAppearance.subtitle) < 0) {
+              issue.subtitles.push(characterAppearance.subtitle);
+            }
+          });
+        });
+        issue.appearances = null;
+      }
+      issue.subtitles.sort();
+    });
+  };
 };

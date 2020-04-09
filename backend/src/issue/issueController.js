@@ -2,15 +2,16 @@ const IssueImageFinder = require('./issueImageFinder');
 
 module.exports = class {
 
-  constructor(server, issueManager) {
-    this.#setupEndpoints(server, issueManager);
+  constructor(server, issueManager, userAccountManager) {
+    this.#setupEndpoints(server, issueManager, userAccountManager);
   }
 
-  #setupEndpoints = function (server, issueManager) {
+  #setupEndpoints = function (server, issueManager, userAccountManager) {
     this.#prepareChangeStatusEndpoint(server, issueManager);
     this.#provideGetIssueDetails(server, issueManager);
     this.#provideUrlToIssueImage(server, new IssueImageFinder());
     this.#provideUrlToIssues(server, issueManager);
+    this.#provideGetAllVolumeOfIssues(server, issueManager, userAccountManager);
   };
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
@@ -60,6 +61,29 @@ module.exports = class {
     server.get("/issues", async (req, res) => {
       const allIssuesPackedInVolumes = await issueManager.getAllIssuesAndPackThemByVolumes();
       res.end(JSON.stringify(allIssuesPackedInVolumes));
+    })
+  };
+
+  #provideGetAllVolumeOfIssues = function (server, issueManager, userAccountManager) {
+    server.get("/getAllVolumeOfIssues", async (req, res) => {
+      const fullVolumeOfIssuesPromise = issueManager.getAllIssuesByVolume(req.query.issueName, req.query.issueVolume);
+      const userCharacterReadsPromise = req.query.idToken && userAccountManager.findUserByIdTokenAsync(req.query.idToken);
+      await Promise.all([fullVolumeOfIssuesPromise, userCharacterReadsPromise])
+        .then(values => {
+          const data = values[0];
+          const userCharacterReads = values[1] && values[1].issuesStatuses;
+          data.forEach(issue => {
+            issue.status = null;
+            const issueStatus = userCharacterReads && userCharacterReads.find(status => status.issueId === issue._id);
+            if (issueStatus && issueStatus.status === "read") {
+              issue.status = issueStatus.status;
+            }
+          });
+          res.end(JSON.stringify(data));
+        })
+        .catch(error => {
+          res.status(500).send(error.toString());
+        });
     })
   };
 };

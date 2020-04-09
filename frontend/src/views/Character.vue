@@ -84,7 +84,7 @@
     </div>
     <section class="row pr-sm-5">
       <table class="table table-bordered table-striped table-sm">
-        <thead>
+        <thead class="text-sm-center">
           <tr>
             <th v-if="userName">Read:</th>
             <th>Issue name:</th>
@@ -154,10 +154,13 @@
               <td>
                 <table class="table">
                   <thead>
-                    <tr style="background-color: inherit">
-                      <th>title</th>
-                      <th>focus type</th>
-                      <th>appearance type</th>
+                    <tr
+                      style="background-color: inherit"
+                      class="text-sm-center"
+                    >
+                      <th>Subtitle</th>
+                      <th>Focus type</th>
+                      <th>Appearance type</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -318,7 +321,9 @@ export default {
       if (!lastCharacters) {
         lastCharacters = [];
       }
-      let characterOccurrence = lastCharacters.find(character => character.id === characterId);
+      let characterOccurrence = lastCharacters.find(
+        character => character.id === characterId
+      );
       if (!characterOccurrence) {
         characterOccurrence = { id: characterId, occurrence: 0 };
         lastCharacters.push(characterOccurrence);
@@ -333,7 +338,10 @@ export default {
           }
           return 1;
         });
-        lastCharacters.splice(maxOccurrences, lastCharacters.length - maxOccurrences);
+        lastCharacters.splice(
+          maxOccurrences,
+          lastCharacters.length - maxOccurrences
+        );
       }
       lastCharacters.sort((lc1, lc2) => {
         if (lc1.occurrence > lc2.occurrence) {

@@ -35,7 +35,7 @@ class App {
     new CharacterController(server, issueManager, userAccountManager, dbConnection);
     new DictionaryController(server, dbConnection);
     new UserController(server, userAccountManager);
-    new IssueController(server, issueManager);
+    new IssueController(server, issueManager, userAccountManager);
   };
 
   #startServer = function (server) {
