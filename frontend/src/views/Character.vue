@@ -208,6 +208,52 @@ export default {
       showEmptyFocusTypes: true
     };
   },
+  watch: {
+    selectedAppearances(newValue, oldValue) {
+      if (
+        newValue.length - oldValue.length > 1 ||
+        newValue.length === oldValue.length
+      ) {
+        return;
+      }
+      if (newValue.length > oldValue.length) {
+        const appearanceToShow = newValue.filter(
+          value => oldValue.indexOf(value) === -1
+        );
+        this.editStoredSettings(false, false, appearanceToShow[0]);
+      } else {
+        const appearanceToHide = oldValue.filter(
+          value => newValue.indexOf(value) === -1
+        );
+        this.editStoredSettings(true, false, appearanceToHide[0]);
+      }
+    },
+    selectedFocusTypes(newValue, oldValue) {
+      if (
+        newValue.length - oldValue.length > 1 ||
+        newValue.length === oldValue.length
+      ) {
+        return;
+      }
+      if (newValue.length > oldValue.length) {
+        const appearanceToShow = newValue.filter(
+          value => oldValue.indexOf(value) === -1
+        );
+        this.editStoredSettings(false, true, appearanceToShow[0]);
+      } else {
+        const appearanceToHide = oldValue.filter(
+          value => newValue.indexOf(value) === -1
+        );
+        this.editStoredSettings(true, true, appearanceToHide[0]);
+      }
+    },
+    showEmptyAppearanceTypes(newValue) {
+      this.editStoredSettings(!newValue, false, "Empty");
+    },
+    showEmptyFocusTypes(newValue) {
+      this.editStoredSettings(!newValue, true, "Empty");
+    }
+  },
   computed: {
     ...mapGetters("user", ["userName", "idToken"]),
     issues() {
@@ -306,9 +352,24 @@ export default {
         .then(response => {
           this.characterData = response.data.characterData;
           this.appearanceTypes = response.data.setOfAppearanceTypes;
-          this.selectedAppearances = response.data.setOfAppearanceTypes;
+          const disabledAppearancesTypes =
+            JSON.parse(localStorage.getItem("disabledAppearanceTypes")) || [];
+          this.showEmptyAppearanceTypes =
+            disabledAppearancesTypes.indexOf("Empty") === -1;
+          this.selectedAppearances = response.data.setOfAppearanceTypes.filter(
+            appearance => {
+              return disabledAppearancesTypes.indexOf(appearance) === -1;
+            }
+          );
           this.focusTypes = response.data.setOfFocusTypes;
-          this.selectedFocusTypes = response.data.setOfFocusTypes;
+          const disabledFocusTypes =
+            JSON.parse(localStorage.getItem("disabledFocusTypes")) || [];
+          this.showEmptyFocusTypes = disabledFocusTypes.indexOf("Empty") === -1;
+          this.selectedFocusTypes = response.data.setOfFocusTypes.filter(
+            appearance => {
+              return disabledFocusTypes.indexOf(appearance) === -1;
+            }
+          );
           this.totalIssues = response.data.characterData.issues.length;
         })
         .catch(error => {
@@ -363,6 +424,27 @@ export default {
         { issueId },
         { height: "auto", scrollable: true, width: 1000 }
       );
+    },
+    editStoredSettings(shouldAddToDisable, isFocusType, name) {
+      if (isFocusType) {
+        this.addToLocalStorage("disabledFocusTypes", shouldAddToDisable, name);
+      } else {
+        this.addToLocalStorage(
+          "disabledAppearanceTypes",
+          shouldAddToDisable,
+          name
+        );
+      }
+    },
+    addToLocalStorage(storageKey, shouldAddToDisable, name) {
+      const disabledTypes = JSON.parse(localStorage.getItem(storageKey)) || [];
+      const indexOfDisabledType = disabledTypes.indexOf(name);
+      if (shouldAddToDisable && indexOfDisabledType === -1) {
+        disabledTypes.push(name);
+      } else if (!shouldAddToDisable && indexOfDisabledType > -1) {
+        disabledTypes.splice(indexOfDisabledType, 1);
+      }
+      localStorage.setItem(storageKey, JSON.stringify(disabledTypes));
     }
   },
   filters: {
