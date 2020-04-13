@@ -18,7 +18,7 @@ Find all appearances of specific characters and mark them as read.
   - MCAM_FIREBASE_DB_URL - url to your firebase project (https://\<projectname\>.firebaseio.com)
   - FIREBASE_API_KEY - api key to firebase
 - In frontend folder, there is .env file (if using google auth)
-  - VUE_APP_FIREBASE_AUTH_DOMAIN - url to your firebase project (https://\<projectname\>.firebaseio.com)
+  - VUE_APP_FIREBASE_AUTH_DOMAIN - auth domain of your firebase project (\<projectname\>.firebaseapp.com)
   - VUE_APP_FIREBASE_API_KEY - api key to firebase
   
 ## How to run:
