@@ -61,6 +61,13 @@ module.exports = class {
       .findOne(query);
   }
 
+  async findOneAsync(collection, query, projection) {
+    return this
+      .db()
+      .collection(collection)
+      .findOne(query, projection);
+  }
+
   async updateAsync(collection, query, updateData) {
     return this
       .db()

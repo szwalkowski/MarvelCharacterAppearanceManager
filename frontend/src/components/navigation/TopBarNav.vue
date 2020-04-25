@@ -40,22 +40,14 @@
         </li>
       </ul>
       <ul class="form-inline navbar-nav">
-        <template v-if="!userName">
+        <template v-if="!user">
           <router-link tag="a" class="nav-link pr-sm-1" to="/log-in">
             Log in
           </router-link>
-          /
-          <router-link tag="a" class="nav-link pl-sm-1" to="/sign-up">
-            Sign up
-          </router-link>
         </template>
         <template v-else>
-          <router-link
-            tag="a"
-            class="nav-link pl-sm-1"
-            :to="isEmailPassword ? '/account' : ''"
-          >
-            Hello, {{ userName }}!
+          <router-link tag="a" class="nav-link pl-sm-1" to="/account">
+            Hello, {{ user.displayName }}!
           </router-link>
           /
           <a class="nav-link pl-sm-1" style="cursor: pointer" @click="logOut">
@@ -67,21 +59,14 @@
   </nav>
 </template>
 <script>
-import axios from "axios";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters("user", ["userName", "isEmailPassword"])
+    ...mapGetters("user", ["user"])
   },
   methods: {
-    logOut() {
-      axios.post("logOut", {
-        idToken: localStorage.getItem("mcam.idToken")
-      });
-      this.$store.commit("user/clearAuthUser");
-      this.$router.push("log-in");
-    }
+    ...mapActions("user", ["logOut"])
   }
 };
 </script>

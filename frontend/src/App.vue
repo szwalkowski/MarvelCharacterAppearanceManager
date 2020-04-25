@@ -1,5 +1,6 @@
 <template>
   <div id="app" class="container-sm">
+    <loading :active.sync="isLoading" />
     <div class="header_div row">
       <div class="col-sm pl-sm-5 p-sm-3">
         <h1 class="header_title row" @click="navigateToHome">
@@ -18,10 +19,16 @@
   </div>
 </template>
 <script>
+import "vue-loading-overlay/dist/vue-loading.css";
+import Loading from "vue-loading-overlay";
 import McamTopBarNav from "@/components/navigation/TopBarNav";
 import CharactersBarNav from "@/components/navigation/CharactersBarNav";
+import { mapState } from "vuex";
 
 export default {
+  computed: {
+    ...mapState("loading", ["isLoading"])
+  },
   methods: {
     navigateToHome() {
       if (this.$route.path !== "/") {
@@ -31,11 +38,11 @@ export default {
   },
   components: {
     McamTopBarNav,
-    CharactersBarNav
+    CharactersBarNav,
+    Loading
   },
   created() {
     this.$store.dispatch("user/initFirebase");
-    this.$store.dispatch("user/tryAutoLogIn");
   }
 };
 </script>

@@ -64,7 +64,6 @@
 </template>
 <script>
 import axios from "axios";
-import { eventBus } from "../main";
 
 const marvelWikiUrl = "https://marvel.fandom.com/wiki/";
 const maxDisplayNameLength = 20;

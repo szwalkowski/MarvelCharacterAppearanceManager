@@ -6,7 +6,7 @@
       </h4>
       <form class="row">
         <div class="col-sm">
-          <div class="row form-group" v-if="userName">
+          <div class="row form-group" v-if="user">
             <label for="read-dr" class="col-sm-1 pl-sm-0">
               Status:
             </label>
@@ -26,7 +26,7 @@
       <table class="table table-bordered table-striped table-sm">
         <thead class="text-sm-center">
           <tr>
-            <th v-if="userName">Read:</th>
+            <th v-if="user">Read:</th>
             <th>Issue name:</th>
             <th>Publication date:</th>
             <th>Volume:</th>
@@ -37,7 +37,7 @@
         <tbody>
           <tr v-for="(issue, idx) in issues" :key="idx">
             <template v-if="issue.status !== 'ignore'">
-              <td v-if="userName">
+              <td v-if="user">
                 <IconLoading v-if="issue.status === 'wait'" />
                 <div v-else class="btn-group">
                   <button
@@ -109,7 +109,7 @@
 import IconLoading from "@/components/icon/IconLoading";
 import IssuePreview from "@/components/issue/IssuePreview";
 import axios from "axios";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
@@ -123,8 +123,15 @@ export default {
       issuesData: undefined
     };
   },
+  watch: {
+    isUserLoadInProgress(newValue) {
+      if (!newValue) {
+        this.loadIssuePage();
+      }
+    }
+  },
   computed: {
-    ...mapGetters("user", ["userName", "idToken"]),
+    ...mapGetters("user", ["user", "isUserLoadInProgress"]),
     issues() {
       if (!this.issuesData) {
         return {};
@@ -146,46 +153,51 @@ export default {
     }
   },
   methods: {
+    ...mapActions("user", ["getIdToken"]),
     changeStatus(idx, issueId, status) {
-      if (this.idToken) {
-        const issues = this.issues;
-        const previousStatus = issues[idx].status;
-        issues[idx].status = "wait";
-        axios
-          .post("changeIssueStatus", {
-            issueId: issueId,
-            status: status,
-            idToken: this.idToken,
-            characterId: this.characterId
-          })
-          .then(response => {
-            if (response.data.status === "ignore") {
-              this.totalIssues -= 1;
-            }
-            this.issues[idx].status = response.data.status;
-          })
-          .catch(error => {
-            console.error(error);
-            issues[idx].status = previousStatus;
+      this.getIdToken()
+        .then(idToken => {
+          const issues = this.issues;
+          const previousStatus = issues[idx].status;
+          issues[idx].status = "wait";
+          axios
+            .post("changeIssueStatus", {
+              issueId,
+              status,
+              idToken,
+              characterId: this.characterId
+            })
+            .then(response => {
+              if (response.data.status === "ignore") {
+                this.totalIssues -= 1;
+              }
+              this.issues[idx].status = response.data.status;
+            })
+            .catch(error => {
+              console.error(error);
+              issues[idx].status = previousStatus;
+            });
+        })
+        .catch(() => {
+          this.$fire({
+            text: "You are not authorized to do such action",
+            type: "error"
           });
-      } else {
-        this.$fire({
-          text: "You are not authorized to do such action",
-          type: "error"
         });
-      }
     },
-    loadIssuePage() {
+    async loadIssuePage() {
       this.issueName = this.$route.query.issueName;
       this.issueVolume = this.$route.query.issueVolume;
+      let idToken;
+      try {
+        idToken = await this.getIdToken();
+      } catch (e) {}
       axios
         .get("getAllVolumeOfIssues", {
           params: {
             issueName: this.issueName,
             issueVolume: this.issueVolume,
-            idToken:
-              localStorage.getItem("mcam.idToken") ||
-              localStorage.getItem("mcam.firebase.idToken")
+            idToken
           }
         })
         .then(response => {
@@ -214,9 +226,6 @@ export default {
       }
       return [year, month].join("-");
     }
-  },
-  created() {
-    this.loadIssuePage();
   },
   beforeRouteUpdate(to, from, next) {
     next();

@@ -1,5 +1,6 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
+import firebase from "firebase";
 import Home from "../views/Home.vue";
 
 Vue.use(VueRouter);
@@ -26,14 +27,12 @@ const routes = [
     component: () => import("../views/Character")
   },
   {
-    path: "/sign-up",
-    name: "sign-up",
-    component: () => import("../views/SignUp")
-  },
-  {
     path: "/log-in",
     name: "log-in",
-    component: () => import("../views/LogIn")
+    component: () => import("../views/LogIn"),
+    meta: {
+      guest: true
+    }
   },
   {
     path: "/characters",
@@ -49,6 +48,14 @@ const routes = [
     path: "/issue",
     name: "issue",
     component: () => import("../views/Issue")
+  },
+  {
+    path: "/account",
+    name: "account",
+    component: () => import("../views/Account"),
+    meta: {
+      auth: true
+    }
   }
 ];
 
@@ -56,6 +63,32 @@ const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes
+});
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some(record => record.meta.auth)) {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        next();
+      } else {
+        next({
+          path: "/log-in"
+        });
+      }
+    });
+  } else if (to.matched.some(record => record.meta.guest)) {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) {
+        next({
+          path: "/account"
+        });
+      } else {
+        next();
+      }
+    });
+  } else {
+    next();
+  }
 });
 
 export default router;

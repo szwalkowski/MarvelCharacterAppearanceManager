@@ -41,7 +41,7 @@
           v-for="character in characters.characters"
           :key="character.characterId"
         >
-          <div v-if="userName && !issue.read">
+          <div v-if="user && !issue.read">
             <button
               v-if="character.read"
               @click="changeStatus('clear', character.characterId)"
@@ -69,7 +69,7 @@
         </div>
       </div>
     </div>
-    <div v-if="userName" class="modal-footer pr-sm-5">
+    <div v-if="user" class="modal-footer pr-sm-5">
       <button
         v-if="issue.read"
         @click="changeStatus('clear')"
@@ -97,7 +97,7 @@ export default {
   },
   props: ["issueId"],
   computed: {
-    ...mapGetters("user", ["userName", "idToken"])
+    ...mapGetters("user", ["user"])
   },
   methods: {
     updateStories() {
