@@ -470,7 +470,6 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     next();
-    this.loadIssuePage();
   },
   components: {
     IconLoading

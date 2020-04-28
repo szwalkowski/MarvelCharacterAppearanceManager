@@ -56,9 +56,7 @@ export default {
       }
       const filteredIssues = {};
       for (const issue in this.issueList) {
-        if (issue
-          .toLowerCase()
-          .includes(this.issueFilter.toLowerCase())) {
+        if (issue.toLowerCase().includes(this.issueFilter.toLowerCase())) {
           filteredIssues[issue] = this.issueList[issue];
         }
       }

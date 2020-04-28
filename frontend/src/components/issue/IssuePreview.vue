@@ -86,7 +86,7 @@
 <script>
 import IssueImage from "@/components/issue/IssueImage";
 import axios from "axios";
-import { mapGetters } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 
 export default {
   data() {
@@ -97,9 +97,17 @@ export default {
   },
   props: ["issueId"],
   computed: {
-    ...mapGetters("user", ["user"])
+    ...mapGetters("user", ["user", "isUserLoadInProgress"])
+  },
+  watch: {
+    isUserLoadInProgress(newValue) {
+      if (!newValue) {
+        this.loadIssuePage();
+      }
+    }
   },
   methods: {
+    ...mapActions("user", ["getIdToken"]),
     updateStories() {
       const stories = {};
       this.issue.appearances.forEach(appearance => {
@@ -175,6 +183,24 @@ export default {
         .catch(error => {
           console.error(error);
         });
+    },
+    async loadIssuePage() {
+      this.getIdToken().then(idToken => {
+        axios
+          .get("issueDetails", {
+            params: {
+              issueId: this.issueId,
+              idToken
+            }
+          })
+          .then(response => {
+            this.issue = response.data;
+            this.stories = this.updateStories();
+          })
+          .catch(error => {
+            console.error(error);
+          });
+      });
     }
   },
   filters: {
@@ -189,22 +215,7 @@ export default {
     }
   },
   created() {
-    axios
-      .get("issueDetails", {
-        params: {
-          issueId: this.issueId,
-          idToken:
-            localStorage.getItem("mcam.idToken") ||
-            localStorage.getItem("mcam.firebase.idToken")
-        }
-      })
-      .then(response => {
-        this.issue = response.data;
-        this.stories = this.updateStories();
-      })
-      .catch(error => {
-        console.error(error);
-      });
+    this.loadIssuePage();
   }
 };
 </script>
