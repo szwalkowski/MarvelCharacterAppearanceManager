@@ -14,7 +14,7 @@
     <div
       class="text-center row bg-secondary p-sm-2 h-100"
       style="border: 1px dotted #82cc6f;"
-      v-for="(volumePack, key) in issueList"
+      v-for="(volumePack, key) in visibleIssues"
       :key="key"
     >
       <div class="col-sm my-auto font-weight-bold text-info">
@@ -45,9 +45,25 @@ import axios from "axios";
 export default {
   data() {
     return {
-      issueList: [],
+      issueList: {},
       issueFilter: ""
     };
+  },
+  computed: {
+    visibleIssues() {
+      if (!this.issueFilter) {
+        return this.issueList;
+      }
+      const filteredIssues = {};
+      for (const issue in this.issueList) {
+        if (issue
+          .toLowerCase()
+          .includes(this.issueFilter.toLowerCase())) {
+          filteredIssues[issue] = this.issueList[issue];
+        }
+      }
+      return filteredIssues;
+    }
   },
   created() {
     axios
