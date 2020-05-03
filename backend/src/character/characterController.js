@@ -2,6 +2,7 @@ const CharacterImporter = require("./characterImporter");
 const CharacterManager = require("./characterManager");
 const DictionaryManager = require("../dictionary/dictionaryManager");
 const DictionaryTranslator = require("../dictionary/dictionaryTranslator");
+const { extractIdToken } = require("../utils");
 
 module.exports = class {
   #dictionaryTranslator = new DictionaryTranslator();
@@ -68,7 +69,8 @@ module.exports = class {
       const characterDataPromise = characterManager.loadIssuesAndAppearancesAsync(req.query.characterId);
       const appearanceDictionaryPromise = dictionaryManager.getDictionaryByIdAsync("appearanceType");
       const focusDictionaryPromise = dictionaryManager.getDictionaryByIdAsync("focusType");
-      const userCharacterReadsPromise = req.query.idToken && userAccountManager.findUserByIdTokenAsync(req.query.idToken);
+      const idToken = extractIdToken(req);
+      const userCharacterReadsPromise = idToken && userAccountManager.findUserByIdTokenAsync(idToken);
       await Promise.all([appearanceDictionaryPromise, focusDictionaryPromise, characterDataPromise, userCharacterReadsPromise])
         .then(values => {
           const appearanceDictionary = values[0].dictionary;

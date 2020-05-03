@@ -107,7 +107,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions("user", ["getIdToken"]),
     updateStories() {
       const stories = {};
       this.issue.appearances.forEach(appearance => {
@@ -141,12 +140,15 @@ export default {
     },
     changeStatus(status, characterId) {
       axios
-        .post("changeIssueStatus", {
-          issueId: this.issue._id,
-          status: status,
-          idToken: this.idToken,
-          characterId
-        })
+        .post(
+          "changeIssueStatus",
+          {
+            issueId: this.issue._id,
+            status: status,
+            characterId
+          },
+          { mcamAuthenticated: true }
+        )
         .then(response => {
           if (response.data.status === "read") {
             this.issue.read = true;
@@ -185,22 +187,20 @@ export default {
         });
     },
     async loadIssuePage() {
-      this.getIdToken().then(idToken => {
-        axios
-          .get("issueDetails", {
-            params: {
-              issueId: this.issueId,
-              idToken
-            }
-          })
-          .then(response => {
-            this.issue = response.data;
-            this.stories = this.updateStories();
-          })
-          .catch(error => {
-            console.error(error);
-          });
-      });
+      axios
+        .get("issueDetails", {
+          params: {
+            issueId: this.issueId
+          },
+          mcamAuthenticated: true
+        })
+        .then(response => {
+          this.issue = response.data;
+          this.stories = this.updateStories();
+        })
+        .catch(error => {
+          console.error(error);
+        });
     }
   },
   filters: {

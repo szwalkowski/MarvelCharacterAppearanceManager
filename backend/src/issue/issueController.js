@@ -1,4 +1,5 @@
 const IssueImageFinder = require('./issueImageFinder');
+const { extractIdToken } = require("../utils");
 
 module.exports = class {
 
@@ -16,7 +17,7 @@ module.exports = class {
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
     server.post("/changeIssueStatus", (req, res) => {
-      issueManager.changeIssueStatusAsync(req.body["issueId"], req.body["status"], req.body["idToken"], req.body["characterId"]).then(response => {
+      issueManager.changeIssueStatusAsync(req.body["issueId"], req.body["status"], extractIdToken(req), req.body["characterId"]).then(response => {
         res.end(JSON.stringify(response));
       }, reason => {
         console.error(reason);
@@ -30,8 +31,9 @@ module.exports = class {
     server.get("/issueDetails", async (req, res) => {
       const issuePromise = issueManager.getIssueAsync(req.query.issueId);
       let readStatus;
-      if (req.query.idToken) {
-        const iterator = await issueManager.getIssueStatusForUserAsync(req.query.issueId, req.query.idToken);
+      const idToken = extractIdToken(req);
+      if (idToken) {
+        const iterator = await issueManager.getIssueStatusForUserAsync(req.query.issueId, idToken);
         readStatus = (await iterator.toArray())[0];
       }
       const issueDetails = await issuePromise;
@@ -67,7 +69,8 @@ module.exports = class {
   #provideGetAllVolumeOfIssues = function (server, issueManager, userAccountManager) {
     server.get("/getAllVolumeOfIssues", async (req, res) => {
       const fullVolumeOfIssuesPromise = issueManager.getAllIssuesByVolume(req.query.issueName, req.query.issueVolume);
-      const userCharacterReadsPromise = req.query.idToken && userAccountManager.findUserByIdTokenAsync(req.query.idToken);
+      const idToken = extractIdToken(req);
+      const userCharacterReadsPromise = idToken && userAccountManager.findUserByIdTokenAsync(idToken);
       await Promise.all([fullVolumeOfIssuesPromise, userCharacterReadsPromise])
         .then(values => {
           const data = values[0];

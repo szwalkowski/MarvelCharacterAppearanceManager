@@ -153,32 +153,31 @@ export default {
     }
   },
   methods: {
-    ...mapActions("user", ["getIdToken"]),
     changeStatus(idx, issueId, status) {
-      this.getIdToken()
-        .then(idToken => {
-          const issues = this.issues;
-          const previousStatus = issues[idx].status;
-          issues[idx].status = "wait";
-          axios
-            .post("changeIssueStatus", {
-              issueId,
-              status,
-              idToken,
-              characterId: this.characterId
-            })
-            .then(response => {
-              if (response.data.status === "ignore") {
-                this.totalIssues -= 1;
-              }
-              this.issues[idx].status = response.data.status;
-            })
-            .catch(error => {
-              console.error(error);
-              issues[idx].status = previousStatus;
-            });
+      const issues = this.issues;
+      const previousStatus = issues[idx].status;
+      issues[idx].status = "wait";
+      axios
+        .post(
+          "changeIssueStatus",
+          {
+            issueId,
+            status,
+            characterId: this.characterId
+          },
+          {
+            mcamAuthenticated: true
+          }
+        )
+        .then(response => {
+          if (response.data.status === "ignore") {
+            this.totalIssues -= 1;
+          }
+          this.issues[idx].status = response.data.status;
         })
-        .catch(() => {
+        .catch(error => {
+          console.error(error);
+          issues[idx].status = previousStatus;
           this.$fire({
             text: "You are not authorized to do such action",
             type: "error"
@@ -188,17 +187,13 @@ export default {
     async loadIssuePage() {
       this.issueName = this.$route.query.issueName;
       this.issueVolume = this.$route.query.issueVolume;
-      let idToken;
-      try {
-        idToken = await this.getIdToken();
-      } catch (e) {}
       axios
         .get("getAllVolumeOfIssues", {
           params: {
             issueName: this.issueName,
-            issueVolume: this.issueVolume,
-            idToken
-          }
+            issueVolume: this.issueVolume
+          },
+          mcamAuthenticated: true
         })
         .then(response => {
           this.issuesData = response.data;
