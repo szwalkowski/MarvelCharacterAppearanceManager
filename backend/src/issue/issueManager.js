@@ -60,22 +60,13 @@ module.exports = class {
       }
       let volume = volumePack[issue.volume];
       if (!volume) {
-        volume = [];
-        volumePack[issue.volume] = volume;
+        volumePack[issue.volume] = 0;
       }
-      volume.push(issue);
+      volumePack[issue.volume]++;
     });
     const orderedPack = {};
     Object.keys(packedIssued).sort().forEach(key => {
       orderedPack[key] = packedIssued[key];
-      Object.values(orderedPack[key]).forEach(volume => {
-        volume.sort((issue1, issue2) => {
-          if (issue1.publishDateTimestamp > issue2.publishDateTimestamp) {
-            return 1;
-          }
-          return -1;
-        });
-      });
     });
     return orderedPack;
   }

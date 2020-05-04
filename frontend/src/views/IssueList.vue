@@ -23,7 +23,7 @@
       <div class="col-sm my-auto text-center font-italic font-weight-bold">
         <div
           class="p-sm-1"
-          v-for="(volume, volumeNo) in volumePack"
+          v-for="(volumeCount, volumeNo) in volumePack"
           :key="volumeNo"
         >
           <a
@@ -33,7 +33,7 @@
             {{ volumeNo }}
           </a>
           <a v-else :href="`/issue?issueName=${key}`">n/a</a>
-          (Issue count: {{ volume.length }})
+          (Issue count: {{ volumeCount }})
         </div>
       </div>
     </div>
