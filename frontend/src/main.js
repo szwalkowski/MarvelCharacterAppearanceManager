@@ -6,7 +6,7 @@ import router from "./router";
 import axios from "axios";
 import store from "./store/store";
 import VModal from "vue-js-modal";
-import firebase from "firebase";
+import firebase from "firebase/app";
 
 Vue.config.productionTip = false;
 
