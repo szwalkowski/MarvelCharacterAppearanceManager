@@ -2,14 +2,24 @@ const state = {
   isLoading: false
 };
 
+const getters = {
+  isLoading: state => {
+    return state.isLoading;
+  }
+};
+
 const mutations = {
-  changeIsLoadingState(state, { isLoadingEnabled }) {
-    state.isLoading = isLoadingEnabled;
+  enableLoading(state) {
+    state.isLoading = true;
+  },
+  disableLoading(state) {
+    state.isLoading = false;
   }
 };
 
 export default {
   namespaced: true,
   mutations,
+  getters,
   state
 };

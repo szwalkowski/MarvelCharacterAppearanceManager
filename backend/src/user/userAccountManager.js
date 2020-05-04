@@ -40,6 +40,18 @@ module.exports = class {
     return this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken });
   }
 
+  async findUserIgnoredIssuesAsync(idToken) {
+    return await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { _id: 0, ignored: 1 });
+  }
+
+  async addIssueToIgnored(idToken, issueId) {
+    await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "ignored", [issueId])
+  }
+
+  async removeIssueFromIgnored(idToken, issueId) {
+    await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "ignored", issueId);
+  }
+
   #addSessionWithUserCreationAsync = async function (sessionData) {
     const userInDb = await this.#dbConnection.findOneAsync("users", { _id: sessionData.userId }, { _id: 1 });
     if (userInDb) {

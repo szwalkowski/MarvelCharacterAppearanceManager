@@ -13,6 +13,9 @@ module.exports = class {
     this.#provideUrlToIssueImage(server, new IssueImageFinder());
     this.#provideUrlToIssues(server, issueManager);
     this.#provideGetAllVolumeOfIssues(server, issueManager, userAccountManager);
+    this.#provideUrlToIgnoredIssues(server, userAccountManager);
+    this.#markIssueAsIgnored(server, userAccountManager);
+    this.#markIssueAsNotIgnored(server, userAccountManager);
   };
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
@@ -87,6 +90,42 @@ module.exports = class {
         .catch(error => {
           res.status(500).send(error.toString());
         });
+    })
+  };
+
+  #provideUrlToIgnoredIssues = function (server, userAccountManager) {
+    server.get("/issues/ignored", async (req, res) => {
+      userAccountManager.findUserIgnoredIssuesAsync(extractIdToken(req))
+        .then(ignoredIssues => {
+          res.end(JSON.stringify(ignoredIssues));
+        })
+        .catch(error => {
+          res.status(500).send(error.toString());
+        })
+    })
+  };
+
+  #markIssueAsIgnored = function (server, userAccountManager) {
+    server.put("/issues/:issueId/ignore", async (req, res) => {
+      userAccountManager.addIssueToIgnored(extractIdToken(req), req.params.issueId)
+        .then(() => {
+          res.end();
+        })
+        .catch(error => {
+          res.status(500).send(error.toString());
+        })
+    })
+  };
+
+  #markIssueAsNotIgnored = function (server, userAccountManager) {
+    server.put("/issues/:issueId/un-ignore", async (req, res) => {
+      userAccountManager.removeIssueFromIgnored(extractIdToken(req), req.params.issueId)
+        .then(() => {
+          res.end();
+        })
+        .catch(error => {
+          res.status(500).send(error.toString());
+        })
     })
   };
 };

@@ -96,7 +96,7 @@
         </thead>
         <tbody>
           <tr v-for="(issue, idx) in issues" :key="idx">
-            <template v-if="issue.status !== 'ignore'">
+            <template>
               <td v-if="user">
                 <IconLoading v-if="issue.status === 'wait'" />
                 <div v-else class="btn-group">
@@ -130,7 +130,7 @@
                         </button>
                         <button
                           class="dropdown-item"
-                          @click="changeStatus(idx, issue.id, 'ignore')"
+                          @click="addIssueToIgnored(idx, issue.id)"
                         >
                           Ignore
                         </button>
@@ -269,6 +269,9 @@ export default {
       const selectedFocusTypes = this.selectedFocusTypes;
       const selectedAppearances = this.selectedAppearances;
       return this.characterData.issues.filter(issue => {
+        if (issue.status === "ignore") {
+          return false;
+        }
         if (
           (selectedReadStatus === "Read" &&
             (!issue.status || issue.status === "clear")) ||
@@ -328,9 +331,6 @@ export default {
           }
         )
         .then(response => {
-          if (response.data.status === "ignore") {
-            this.totalIssues -= 1;
-          }
           this.issues[idx].status = response.data.status;
         })
         .catch(error => {
@@ -450,6 +450,17 @@ export default {
         disabledTypes.splice(indexOfDisabledType, 1);
       }
       localStorage.setItem(storageKey, JSON.stringify(disabledTypes));
+    },
+    addIssueToIgnored(idx, issueId) {
+      axios
+        .put(`issues/${issueId}/ignore`, {}, { mcamAuthenticated: true })
+        .then(() => {
+          this.totalIssues -= 1;
+          this.issues[idx].status = "ignore";
+        })
+        .catch(err => {
+          console.error(err);
+        });
     }
   },
   filters: {
@@ -465,6 +476,9 @@ export default {
   },
   beforeRouteUpdate(to, from, next) {
     next();
+    this.loadIssuePage();
+  },
+  mounted() {
     this.loadIssuePage();
   },
   components: {

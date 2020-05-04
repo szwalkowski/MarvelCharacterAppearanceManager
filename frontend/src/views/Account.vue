@@ -1,34 +1,39 @@
 <template>
-  <div
-    v-if="user"
-    class="card horizontal"
-    style="max-width:400px;margin:0 auto;"
-  >
-    <div class="card-stacked">
-      <div class="card-content">
-        <p>
-          name:
-          <strong>{{ user.displayName }}</strong>
-          <br />email:
-          <strong>{{ user.email }}</strong>
-          <br />
-          uid:
-          <strong>{{ user.uid }}</strong>
-          <br />provider:
-          <strong class="teal-text">
-            {{ user.providerData[0].providerId }}
-          </strong>
-        </p>
-      </div>
+  <div class="row">
+    <div class="card btn-gr col-auto">
+      <button
+        @click="selectedComponent = 'AccountInfo'"
+        class="btn btn-secondary"
+      >
+        Account info
+      </button>
+      <button
+        @click="selectedComponent = 'AccountIgnoredIssues'"
+        class="btn btn-secondary"
+      >
+        Ignored issues
+      </button>
     </div>
+    <component class="flex-fill" :is="selectedComponent" />
   </div>
 </template>
 <script>
 import { mapGetters } from "vuex";
+import AccountIgnoredIssues from "../components/account/AccountIgnoredIssues";
+import AccountInfo from "../components/account/AccountInfo";
 
 export default {
+  data() {
+    return {
+      selectedComponent: "AccountInfo"
+    };
+  },
   computed: {
     ...mapGetters("user", ["user"])
+  },
+  components: {
+    AccountInfo,
+    AccountIgnoredIssues
   }
 };
 </script>

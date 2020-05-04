@@ -54,18 +54,11 @@ module.exports = class {
       .project(projection);
   }
 
-  async findOneAsync(collection, query) {
+  async findOneAsync(collection, query, projection = {}) {
     return this
       .db()
       .collection(collection)
-      .findOne(query);
-  }
-
-  async findOneAsync(collection, query, projection) {
-    return this
-      .db()
-      .collection(collection)
-      .findOne(query, projection);
+      .findOne(query, { projection })
   }
 
   async updateAsync(collection, query, updateData) {
@@ -73,5 +66,19 @@ module.exports = class {
       .db()
       .collection(collection)
       .updateOne(query, { $set: updateData });
+  }
+
+  async addToSet(collection, query, setName, elements) {
+    return this
+      .db()
+      .collection(collection)
+      .updateOne(query, { $addToSet: { [setName]: { $each: elements } } });
+  }
+
+  async pull(collection, query, field, value) {
+    return this
+      .db()
+      .collection(collection)
+      .updateOne(query, { $pull: { [field]: value } });
   }
 };
