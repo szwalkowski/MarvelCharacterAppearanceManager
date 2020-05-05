@@ -64,6 +64,18 @@
                       <div class="dropdown-menu">
                         <button
                           class="dropdown-item"
+                          @click="
+                            changeFavouriteState(
+                              idx,
+                              issue._id,
+                              !issue.isFavourite
+                            )
+                          "
+                        >
+                          {{ issue.isFavourite ? "Unfavourite" : "Favourite" }}
+                        </button>
+                        <button
+                          class="dropdown-item"
                           @click="addIssueToIgnored(idx, issue._id)"
                         >
                           Ignore
@@ -74,6 +86,11 @@
                 </div>
               </td>
               <td>
+                <img
+                  v-if="!!issue.isFavourite"
+                  src="/img/FavIcon.png"
+                  style="width: 15px"
+                />
                 <a
                   type="button"
                   class="text-info"
@@ -156,6 +173,10 @@ export default {
     }
   },
   methods: {
+    ...mapActions("issue", [
+      "changeIgnoreStateOfIssue",
+      "changeFavouriteStateOfIssue"
+    ]),
     changeStatus(idx, issueId, status) {
       const issues = this.issues;
       const previousStatus = issues[idx].status;
@@ -213,9 +234,17 @@ export default {
         { height: "auto", scrollable: true, width: 1000 }
       );
     },
+    changeFavouriteState(idx, issueId, state) {
+      this.changeFavouriteStateOfIssue({ issueId, state })
+        .then(() => {
+          this.issues[idx].isFavourite = state;
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
     addIssueToIgnored(idx, issueId) {
-      axios
-        .put(`issues/${issueId}/ignore`, {}, { mcamAuthenticated: true })
+      this.changeIgnoreStateOfIssue({ issueId, state: true })
         .then(() => {
           this.totalIssues -= 1;
           this.issues[idx].status = "ignore";

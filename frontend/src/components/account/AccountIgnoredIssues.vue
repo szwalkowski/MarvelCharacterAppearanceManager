@@ -20,7 +20,7 @@
 </template>
 <script>
 import IconLoading from "@/components/icon/IconLoading";
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations, mapActions } from "vuex";
 import axios from "axios";
 
 export default {
@@ -35,9 +35,9 @@ export default {
   },
   methods: {
     ...mapMutations("loading", ["disableLoading", "enableLoading"]),
+    ...mapActions("issue", ["changeIgnoreStateOfIssue"]),
     removeIgnore(idx, issueId) {
-      axios
-        .put(`issues/${issueId}/un-ignore`, {}, { mcamAuthenticated: true })
+      this.changeIgnoreStateOfIssue({ issueId, state: false })
         .then(() => {
           this.ignoredIssues.splice(idx, 1);
         })

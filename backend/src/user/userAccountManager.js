@@ -44,12 +44,20 @@ module.exports = class {
     return await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { _id: 0, ignored: 1 });
   }
 
-  async addIssueToIgnored(idToken, issueId) {
-    await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "ignored", [issueId])
+  async changeIgnoreStateOfIssue(idToken, issueId, state) {
+    if (state) {
+      await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "ignored", [issueId]);
+    } else {
+      await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "ignored", issueId);
+    }
   }
 
-  async removeIssueFromIgnored(idToken, issueId) {
-    await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "ignored", issueId);
+  async changeFavouriteStateOfIssue(idToken, issueId, state) {
+    if (state) {
+      await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "favourites", [issueId]);
+    } else {
+      await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "favourites", issueId);
+    }
   }
 
   #addSessionWithUserCreationAsync = async function (sessionData) {

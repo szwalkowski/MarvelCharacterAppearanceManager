@@ -14,8 +14,8 @@ module.exports = class {
     this.#provideUrlToIssues(server, issueManager);
     this.#provideGetAllVolumeOfIssues(server, issueManager, userAccountManager);
     this.#provideUrlToIgnoredIssues(server, userAccountManager);
-    this.#markIssueAsIgnored(server, userAccountManager);
-    this.#markIssueAsNotIgnored(server, userAccountManager);
+    this.#changeIgnoreStateOfIssue(server, userAccountManager);
+    this.#changeFavouriteStateOfIssue(server, userAccountManager);
   };
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
@@ -79,11 +79,13 @@ module.exports = class {
           const data = values[0];
           const userCharacterReads = values[1] && values[1].issuesStatuses;
           const ignoredIssues = values[1] && values[1].ignored;
+          const favouriteIssues = values[1] && values[1].favourites;
           const filteredData = [];
           data.forEach(issue => {
             const isNotIgnored = !ignoredIssues || !ignoredIssues.includes(issue._id);
             if (isNotIgnored) {
               issue.status = null;
+              issue.isFavourite = favouriteIssues && favouriteIssues.includes(issue._id);
               const issueStatus = userCharacterReads && userCharacterReads.find(status => status.issueId === issue._id);
               if (issueStatus && issueStatus.status === "read") {
                 issue.status = issueStatus.status;
@@ -111,9 +113,9 @@ module.exports = class {
     })
   };
 
-  #markIssueAsIgnored = function (server, userAccountManager) {
+  #changeIgnoreStateOfIssue = function (server, userAccountManager) {
     server.put("/issues/:issueId/ignore", async (req, res) => {
-      userAccountManager.addIssueToIgnored(extractIdToken(req), req.params.issueId)
+      userAccountManager.changeIgnoreStateOfIssue(extractIdToken(req), req.params.issueId, req.body.state)
         .then(() => {
           res.end();
         })
@@ -123,9 +125,9 @@ module.exports = class {
     })
   };
 
-  #markIssueAsNotIgnored = function (server, userAccountManager) {
-    server.put("/issues/:issueId/un-ignore", async (req, res) => {
-      userAccountManager.removeIssueFromIgnored(extractIdToken(req), req.params.issueId)
+  #changeFavouriteStateOfIssue = function (server, userAccountManager) {
+    server.put("/issues/:issueId/favourite", async (req, res) => {
+      userAccountManager.changeFavouriteStateOfIssue(extractIdToken(req), req.params.issueId, req.body.state)
         .then(() => {
           res.end();
         })

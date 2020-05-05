@@ -2,12 +2,14 @@ import Vue from "vue";
 import Vuex from "vuex";
 import user from "./modules/user";
 import loading from "./modules/loading";
+import issue from "./modules/issue";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
     user,
-    loading
+    loading,
+    issue
   }
 });
