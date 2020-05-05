@@ -84,13 +84,13 @@ module.exports = class {
 
           const filteredAndMarkedIssues = [];
           data.characterData.issues.forEach(issue => {
-            issue.appearances.forEach(appearance => {
-              appearance.appearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, appearanceDictionary, true);
-              appearance.focusType = this.#dictionaryTranslator.translateUsingDictionary(appearance.focusType, focusDictionary, true);
-            });
-            const issueStatus = userCharacterReads && userCharacterReads.find(status => status.issueId === issue.id);
-            const isNotIgnored = !ignoredIssues || !ignoredIssues.includes(issue.id)
+            const isNotIgnored = !ignoredIssues || !ignoredIssues.includes(issue.id);
             if (isNotIgnored) {
+              issue.appearances.forEach(appearance => {
+                appearance.appearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, appearanceDictionary, true);
+                appearance.focusType = this.#dictionaryTranslator.translateUsingDictionary(appearance.focusType, focusDictionary, true);
+              });
+              const issueStatus = userCharacterReads && userCharacterReads.find(status => status.issueId === issue.id);
               if (issueStatus &&
                 (issueStatus.status === "read" ||
                   (issueStatus.status === "character" && issueStatus.characters.find(char => char === data.characterData._id)))) {

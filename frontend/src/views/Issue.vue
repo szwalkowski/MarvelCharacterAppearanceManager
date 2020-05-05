@@ -36,7 +36,7 @@
         </thead>
         <tbody>
           <tr v-for="(issue, idx) in issues" :key="idx">
-            <template v-if="issue.status !== 'ignore'">
+            <template>
               <td v-if="user">
                 <IconLoading v-if="issue.status === 'wait'" />
                 <div v-else class="btn-group">
@@ -64,7 +64,7 @@
                       <div class="dropdown-menu">
                         <button
                           class="dropdown-item"
-                          @click="changeStatus(idx, issue._id, 'ignore')"
+                          @click="addIssueToIgnored(idx, issue._id)"
                         >
                           Ignore
                         </button>
@@ -138,6 +138,9 @@ export default {
       }
       const selectedReadStatus = this.selectedReadStatus;
       return this.issuesData.filter(issue => {
+        if (issue.status === "ignore") {
+          return false;
+        }
         if (
           (selectedReadStatus === "Read" &&
             (!issue.status || issue.status === "clear")) ||
@@ -209,6 +212,17 @@ export default {
         { issueId },
         { height: "auto", scrollable: true, width: 1000 }
       );
+    },
+    addIssueToIgnored(idx, issueId) {
+      axios
+        .put(`issues/${issueId}/ignore`, {}, { mcamAuthenticated: true })
+        .then(() => {
+          this.totalIssues -= 1;
+          this.issues[idx].status = "ignore";
+        })
+        .catch(err => {
+          console.error(err);
+        });
     }
   },
   filters: {

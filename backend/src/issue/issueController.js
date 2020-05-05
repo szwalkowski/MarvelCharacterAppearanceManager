@@ -78,14 +78,20 @@ module.exports = class {
         .then(values => {
           const data = values[0];
           const userCharacterReads = values[1] && values[1].issuesStatuses;
+          const ignoredIssues = values[1] && values[1].ignored;
+          const filteredData = [];
           data.forEach(issue => {
-            issue.status = null;
-            const issueStatus = userCharacterReads && userCharacterReads.find(status => status.issueId === issue._id);
-            if (issueStatus && issueStatus.status === "read") {
-              issue.status = issueStatus.status;
+            const isNotIgnored = !ignoredIssues || !ignoredIssues.includes(issue._id);
+            if (isNotIgnored) {
+              issue.status = null;
+              const issueStatus = userCharacterReads && userCharacterReads.find(status => status.issueId === issue._id);
+              if (issueStatus && issueStatus.status === "read") {
+                issue.status = issueStatus.status;
+              }
+              filteredData.push(issue);
             }
           });
-          res.end(JSON.stringify(data));
+          res.end(JSON.stringify(filteredData));
         })
         .catch(error => {
           res.status(500).send(error.toString());
