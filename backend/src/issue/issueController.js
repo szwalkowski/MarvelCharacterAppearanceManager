@@ -13,9 +13,6 @@ module.exports = class {
     this.#provideUrlToIssueImage(server, new IssueImageFinder());
     this.#provideUrlToIssues(server, issueManager);
     this.#provideGetAllVolumeOfIssues(server, issueManager, userAccountManager);
-    this.#provideUrlToIgnoredIssues(server, userAccountManager);
-    this.#changeIgnoreStateOfIssue(server, userAccountManager);
-    this.#changeFavouriteStateOfIssue(server, userAccountManager);
   };
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
@@ -98,42 +95,6 @@ module.exports = class {
         .catch(error => {
           res.status(500).send(error.toString());
         });
-    })
-  };
-
-  #provideUrlToIgnoredIssues = function (server, userAccountManager) {
-    server.get("/issues/ignored", async (req, res) => {
-      userAccountManager.findUserIgnoredIssuesAsync(extractIdToken(req))
-        .then(ignoredIssues => {
-          res.end(JSON.stringify(ignoredIssues));
-        })
-        .catch(error => {
-          res.status(500).send(error.toString());
-        })
-    })
-  };
-
-  #changeIgnoreStateOfIssue = function (server, userAccountManager) {
-    server.put("/issues/:issueId/ignore", async (req, res) => {
-      userAccountManager.changeIgnoreStateOfIssue(extractIdToken(req), req.params.issueId, req.body.state)
-        .then(() => {
-          res.end();
-        })
-        .catch(error => {
-          res.status(500).send(error.toString());
-        })
-    })
-  };
-
-  #changeFavouriteStateOfIssue = function (server, userAccountManager) {
-    server.put("/issues/:issueId/favourite", async (req, res) => {
-      userAccountManager.changeFavouriteStateOfIssue(extractIdToken(req), req.params.issueId, req.body.state)
-        .then(() => {
-          res.end();
-        })
-        .catch(error => {
-          res.status(500).send(error.toString());
-        })
     })
   };
 };

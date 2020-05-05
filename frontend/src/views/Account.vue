@@ -8,32 +8,49 @@
         Account info
       </button>
       <button
-        @click="selectedComponent = 'AccountIgnoredIssues'"
+        @click="showFavourites()"
+        class="btn btn-secondary"
+      >
+        Favourite issues
+      </button>
+      <button
+        @click="showIgnored()"
         class="btn btn-secondary"
       >
         Ignored issues
       </button>
     </div>
-    <component class="flex-fill" :is="selectedComponent" />
+    <component class="flex-fill" :is="selectedComponent" :issueTypeView="issueTypeView" />
   </div>
 </template>
 <script>
 import { mapGetters } from "vuex";
-import AccountIgnoredIssues from "../components/account/AccountIgnoredIssues";
+import IssueSimpleList from "../components/issue/IssueSimpleList";
 import AccountInfo from "../components/account/AccountInfo";
 
 export default {
   data() {
     return {
+      issueTypeView: "",
       selectedComponent: "AccountInfo"
     };
   },
   computed: {
     ...mapGetters("user", ["user"])
   },
+  methods: {
+    showFavourites() {
+      this.issueTypeView = "favourites";
+      this.selectedComponent = "IssueSimpleList";
+    },
+    showIgnored() {
+      this.issueTypeView = "ignored";
+      this.selectedComponent = "IssueSimpleList";
+    }
+  },
   components: {
     AccountInfo,
-    AccountIgnoredIssues
+    IssueSimpleList
   }
 };
 </script>

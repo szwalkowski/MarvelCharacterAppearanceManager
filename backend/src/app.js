@@ -2,6 +2,8 @@ const express = require('express');
 const CharacterController = require('./character/characterController');
 const DictionaryController = require('./dictionary/dictionaryController');
 const IssueController = require('./issue/issueController');
+const IssueIgnoredController = require('./issue/issueIgnoredController');
+const IssueFavouritesController = require('./issue/issueFavouritesController');
 const UserController = require('./user/userController');
 const IssueManager = require("./issue/issueManager");
 const UserAccountManager = require("./user/userAccountManager");
@@ -21,7 +23,7 @@ class App {
   #configureServerSettings = function (server) {
     server.use((req, res, next) => {
       res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-      res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT");
+      res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
       res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
       next();
     });
@@ -36,6 +38,8 @@ class App {
     new DictionaryController(server, dbConnection);
     new UserController(server, userAccountManager);
     new IssueController(server, issueManager, userAccountManager);
+    new IssueIgnoredController(server, userAccountManager);
+    new IssueFavouritesController(server, userAccountManager);
   };
 
   #startServer = function (server) {

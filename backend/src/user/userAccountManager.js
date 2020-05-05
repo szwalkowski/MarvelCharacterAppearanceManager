@@ -44,20 +44,24 @@ module.exports = class {
     return await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { _id: 0, ignored: 1 });
   }
 
-  async changeIgnoreStateOfIssue(idToken, issueId, state) {
-    if (state) {
-      await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "ignored", [issueId]);
-    } else {
-      await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "ignored", issueId);
-    }
+  async markIssueAsIgnoredAsync(idToken, issueId) {
+    await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "ignored", [issueId]);
   }
 
-  async changeFavouriteStateOfIssue(idToken, issueId, state) {
-    if (state) {
-      await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "favourites", [issueId]);
-    } else {
-      await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "favourites", issueId);
-    }
+  async removeIssueFromIgnoredAsync(idToken, issueId) {
+    await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "ignored", issueId);
+  }
+
+  async findUserFavouritesIssuesAsync(idToken) {
+    return await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { _id: 0, favourites: 1 });
+  }
+
+  async markIssueAsFavouriteAsync(idToken, issueId) {
+    await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "favourites", [issueId]);
+  }
+
+  async removeIssueFromFavouriteAsync(idToken, issueId) {
+    await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "favourites", issueId);
   }
 
   #addSessionWithUserCreationAsync = async function (sessionData) {

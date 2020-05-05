@@ -2,22 +2,30 @@ import axios from "axios";
 
 const actions = {
   changeIgnoreStateOfIssue(context, data) {
-    return axios.put(
-      `issues/${data.issueId}/ignore`,
-      {
-        state: data.state
-      },
-      { mcamAuthenticated: true }
-    );
+    if (data.state) {
+      return axios.post(
+        `issues/ignored/${data.issueId}`,
+        {},
+        { mcamAuthenticated: true }
+      );
+    } else {
+      return axios.delete(`issues/ignored/${data.issueId}`, {
+        mcamAuthenticated: true
+      });
+    }
   },
   changeFavouriteStateOfIssue(context, data) {
-    return axios.put(
-      `issues/${data.issueId}/favourite`,
-      {
-        state: data.state
-      },
-      { mcamAuthenticated: true }
-    );
+    if (data.state) {
+      return axios.post(
+        `issues/favourites/${data.issueId}`,
+        {},
+        { mcamAuthenticated: true }
+      );
+    } else {
+      return axios.delete(`issues/favourites/${data.issueId}`, {
+        mcamAuthenticated: true
+      });
+    }
   }
 };
 
