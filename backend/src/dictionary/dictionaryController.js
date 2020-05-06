@@ -14,7 +14,8 @@ module.exports = class {
 
   #prepareGetDictionary = function (server, dictionaryManager) {
     server.get("/getDictionary", async (req, res) => {
-      const data = (await dictionaryManager.getDictionaryByIdAsync(req.query.dictionaryId)).dictionary;
+      const dictionaryResponse = await dictionaryManager.getDictionaryByIdAsync(req.query.dictionaryId);
+      const data = (dictionaryResponse && dictionaryResponse.dictionary) || [];
       data && data.sort((a, b) => {
         if (a.label === '-hide-') return -1;
         if (b.label === '-hide-') return 1;
