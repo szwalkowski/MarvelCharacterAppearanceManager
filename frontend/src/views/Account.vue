@@ -7,25 +7,30 @@
       >
         Account info
       </button>
-      <button
-        @click="showFavourites()"
-        class="btn btn-secondary"
-      >
+      <button @click="showFavourites()" class="btn btn-secondary">
         Favourite issues
       </button>
-      <button
-        @click="showIgnored()"
-        class="btn btn-secondary"
-      >
+      <button @click="showIgnored()" class="btn btn-secondary">
         Ignored issues
       </button>
+      <button
+        @click="selectedComponent = 'AccountDeletion'"
+        class="btn btn-secondary"
+      >
+        Remove account
+      </button>
     </div>
-    <component class="flex-fill" :is="selectedComponent" :issueTypeView="issueTypeView" />
+    <component
+      class="flex-fill"
+      :is="selectedComponent"
+      :issueTypeView="issueTypeView"
+    />
   </div>
 </template>
 <script>
 import { mapGetters } from "vuex";
 import IssueSimpleList from "../components/issue/IssueSimpleList";
+import AccountDeletion from "../components/account/AccountDeletion";
 import AccountInfo from "../components/account/AccountInfo";
 
 export default {
@@ -49,6 +54,7 @@ export default {
     }
   },
   components: {
+    AccountDeletion,
     AccountInfo,
     IssueSimpleList
   }

@@ -2,6 +2,7 @@
   <div class="card horizontal col-auto">
     <IconLoading v-if="isLoading" />
     <div v-else>
+      <div v-if="!issues.length">No {{ issueTypeView }} issues found.</div>
       <div v-for="(issue, idx) in issues" :key="issue" class="row">
         <button
           @click="removeIssueFromList(idx, issue)"

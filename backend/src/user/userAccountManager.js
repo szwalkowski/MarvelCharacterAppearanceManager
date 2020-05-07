@@ -25,6 +25,13 @@ module.exports = class {
     await this.#dbConnection.updateAsync("users", { "sessionData.idToken": idToken }, { sessionData: {} });
   }
 
+  async deleteUserAsync(idToken) {
+    if (!idToken) {
+      throw new Error("Missing idToken!");
+    }
+    await this.#dbConnection.deleteAsync("users", { "sessionData.idToken": idToken });
+  }
+
   async verifyIdTokenAsync(idToken) {
     const verificationData = await this.#userFirebaseManager.verifyIdTokenAsync(idToken);
     if (verificationData) {

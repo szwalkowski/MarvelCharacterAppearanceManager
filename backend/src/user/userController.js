@@ -1,4 +1,5 @@
 const UserValidator = require("./userValidator");
+const { extractIdToken } = require("../utils");
 
 module.exports = class {
   #userValidator;
@@ -11,6 +12,7 @@ module.exports = class {
   #createUserEndpoints = function (server, userAccountManager) {
     this.#prepareLogIn(server, userAccountManager);
     this.#prepareLogOut(server, userAccountManager);
+    this.#deleteUser(server, userAccountManager);
   };
 
   #prepareLogIn = function (server, userAccountManager) {
@@ -30,7 +32,14 @@ module.exports = class {
   #prepareLogOut = function (server, userAccountManager) {
     server.post("/logOut", async (req, res) => {
       userAccountManager.logOutAsync(req.body["idToken"]);
-      res.end();
+      res.status(204).end();
+    });
+  };
+
+  #deleteUser = function (server, userAccountManager) {
+    server.delete("/user", async (req, res) => {
+      userAccountManager.deleteUserAsync(extractIdToken(req));
+      res.status(204).end();
     });
   };
 };

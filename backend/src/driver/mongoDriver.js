@@ -68,6 +68,13 @@ module.exports = class {
       .updateOne(query, { $set: updateData });
   }
 
+  async deleteAsync(collection, query) {
+    return this
+      .db()
+      .collection(collection)
+      .deleteOne(query);
+  }
+
   async addToSet(collection, query, setName, elements) {
     return this
       .db()
