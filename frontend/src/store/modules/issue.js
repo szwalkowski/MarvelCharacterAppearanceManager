@@ -26,6 +26,17 @@ const actions = {
         mcamAuthenticated: true
       });
     }
+  },
+  changeStatusOfIssues(context, data) {
+    return axios.post(
+      "changeIssuesStatus",
+      {
+        issueIds: data.issuesIds,
+        status: data.status,
+        characterId: data.characterId
+      },
+      { mcamAuthenticated: true }
+    );
   }
 };
 

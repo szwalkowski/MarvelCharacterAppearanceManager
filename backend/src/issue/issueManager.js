@@ -18,33 +18,37 @@ module.exports = class {
     return await this.#dbConnection.saveAsync(collectionName, issue._id, issue);
   }
 
-  async changeIssueStatusAsync(issueId, newStatus, userIdToken, characterId) {
+  async changeIssuesStatusAsync(issueIds, newStatus, userIdToken, characterId) {
     const user = await this.#userAccountManager.findUserByIdTokenAsync(userIdToken);
     if (!user) {
       throw new Error("Not allowed to call this method");
     }
-    let issueStatus = user.issuesStatuses.find(iStatus => iStatus.issueId === issueId);
-    if (!issueStatus) {
-      issueStatus = {
-        issueId,
-        characters: []
-      };
-      user.issuesStatuses.push(issueStatus);
-    }
-    if (characterId) {
-      this.#resolveCharacterId(issueStatus, newStatus, characterId);
-    }
-    if (newStatus !== "clear") {
-      issueStatus.status = newStatus;
-    }
-    if (!issueStatus.characters.length && newStatus !== "read") {
-      user.issuesStatuses = user.issuesStatuses.filter(iStatus => iStatus.issueId !== issueId);
-    } else if (newStatus === "clear") {
-      issueStatus.status = "character";
-    }
+    const issueStatuses = {};
+    issueIds.forEach(issueId => {
+      let issueStatus = user.issuesStatuses.find(iStatus => iStatus.issueId === issueId);
+      if (!issueStatus) {
+        issueStatus = {
+          issueId,
+          characters: []
+        };
+        user.issuesStatuses.push(issueStatus);
+      }
+      if (characterId) {
+        this.#resolveCharacterId(issueStatus, newStatus, characterId);
+      }
+      if (newStatus !== "clear") {
+        issueStatus.status = newStatus;
+      }
+      if (!issueStatus.characters.length && newStatus !== "read") {
+        user.issuesStatuses = user.issuesStatuses.filter(iStatus => iStatus.issueId !== issueId);
+      } else if (newStatus === "clear") {
+        issueStatus.status = "character";
+      }
+      issueStatuses[issueId] = issueStatus;
+      issueStatuses[issueId].status = newStatus;
+    });
     await this.#dbConnection.saveAsync("users", user._id, user);
-    issueStatus.status = newStatus;
-    return issueStatus;
+    return issueStatuses;
   }
 
   async getAllIssuesAndPackThemByVolumes() {

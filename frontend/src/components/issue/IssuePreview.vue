@@ -107,6 +107,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions("issue", ["changeStatusOfIssues"]),
     updateStories() {
       const stories = {};
       this.issue.appearances.forEach(appearance => {
@@ -139,26 +140,24 @@ export default {
       this.$emit("close");
     },
     changeStatus(status, characterId) {
-      axios
-        .post(
-          "changeIssueStatus",
-          {
-            issueId: this.issue._id,
-            status: status,
-            characterId
-          },
-          { mcamAuthenticated: true }
-        )
+      const issueId = this.issue._id;
+      this.changeStatusOfIssues({
+        issuesIds: [issueId],
+        status,
+        characterId
+      })
         .then(response => {
-          if (response.data.status === "read") {
+          if (response.data[issueId].status === "read") {
             this.issue.read = true;
-          } else if (response.data.status === "clear") {
+          } else if (response.data[issueId].status === "clear") {
             this.issue.read = false;
           }
           for (const story in this.stories) {
             this.stories[story].characters.forEach(character => {
               character.read =
-                response.data.characters.indexOf(character.characterId) >= 0;
+                response.data[issueId].characters.indexOf(
+                  character.characterId
+                ) >= 0;
             });
           }
           this.updateStories();

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="col-sm pl-sm-1">
+  <div class="container">
+    <div class="col-sm">
       <h4 class="row">
         {{ `Visible ${issues.length} issues of ${totalIssues} total:` }}
       </h4>
@@ -22,7 +22,7 @@
         </div>
       </form>
     </div>
-    <section class="row pr-sm-5">
+    <section class="row">
       <table class="table table-bordered table-striped table-sm">
         <thead class="text-sm-center">
           <tr>
@@ -40,18 +40,23 @@
               <td v-if="user">
                 <IconLoading v-if="issue.status === 'wait'" />
                 <div v-else class="btn-group">
+                  <input
+                    type="checkbox"
+                    class="form-check-inline mt-sm-2 ml-sm-1"
+                    v-model="issue.selected"
+                  />
                   <button
                     v-if="
                       issue.status === 'read' || issue.status === 'character'
                     "
-                    @click="changeStatus(idx, issue._id, 'clear')"
+                    @click="changeStatus([issue._id], 'clear')"
                     class="btn btn-danger"
                   >
                     Unread
                   </button>
                   <template v-else>
                     <button
-                      @click="changeStatus(idx, issue._id, 'read')"
+                      @click="changeStatus([issue._id], 'read')"
                       class="btn btn-primary"
                     >
                       Read
@@ -120,6 +125,36 @@
         </tbody>
       </table>
     </section>
+    <div class="footer">
+      <div class="btn-group-sm card-footer">
+        <button
+          v-if="allVisibleIssuesShouldBeSelected"
+          @click="allVisibleIssuesShouldBeSelected = false"
+          class="btn btn-dark btn-sm"
+        >
+          Unselect all visible issues
+        </button>
+        <button
+          v-else
+          @click="allVisibleIssuesShouldBeSelected = true"
+          class="btn btn-dark btn-sm"
+        >
+          Select all visible issues
+        </button>
+        <button
+          @click="changeStateOfSelectedIssues('read')"
+          class="btn btn-dark btn-sm"
+        >
+          Read selected issues
+        </button>
+        <button
+          @click="changeStateOfSelectedIssues('clear')"
+          class="btn btn-dark btn-sm"
+        >
+          Unread selected issues
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -137,7 +172,8 @@ export default {
       visibleIssues: 0,
       issueName: "",
       issueVolume: "",
-      issuesData: undefined
+      issuesData: undefined,
+      allVisibleIssuesShouldBeSelected: false
     };
   },
   watch: {
@@ -155,6 +191,7 @@ export default {
       }
       const selectedReadStatus = this.selectedReadStatus;
       return this.issuesData.filter(issue => {
+        issue.selected = false;
         if (issue.status === "ignore") {
           return false;
         }
@@ -168,6 +205,7 @@ export default {
         ) {
           return false;
         }
+        issue.selected = this.allVisibleIssuesShouldBeSelected;
         return true;
       });
     }
@@ -175,37 +213,37 @@ export default {
   methods: {
     ...mapActions("issue", [
       "changeIgnoreStateOfIssue",
-      "changeFavouriteStateOfIssue"
+      "changeFavouriteStateOfIssue",
+      "changeStatusOfIssues"
     ]),
-    changeStatus(idx, issueId, status) {
+    changeStateOfSelectedIssues(state) {
+      const issueIds = this.issues
+        .filter(issue => issue.selected)
+        .map(issue => issue._id);
+      this.changeStatus(issueIds, state);
+    },
+    changeStatus(issuesIds, status) {
       const issues = this.issues;
-      const previousStatus = issues[idx].status;
-      issues[idx].status = "wait";
-      axios
-        .post(
-          "changeIssueStatus",
-          {
-            issueId,
-            status,
-            characterId: this.characterId
-          },
-          {
-            mcamAuthenticated: true
-          }
-        )
+      issues
+        .filter(issue => issuesIds.includes(issue._id))
+        .forEach(issue => (issue.status = "wait"));
+      this.changeStatusOfIssues({
+        issuesIds,
+        status
+      })
         .then(response => {
-          if (response.data.status === "ignore") {
-            this.totalIssues -= 1;
+          for (const [key, value] of Object.entries(response.data)) {
+            this.issues.find(issue => issue._id === key).status = value.status;
           }
-          this.issues[idx].status = response.data.status;
+          this.allVisibleIssuesShouldBeSelected = false;
         })
         .catch(error => {
           console.error(error);
-          issues[idx].status = previousStatus;
           this.$fire({
             text: "You are not authorized to do such action",
             type: "error"
           });
+          this.loadIssuePage();
         });
     },
     async loadIssuePage() {

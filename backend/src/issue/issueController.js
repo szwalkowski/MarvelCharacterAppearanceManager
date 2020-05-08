@@ -16,8 +16,8 @@ module.exports = class {
   };
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
-    server.post("/changeIssueStatus", (req, res) => {
-      issueManager.changeIssueStatusAsync(req.body["issueId"], req.body["status"], extractIdToken(req), req.body["characterId"]).then(response => {
+    server.post("/changeIssuesStatus", (req, res) => {
+      issueManager.changeIssuesStatusAsync(req.body["issueIds"], req.body["status"], extractIdToken(req), req.body["characterId"]).then(response => {
         res.end(JSON.stringify(response));
       }, reason => {
         console.error(reason);

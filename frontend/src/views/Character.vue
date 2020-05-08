@@ -1,7 +1,10 @@
 <template>
-  <div>
-    <div class="col-sm pl-sm-1">
-      <h4 class="row">
+  <div class="container">
+    <div class="col-sm">
+      <h3 class="row text-info">
+        {{ `${characterId}` | removeDash }}
+      </h3>
+      <h4 class="row text-light">
         {{ `Visible ${issues.length} issues of ${totalIssues} total:` }}
       </h4>
       <form class="row">
@@ -21,7 +24,7 @@
           </div>
           <div class="row form-group">
             <label class="col-sm-1 pl-sm-0">Focus types:</label>
-            <div class="custom-control custom-checkbox col-sm-1">
+            <div class="custom-control custom-checkbox col-sm-auto">
               <input
                 type="checkbox"
                 class="custom-control-input"
@@ -33,7 +36,7 @@
               </label>
             </div>
             <div
-              class="custom-control custom-checkbox col-sm-1"
+              class="custom-control custom-checkbox col-sm-auto"
               v-for="(type, idx) in focusTypes"
               :key="'_' + type + idx"
             >
@@ -52,7 +55,7 @@
           </div>
           <div class="row form-group">
             <label class="col-sm-1 pl-sm-0">Appearances: </label>
-            <div class="custom-control custom-checkbox col-sm-1">
+            <div class="custom-control custom-checkbox col-sm-auto">
               <input
                 type="checkbox"
                 class="custom-control-input"
@@ -62,7 +65,7 @@
               <label class="custom-control-label" for="hide-type">Empty</label>
             </div>
             <div
-              class="custom-control custom-checkbox col-sm-1"
+              class="custom-control custom-checkbox col-sm-auto"
               v-for="(type, idx) in appearanceTypes"
               :key="' ' + idx"
             >
@@ -82,7 +85,7 @@
         </div>
       </form>
     </div>
-    <section class="row pr-sm-5">
+    <section class="row">
       <table class="table table-bordered table-striped table-sm">
         <thead class="text-sm-center">
           <tr>
@@ -100,23 +103,28 @@
               <td v-if="user">
                 <IconLoading v-if="issue.status === 'wait'" />
                 <div v-else class="btn-group">
+                  <input
+                    type="checkbox"
+                    class="form-check-inline mt-sm-2 ml-sm-1"
+                    v-model="issue.selected"
+                  />
                   <button
                     v-if="
                       issue.status === 'read' || issue.status === 'character'
                     "
-                    @click="changeStatus(idx, issue.id, 'clear')"
+                    @click="changeStatus([issue.id], 'clear')"
                     class="btn btn-danger"
                   >
                     Unread
                   </button>
                   <template v-else>
                     <button
-                      @click="changeStatus(idx, issue.id, 'read')"
+                      @click="changeStatus([issue.id], 'read')"
                       class="btn btn-primary"
                     >
                       Read
                     </button>
-                    <div class="btn-group">
+                    <div class="btn-group mr-sm-1">
                       <button
                         class="btn btn-primary dropdown-toggle"
                         data-toggle="dropdown"
@@ -124,7 +132,7 @@
                       <div class="dropdown-menu">
                         <button
                           class="dropdown-item"
-                          @click="changeStatus(idx, issue.id, 'character')"
+                          @click="changeStatus([issue.id], 'character')"
                         >
                           Mark read for this character
                         </button>
@@ -198,6 +206,42 @@
         </tbody>
       </table>
     </section>
+    <div class="footer">
+      <div class="btn-group-sm card-footer">
+        <button
+          v-if="allVisibleIssuesShouldBeSelected"
+          @click="allVisibleIssuesShouldBeSelected = false"
+          class="btn btn-dark btn-sm"
+        >
+          Unselect all visible issues
+        </button>
+        <button
+          v-else
+          @click="allVisibleIssuesShouldBeSelected = true"
+          class="btn btn-dark btn-sm"
+        >
+          Select all visible issues
+        </button>
+        <button
+          @click="changeStateOfSelectedIssues('read')"
+          class="btn btn-dark btn-sm"
+        >
+          Read selected issues
+        </button>
+        <button
+          @click="changeStateOfSelectedIssues('character')"
+          class="btn btn-dark btn-sm"
+        >
+          Read selected issues for this character only
+        </button>
+        <button
+          @click="changeStateOfSelectedIssues('clear')"
+          class="btn btn-dark btn-sm"
+        >
+          Unread selected issues
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -210,7 +254,6 @@ export default {
   data() {
     return {
       characterId: "",
-      alias: "",
       universe: "",
       readStatuses: ["All", "Read", "Not read"],
       focusTypes: [],
@@ -222,11 +265,13 @@ export default {
       totalIssues: 0,
       visibleIssues: 0,
       showEmptyAppearanceTypes: true,
-      showEmptyFocusTypes: true
+      showEmptyFocusTypes: true,
+      allVisibleIssuesShouldBeSelected: false
     };
   },
   watch: {
     selectedAppearances(newValue, oldValue) {
+      this.allVisibleIssuesShouldBeSelected = false;
       if (
         newValue.length - oldValue.length > 1 ||
         newValue.length === oldValue.length
@@ -246,6 +291,7 @@ export default {
       }
     },
     selectedFocusTypes(newValue, oldValue) {
+      this.allVisibleIssuesShouldBeSelected = false;
       if (
         newValue.length - oldValue.length > 1 ||
         newValue.length === oldValue.length
@@ -265,9 +311,11 @@ export default {
       }
     },
     showEmptyAppearanceTypes(newValue) {
+      this.allVisibleIssuesShouldBeSelected = false;
       this.editStoredSettings(!newValue, false, "Empty");
     },
     showEmptyFocusTypes(newValue) {
+      this.allVisibleIssuesShouldBeSelected = false;
       this.editStoredSettings(!newValue, true, "Empty");
     },
     isUserLoadInProgress(newValue) {
@@ -286,6 +334,7 @@ export default {
       const selectedFocusTypes = this.selectedFocusTypes;
       const selectedAppearances = this.selectedAppearances;
       return this.characterData.issues.filter(issue => {
+        issue.selected = false;
         if (issue.status === "ignore") {
           return false;
         }
@@ -324,44 +373,48 @@ export default {
           }) ||
           (this.showEmptyAppearanceTypes && !issue.appearances.length)
         ) {
+          issue.selected = this.allVisibleIssuesShouldBeSelected;
           return true;
         }
         return false;
       });
-      console.log(this.characterData.issues);
     }
   },
   methods: {
     ...mapActions("issue", [
       "changeIgnoreStateOfIssue",
-      "changeFavouriteStateOfIssue"
+      "changeFavouriteStateOfIssue",
+      "changeStatusOfIssues"
     ]),
-    changeStatus(idx, issueId, status) {
+    changeStateOfSelectedIssues(state) {
+      const issueIds = this.issues
+        .filter(issue => issue.selected)
+        .map(issue => issue.id);
+      this.changeStatus(issueIds, state);
+    },
+    changeStatus(issuesIds, status) {
       const issues = this.issues;
-      const previousStatus = issues[idx].status;
-      issues[idx].status = "wait";
-      axios
-        .post(
-          "changeIssueStatus",
-          {
-            issueId,
-            status,
-            characterId: this.characterId
-          },
-          {
-            mcamAuthenticated: true
-          }
-        )
+      issues
+        .filter(issue => issuesIds.includes(issue.id))
+        .forEach(issue => (issue.status = "wait"));
+      this.changeStatusOfIssues({
+        issuesIds,
+        status,
+        characterId: this.characterId
+      })
         .then(response => {
-          this.issues[idx].status = response.data.status;
+          for (const [key, value] of Object.entries(response.data)) {
+            this.issues.find(issue => issue.id === key).status = value.status;
+          }
+          this.allVisibleIssuesShouldBeSelected = false;
         })
         .catch(error => {
           console.error(error);
-          issues[idx].status = previousStatus;
           this.$fire({
             text: "You are not authorized to do such action",
             type: "error"
           });
+          this.loadIssuePage();
         });
     },
     async loadIssuePage() {
@@ -502,6 +555,9 @@ export default {
         month = "0" + month;
       }
       return [year, month].join("-");
+    },
+    removeDash(title) {
+      return title.replace(/_/g, " ");
     }
   },
   beforeRouteUpdate(to, from, next) {

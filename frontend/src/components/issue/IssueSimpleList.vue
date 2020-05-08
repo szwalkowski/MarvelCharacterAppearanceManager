@@ -81,7 +81,7 @@ export default {
   },
   filters: {
     removeDash(title) {
-      return title.replace("_", " ");
+      return title.replace(/_/g, " ");
     }
   },
   components: {

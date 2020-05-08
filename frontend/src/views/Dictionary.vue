@@ -159,7 +159,7 @@ export default {
       if (!this.errors.length) {
         this.dictionary.push({
           label: label,
-          values: [value]
+          values: [value.trim().toUpperCase()]
         });
         this.newRow = { label: undefined, value: undefined };
       }
