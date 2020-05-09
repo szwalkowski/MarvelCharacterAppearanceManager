@@ -128,7 +128,7 @@ export default {
       stories: {}
     };
   },
-  props: ["issueId"],
+  props: ["issueId", "markIssueAsFn"],
   computed: {
     ...mapGetters("user", ["user", "isUserLoadInProgress"])
   },
@@ -198,6 +198,7 @@ export default {
             });
           }
           this.updateStories();
+          this.markIssueAsFn(this.issue._id, status);
         })
         .catch(error => {
           console.error(error);
@@ -242,6 +243,7 @@ export default {
       this.changeFavouriteStateOfIssue({ issueId: this.issue._id, state })
         .then(() => {
           this.issue.isFavourite = state;
+          this.markIssueAsFn(this.issue._id, "favourite", state);
         })
         .catch(err => {
           console.error(err);
@@ -251,6 +253,7 @@ export default {
       this.changeIgnoreStateOfIssue({ issueId: this.issue._id, state })
         .then(() => {
           this.issue.isIgnored = state;
+          this.markIssueAsFn(this.issue._id, "ignore", state);
         })
         .catch(err => {
           console.error(err);

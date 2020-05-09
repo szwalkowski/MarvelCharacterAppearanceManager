@@ -84,6 +84,7 @@ module.exports = class {
           data.forEach(issue => {
             const isNotIgnored = !ignoredIssues || !ignoredIssues.includes(issue._id);
             if (isNotIgnored) {
+              issue.isIgnored = false;
               issue.status = null;
               issue.isFavourite = favouriteIssues && favouriteIssues.includes(issue._id);
               const issueStatus = userCharacterReads && userCharacterReads.find(status => status.issueId === issue._id);

@@ -335,7 +335,7 @@ export default {
       const selectedAppearances = this.selectedAppearances;
       return this.characterData.issues.filter(issue => {
         issue.selected = false;
-        if (issue.status === "ignore") {
+        if (issue.isIgnored) {
           return false;
         }
         if (
@@ -501,7 +501,7 @@ export default {
     showIssueDetails(issueId) {
       this.$modal.show(
         IssuePreview,
-        { issueId },
+        { issueId, markIssueAsFn: this.markIssueAs },
         { height: "auto", scrollable: true, width: 1000 }
       );
     },
@@ -539,11 +539,24 @@ export default {
       this.changeIgnoreStateOfIssue({ issueId, state: true })
         .then(() => {
           this.totalIssues -= 1;
-          this.issues[idx].status = "ignore";
+          this.issues[idx].isIgnored = true;
         })
         .catch(err => {
           console.error(err);
         });
+    },
+    markIssueAs(issueId, statusName, state) {
+      const issue = this.characterData.issues.find(
+        issue => issue.id === issueId
+      );
+      if (statusName === "favourite") {
+        issue.isFavourite = state;
+      } else if (statusName === "ignore") {
+        this.totalIssues += state ? -1 : 1;
+        issue.isIgnored = state;
+      } else {
+        issue.status = statusName;
+      }
     }
   },
   filters: {

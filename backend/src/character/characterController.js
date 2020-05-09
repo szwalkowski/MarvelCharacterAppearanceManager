@@ -91,6 +91,7 @@ module.exports = class {
           data.characterData.issues.forEach(issue => {
             const isNotIgnored = !ignoredIssues || !ignoredIssues.includes(issue.id);
             if (isNotIgnored) {
+              issue.isIgnored = false;
               issue.appearances.forEach(appearance => {
                 if (appearanceDictionary) {
                   appearance.appearanceTypes = this.#dictionaryTranslator.translateArrayUsingDictionary(appearance.appearanceTypes, appearanceDictionary, true);
