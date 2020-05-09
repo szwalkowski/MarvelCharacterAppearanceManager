@@ -25,6 +25,9 @@ module.exports = class {
     }
     const issueStatuses = {};
     issueIds.forEach(issueId => {
+      if (!issueId) {
+        throw new Error("Empty issue id!");
+      }
       let issueStatus = user.issuesStatuses.find(iStatus => iStatus.issueId === issueId);
       if (!issueStatus) {
         issueStatus = {
@@ -80,10 +83,37 @@ module.exports = class {
   }
 
   async getIssueStatusForUserAsync(issueId, idToken) {
-    return this.#dbConnection.findAsync(
+    return this.#dbConnection.aggregateAsync(
       "users",
-      { "sessionData.idToken": idToken, "issuesStatuses.issueId": issueId },
-      { "issuesStatuses.$": 1 });
+      {
+        $match: { "sessionData.idToken": idToken }
+      },
+      {
+        $project: {
+          issuesStatuses: {
+            $filter: {
+              input: "$issuesStatuses",
+              as: "issueStatus",
+              cond: { $eq: ["$$issueStatus.issueId", issueId] }
+            }
+          },
+          favourites: {
+            $filter: {
+              input: "$favourites",
+              as: "favourite",
+              cond: { $eq: ["$$favourite", issueId] }
+            }
+          },
+          ignored: {
+            $filter: {
+              input: "$ignored",
+              as: "ignore",
+              cond: { $eq: ["$$ignore", issueId] }
+            }
+          }
+        }
+      }
+    );
   }
 
   async getAllIssuesByVolume(issueName, issueVolume) {

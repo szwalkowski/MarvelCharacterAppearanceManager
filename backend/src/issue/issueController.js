@@ -29,11 +29,12 @@ module.exports = class {
 
   #provideGetIssueDetails = function (server, issueManager) {
     server.get("/issueDetails", async (req, res) => {
-      const issuePromise = issueManager.getIssueAsync(req.query.issueId);
+      const issueId = req.query.issueId;
+      const issuePromise = issueManager.getIssueAsync(issueId);
       let readStatus;
       const idToken = extractIdToken(req);
       if (idToken) {
-        const iterator = await issueManager.getIssueStatusForUserAsync(req.query.issueId, idToken);
+        const iterator = await issueManager.getIssueStatusForUserAsync(issueId, idToken);
         readStatus = (await iterator.toArray())[0];
       }
       const issueDetails = await issuePromise;
@@ -48,7 +49,9 @@ module.exports = class {
           });
         }
       }
-      res.end(JSON.stringify(await issueDetails));
+      issueDetails.isFavourite = readStatus && readStatus.favourites && readStatus.favourites.includes(issueId);
+      issueDetails.isIgnored = readStatus && readStatus.ignored && readStatus.ignored.includes(issueId);
+      res.end(JSON.stringify(issueDetails));
     });
   };
 

@@ -88,4 +88,11 @@ module.exports = class {
       .collection(collection)
       .updateOne(query, { $pull: { [field]: value } });
   }
+
+  async aggregateAsync(collection, pipeline, options) {
+    return this
+      .db()
+      .collection(collection)
+      .aggregate(pipeline, options);
+  }
 };

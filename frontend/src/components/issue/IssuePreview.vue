@@ -6,6 +6,11 @@
     <div class="p-sm-5 modal-body">
       <div class="row pl-sm-4 modal-title">
         <h3>
+          <img
+            v-if="!!issue.isFavourite"
+            src="/img/FavIcon.png"
+            style="width: 30px"
+          />
           <a :href="issue.url" target="_blank">{{ issue.name }}</a>
         </h3>
       </div>
@@ -80,6 +85,34 @@
       <button v-else class="btn btn-sm btn-dark" @click="changeStatus('read')">
         Read issue
       </button>
+      <button
+        v-if="!issue.isFavourite"
+        @click="changeFavouriteState(true)"
+        class="btn btn-sm btn-dark"
+      >
+        Mark as favourite
+      </button>
+      <button
+        v-else
+        @click="changeFavouriteState(false)"
+        class="btn btn-sm btn-dark"
+      >
+        Unfavourite
+      </button>
+      <button
+        v-if="!issue.isIgnored"
+        @click="changeIgnoreState(true)"
+        class="btn btn-sm btn-dark"
+      >
+        Mark as ignore
+      </button>
+      <button
+        v-else
+        class="btn btn-sm btn-dark"
+        @click="changeIgnoreState(false)"
+      >
+        Unignore
+      </button>
     </div>
   </div>
 </template>
@@ -107,7 +140,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions("issue", ["changeStatusOfIssues"]),
+    ...mapActions("issue", [
+      "changeIgnoreStateOfIssue",
+      "changeFavouriteStateOfIssue",
+      "changeStatusOfIssues"
+    ]),
     updateStories() {
       const stories = {};
       this.issue.appearances.forEach(appearance => {
@@ -199,6 +236,24 @@ export default {
         })
         .catch(error => {
           console.error(error);
+        });
+    },
+    changeFavouriteState(state) {
+      this.changeFavouriteStateOfIssue({ issueId: this.issue._id, state })
+        .then(() => {
+          this.issue.isFavourite = state;
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    },
+    changeIgnoreState(state) {
+      this.changeIgnoreStateOfIssue({ issueId: this.issue._id, state })
+        .then(() => {
+          this.issue.isIgnored = state;
+        })
+        .catch(err => {
+          console.error(err);
         });
     }
   },
