@@ -198,7 +198,7 @@ export default {
           this.$alert("Dictionary save completed!");
         })
         .catch(error => {
-          this.errors.push(error.message);
+          this.errors.push(error.response.data);
           console.error(error);
         });
     },

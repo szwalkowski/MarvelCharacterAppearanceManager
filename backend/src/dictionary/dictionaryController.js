@@ -36,7 +36,7 @@ module.exports = class {
       }, reason => {
         console.error(reason);
         res.status(500);
-        res.end("Error on saving dictionary");
+        res.end(`Error on saving dictionary: ${reason}`);
       });
     });
   };
