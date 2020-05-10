@@ -3,6 +3,7 @@ import VueRouter from "vue-router";
 import firebase from "firebase/app";
 import "firebase/auth";
 import Home from "../views/Home.vue";
+import store from "./../store/store";
 
 Vue.use(VueRouter);
 
@@ -15,12 +16,18 @@ const routes = [
   {
     path: "/add-new-character",
     name: "new-character",
-    component: () => import("../views/NewCharacter")
+    component: () => import("../views/NewCharacter"),
+    meta: {
+      admin: true
+    }
   },
   {
     path: "/dictionary",
     name: "dictionary",
-    component: () => import("../views/Dictionary")
+    component: () => import("../views/Dictionary"),
+    meta: {
+      admin: true
+    }
   },
   {
     path: "/character",
@@ -87,6 +94,11 @@ router.beforeEach((to, from, next) => {
         next();
       }
     });
+  } else if (to.matched.some(record => record.meta.admin)) {
+    const userType = store.state.user.userMcamSession.userType;
+    if (userType === "Admin") {
+      next();
+    }
   } else {
     next();
   }

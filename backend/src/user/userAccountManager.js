@@ -16,8 +16,12 @@ module.exports = class {
     }
     await this.#addSessionWithUserCreationAsync(verificationData);
     const user = await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { _id: 1 });
+    const isAdmin = user._id === process.env.ADMIN_USER_ID;
     if (user) {
-      return true;
+      return {
+        id: user._id,
+        userType: isAdmin ? "Admin" : "User"
+      };
     }
   }
 
@@ -69,6 +73,14 @@ module.exports = class {
 
   async removeIssueFromFavouriteAsync(idToken, issueId) {
     await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "favourites", issueId);
+  }
+
+  async isAdminLoggedAsync(idToken) {
+    if (!idToken) {
+      return false;
+    }
+    const user = await this.#dbConnection.findOneAsync("users", { _id: process.env.ADMIN_USER_ID, "sessionData.idToken": idToken }, { _id: 1 });
+    return !!user;
   }
 
   #addSessionWithUserCreationAsync = async function (sessionData) {

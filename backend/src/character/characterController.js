@@ -15,45 +15,55 @@ module.exports = class {
   };
 
   #createCharacterEndpoints = function (server, dictionaryManager, characterManager, characterImporter, userAccountManager) {
-    this.#prepareCharacterFromWikiPage(server, characterImporter);
-    this.#prepareCharacterConfirmAction(server, characterImporter);
+    this.#prepareCharacterFromWikiPage(server, characterImporter, userAccountManager);
+    this.#prepareCharacterConfirmAction(server, characterImporter, userAccountManager);
     this.#prepareGetAllCharacters(server, characterManager);
     this.#prepareGetAllIssuesForCharacter(server, dictionaryManager, characterManager, userAccountManager);
   };
 
-  #prepareCharacterFromWikiPage = function (server, characterImporter) {
-    server.post("/newCharacter", (req, res) => {
-      characterImporter.provideCharacterBaseInfoFromPageAsync(req.body["characterUrl"]).then(response => {
-        res.end(JSON.stringify({
-          CharacterId: response.getId(),
-          Url: req.body["characterUrl"],
-          Aliases: response.getAliases(),
-          Universe: response.getUniverse(),
-          RealName: response.getRealName(),
-          AppearanceCount: response.getAppearancesCount(),
-          MinorAppearanceCount: response.getMinorAppearancesCount(),
-          AppearanceUrl: response.getAppearancesUrl(),
-          MinorAppearanceUrl: response.getMinorAppearancesUrl(),
-          ImageUrl: response.getImage(),
-          DisplayName: response.getCurrentAlias() || response.getRealName()
-        }));
-      }, reason => {
-        console.error(reason);
-        res.status(500);
-        res.end("Error on decoding character from provided page");
-      });
+  #prepareCharacterFromWikiPage = function (server, characterImporter, userAccountManager) {
+    server.post("/newCharacter", async (req, res) => {
+      const isAdmin = await userAccountManager.isAdminLoggedAsync(extractIdToken(req));
+      if (isAdmin) {
+        characterImporter.provideCharacterBaseInfoFromPageAsync(req.body["characterUrl"]).then(response => {
+          res.end(JSON.stringify({
+            CharacterId: response.getId(),
+            Url: req.body["characterUrl"],
+            Aliases: response.getAliases(),
+            Universe: response.getUniverse(),
+            RealName: response.getRealName(),
+            AppearanceCount: response.getAppearancesCount(),
+            MinorAppearanceCount: response.getMinorAppearancesCount(),
+            AppearanceUrl: response.getAppearancesUrl(),
+            MinorAppearanceUrl: response.getMinorAppearancesUrl(),
+            ImageUrl: response.getImage(),
+            DisplayName: response.getCurrentAlias() || response.getRealName()
+          }));
+        }, reason => {
+          console.error(reason);
+          res.status(500);
+          res.end("Error on decoding character from provided page");
+        });
+      } else {
+        res.status(401).end("Unauthorized");
+      }
     });
   };
 
-  #prepareCharacterConfirmAction = function (server, characterImporter) {
-    server.post("/confirmCharacter", (req, res) => {
-      characterImporter.downloadAndStoreConfirmedCharacterAsync(req.body).then(() => {
-        res.end();
-      }, reason => {
-        console.error(reason);
-        res.status(500);
-        res.end("Error on saving character and its appearances");
-      });
+  #prepareCharacterConfirmAction = function (server, characterImporter, userAccountManager) {
+    server.post("/confirmCharacter", async (req, res) => {
+      const isAdmin = await userAccountManager.isAdminLoggedAsync(extractIdToken(req));
+      if (isAdmin) {
+        characterImporter.downloadAndStoreConfirmedCharacterAsync(req.body).then(() => {
+          res.end();
+        }, reason => {
+          console.error(reason);
+          res.status(500);
+          res.end("Error on saving character and its appearances");
+        });
+      } else {
+        res.status(401).end("Unauthorized");
+      }
     });
   };
 

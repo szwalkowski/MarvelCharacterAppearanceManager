@@ -190,10 +190,16 @@ export default {
     },
     saveDictionary() {
       axios
-        .post("saveDictionary", {
-          dictionaryId: this.dictionaryId,
-          dictionaryContent: this.dictionary
-        })
+        .post(
+          "saveDictionary",
+          {
+            dictionaryId: this.dictionaryId,
+            dictionaryContent: this.dictionary
+          },
+          {
+            mcamAuthenticated: true
+          }
+        )
         .then(() => {
           this.$alert("Dictionary save completed!");
         })

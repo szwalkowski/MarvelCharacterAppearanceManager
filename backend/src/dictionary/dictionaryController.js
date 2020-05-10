@@ -1,15 +1,16 @@
 const DictionaryManager = require('./dictionaryManager');
+const { extractIdToken } = require("../utils");
 
 module.exports = class {
 
-  constructor(server, dbConnection) {
+  constructor(server, dbConnection, userAccountManager) {
     const dictionaryManager = new DictionaryManager(dbConnection);
-    this.#createDictionaryEndpoints(server, dictionaryManager);
+    this.#createDictionaryEndpoints(server, dictionaryManager, userAccountManager);
   };
 
-  #createDictionaryEndpoints = function (server, dictionaryManager) {
+  #createDictionaryEndpoints = function (server, dictionaryManager, userAccountManager) {
     this.#prepareGetDictionary(server, dictionaryManager);
-    this.#prepareSaveDictionary(server, dictionaryManager);
+    this.#prepareSaveDictionary(server, dictionaryManager, userAccountManager);
   };
 
   #prepareGetDictionary = function (server, dictionaryManager) {
@@ -29,15 +30,20 @@ module.exports = class {
     });
   };
 
-  #prepareSaveDictionary = function (server, dictionaryManager) {
-    server.post("/saveDictionary", (req, res) => {
-      dictionaryManager.saveDictionaryAsync(req.body["dictionaryId"], req.body["dictionaryContent"]).then(() => {
-        res.end();
-      }, reason => {
-        console.error(reason);
-        res.status(500);
-        res.end(`Error on saving dictionary: ${reason}`);
-      });
+  #prepareSaveDictionary = function (server, dictionaryManager, userAccountManager) {
+    server.post("/saveDictionary", async (req, res) => {
+      const isAdmin = await userAccountManager.isAdminLoggedAsync(extractIdToken(req));
+      if (isAdmin) {
+        dictionaryManager.saveDictionaryAsync(req.body["dictionaryId"], req.body["dictionaryContent"]).then(() => {
+          res.end();
+        }, reason => {
+          console.error(reason);
+          res.status(500);
+          res.end(`Error on saving dictionary: ${reason}`);
+        });
+      } else {
+        res.status(401).end("Unauthorized");
+      }
     });
   };
 };

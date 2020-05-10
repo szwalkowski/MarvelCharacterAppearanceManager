@@ -102,12 +102,16 @@ export default {
       if (!this.errors.length) {
         this.characterIsLoading = true;
         axios
-          .post("newCharacter", { characterUrl: url })
+          .post(
+            "newCharacter",
+            { characterUrl: url },
+            { mcamAuthenticated: true }
+          )
           .then(response => {
             this.characterInfo = response.data;
           })
           .catch(error => {
-            this.errors.push(error.message);
+            this.errors.push(error.response.data);
             console.error(error);
           })
           .then(() => {
@@ -133,13 +137,15 @@ export default {
       }
       if (!this.errors.length) {
         axios
-          .post("confirmCharacter", this.characterInfo)
+          .post("confirmCharacter", this.characterInfo, {
+            mcamAuthenticated: true
+          })
           .then(() => {
             this.$alert("New character request sent!");
             this.characterInfo = null;
           })
           .catch(error => {
-            this.errors.push(error.message);
+            this.errors.push(error.response.data);
             console.log(error);
           });
       }

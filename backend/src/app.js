@@ -35,7 +35,7 @@ class App {
     const userAccountManager = new UserAccountManager(dbConnection);
     const issueManager = new IssueManager(userAccountManager, dbConnection);
     new CharacterController(server, issueManager, userAccountManager, dbConnection);
-    new DictionaryController(server, dbConnection);
+    new DictionaryController(server, dbConnection, userAccountManager);
     new UserController(server, userAccountManager);
     new IssueController(server, issueManager, userAccountManager);
     new IssueIgnoredController(server, userAccountManager);

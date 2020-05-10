@@ -12,12 +12,15 @@
             Issues
           </router-link>
         </li>
-        <li class="nav-item">
+        <li v-if="userMcamSession.userType === 'Admin'" class="nav-item">
           <router-link tag="a" class="nav-link" to="/add-new-character">
             Add new character
           </router-link>
         </li>
-        <li class="nav-item dropdown">
+        <li
+          v-if="userMcamSession.userType === 'Admin'"
+          class="nav-item dropdown"
+        >
           <a class="nav-link dropdown-toggle" href="#" data-toggle="dropdown">
             Dictionaries
           </a>
@@ -63,7 +66,7 @@ import { mapGetters, mapActions } from "vuex";
 
 export default {
   computed: {
-    ...mapGetters("user", ["user"])
+    ...mapGetters("user", ["user", "userMcamSession"])
   },
   methods: {
     ...mapActions("user", ["logOut"])

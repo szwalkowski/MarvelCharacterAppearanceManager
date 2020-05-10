@@ -4,7 +4,8 @@ import "firebase/auth";
 
 const state = {
   user: null,
-  isUserLoadInProgress: true
+  isUserLoadInProgress: true,
+  userMcamSession: {}
 };
 
 const getters = {
@@ -13,12 +14,18 @@ const getters = {
   },
   isUserLoadInProgress: state => {
     return state.isUserLoadInProgress;
+  },
+  userMcamSession: state => {
+    return state.userMcamSession;
   }
 };
 
 const mutations = {
   assignUser(user) {
     state.user = user;
+  },
+  assignUserMcamSession(userMcamSession) {
+    state.userMcamSession = userMcamSession;
   }
 };
 
@@ -50,6 +57,9 @@ function logInUserInBackend(userStore) {
     axios
       .post("logIn", {
         idToken
+      })
+      .then(response => {
+        mutations.assignUserMcamSession(response.data);
       })
       .catch(error => {
         console.error(error);
