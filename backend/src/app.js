@@ -5,6 +5,7 @@ const IssueController = require('./issue/issueController');
 const IssueIgnoredController = require('./issue/issueIgnoredController');
 const IssueFavouritesController = require('./issue/issueFavouritesController');
 const UserController = require('./user/userController');
+const FeedController = require("./feed/feedController");
 const IssueManager = require("./issue/issueManager");
 const UserAccountManager = require("./user/userAccountManager");
 const bodyParser = require('body-parser');
@@ -40,6 +41,7 @@ class App {
     new IssueController(server, issueManager, userAccountManager);
     new IssueIgnoredController(server, userAccountManager);
     new IssueFavouritesController(server, userAccountManager);
+    new FeedController(server, userAccountManager);
   };
 
   #startServer = function (server) {

@@ -17,6 +17,11 @@
             Add new character
           </router-link>
         </li>
+        <li v-if="userMcamSession.userType === 'Admin'" class="nav-item">
+          <a class="nav-link" style="cursor: pointer;" @click="feedUpdate">
+            Feed update
+          </a>
+        </li>
         <li
           v-if="userMcamSession.userType === 'Admin'"
           class="nav-item dropdown"
@@ -62,6 +67,7 @@
   </nav>
 </template>
 <script>
+import axios from "axios";
 import { mapGetters, mapActions } from "vuex";
 
 export default {
@@ -69,7 +75,19 @@ export default {
     ...mapGetters("user", ["user", "userMcamSession"])
   },
   methods: {
-    ...mapActions("user", ["logOut"])
+    ...mapActions("user", ["logOut"]),
+    feedUpdate() {
+      axios
+        .get("feedUpdate", {
+          mcamAuthenticated: true
+        })
+        .then(response => {
+          console.log(response.data);
+        })
+        .catch(error => {
+          console.error(error);
+        });
+    }
   }
 };
 </script>
