@@ -10,7 +10,7 @@ module.exports = class {
 
   constructor() {
     this.#pageDownloader = new PageDownloader();
-    new CronJob("0 0 0,12 * * *", this.initiateUpdateProcess, null, true);
+    new CronJob(process.env.CRON_FEED_UPDATE, this.initiateUpdateProcess, null, true);
   }
 
   async initiateUpdateProcess() {

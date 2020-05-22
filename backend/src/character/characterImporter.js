@@ -41,9 +41,9 @@ module.exports = class {
       that.#pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
         issuePage => {
           console.log(`${++no} page downloaded! ${link}`);
-          const issuePageModel = new IssuePageModel(issuePage, baseCharacterInfo.CharacterId, link);
+          const issuePageModel = new IssuePageModel(issuePage, link);
           if (issuePageModel.isIssue) {
-            characterAndIssues.issues.push(that.#parseIssuePageModelToIssueModel(issuePageModel));
+            characterAndIssues.issues.push(that.#parseIssuePageModelToIssueModel(issuePageModel, baseCharacterInfo.CharacterId));
           }
           callback();
         }
@@ -87,10 +87,11 @@ module.exports = class {
     return allAppearanceLinks;
   };
 
-  #parseIssuePageModelToIssueModel = function (issuePageModel) {
+  #parseIssuePageModelToIssueModel = function (issuePageModel, characterId) {
     const appearancesInIssue = [];
-    issuePageModel.appearances.forEach(appearance => {
+    issuePageModel.getAppearances(characterId).forEach(appearance => {
       appearancesInIssue.push({
+        ordinal: appearance.storyOrdinal,
         subtitle: appearance.title,
         focusType: appearance.focusType,
         appearanceTypes: appearance.typesOfAppearance

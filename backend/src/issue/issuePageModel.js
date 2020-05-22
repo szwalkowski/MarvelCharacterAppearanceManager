@@ -1,4 +1,5 @@
 const JQuery = require('jquery');
+const AppearingResolver = require('./appearingResolver');
 const Months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
 const SelectorWithAllIssueData = '#wpTextbox1';
@@ -7,21 +8,17 @@ const RegexAppearingTag = /^\|[ ]+Appearing/;
 const RegexYearTag = /^\|[ ]+Year/;
 const RegexMonthTag = /^\|[ ]+Month/;
 const RegexImageTag = /^\|[ ]+Image /;
-const RegexForAppearanceTypeOptionOne = /[{\\|][a-zA-Z\d ']+}}/g;
-const RegexForAppearanceTypeOptionTwo = /{[a-zA-Z\d ']+\|/g;
-const InvalidTypeAppearances = ["A", "APN", "G", "CHRONOLOGY", "CHRONOFB"];
 
 module.exports = class {
   #jquery;
+  #appearingResolver;
 
-  constructor(issuePageWindow, characterId, url) {
+  constructor(issuePageWindow, url) {
     if (!issuePageWindow) {
       throw new Error("issuePageWindow is undefined!");
     }
-    if (!characterId) {
-      throw new Error("characterId is undefined!");
-    }
     this.url = url;
+    this.#appearingResolver = new AppearingResolver();
     this.#jquery = new JQuery(issuePageWindow);
     const allIssueDataElement = this.#jquery.find(SelectorWithAllIssueData)[0];
     if (allIssueDataElement) {
@@ -30,7 +27,7 @@ module.exports = class {
       this.isIssue = issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
       if (this.isIssue) {
         this.fullName = this.#jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
-        this.#readDataFromText(issueTextInfo, characterId.replace(/_/g, " "));
+        this.#readDataFromText(issueTextInfo);
       }
     } else {
       this.isIssue = false;
@@ -75,8 +72,32 @@ module.exports = class {
     return new Date(year, month).getTime();
   };
 
-  getAppearances() {
-    return this.appearances;
+  getAppearances(characterId) {
+    const appearances = [];
+    for (const issueStory in this.issueStories) {
+      if (!this.issueStories.hasOwnProperty(issueStory)) {
+        continue;
+      }
+      const appearance = { storyOrdinal: issueStory };
+      for (const storyElement in this.issueStories[issueStory]) {
+        if (!this.issueStories[issueStory].hasOwnProperty(storyElement)) {
+          continue;
+        }
+        if (storyElement === "title") {
+          appearance.title = this.issueStories[issueStory][storyElement];
+        } else {
+          const appearanceOfCharacter = this.issueStories[issueStory][storyElement].find(app => app.id === characterId);
+          if (appearanceOfCharacter) {
+            appearance.focusType = storyElement;
+            appearance.typesOfAppearance = appearanceOfCharacter.tags;
+          }
+        }
+      }
+      if (appearance.focusType) {
+        appearances.push(appearance);
+      }
+    }
+    return appearances;
   };
 
   getImage() {
@@ -86,108 +107,81 @@ module.exports = class {
     return encodeURI(`${this.id}.jpg`);
   };
 
-  #readDataFromText = function (issueTextInfo, characterId) {
-    let allAppearings = [];
-    let appearingNumber = -1;
-    let foundFocusType = false;
-    const regexForCharacter = new RegExp(`^:*\\*.*{{.*${this.#escapeRegExp(characterId)}.*\\|.*`);
+  #readDataFromText = function (issueTextInfo) {
+    const issueStories = {};
+    let appearingNumber = null;
+    let lastFocusType = null;
     for (let counter = 0; counter < issueTextInfo.length; counter++) {
       const line = issueTextInfo[counter].trim();
-      if (appearingNumber > -1 && line.startsWith("| ")) {
-        appearingNumber = -1;
-        foundFocusType = false;
-      } else if (appearingNumber > -1) {
+      if (!line) {
+        continue;
+      }
+      if (appearingNumber !== null && !line.startsWith("| ")) {
         if (line.startsWith("'''") && line.endsWith("'''")) {
-          this.#resolveFocusType(allAppearings, appearingNumber, line);
-          foundFocusType = true;
-        } else if (foundFocusType) {
-          if (regexForCharacter.exec(line)) {
-            this.#addAppearingTypes(this.#prepareAppearing(allAppearings, appearingNumber), line);
-            foundFocusType = false;
-            appearingNumber = -1;
+          lastFocusType = this.#resolveFocusType(line, issueStories[appearingNumber]);
+        } else if (lastFocusType !== null && (line.startsWith("*") || line.startsWith(":*"))) {
+          const appearance = this.#appearingResolver.resolveAppearing(line);
+          if (appearance.length) {
+            issueStories[appearingNumber][lastFocusType].push(...appearance);
           }
         }
-      }
-      if (RegexStoryTitleTag.exec(line)) {
-        this.#resolveStoryTitleAndOrdinal(allAppearings, line);
-      } else if (RegexAppearingTag.exec(line)) {
-        appearingNumber = this.#getOrdinalOfAppearing(line, RegexAppearingTag);
-      } else if (RegexYearTag.exec(line)) {
+      } else if (RegexYearTag.test(line)) {
+        appearingNumber = null;
+        lastFocusType = null;
         this.year = this.#getValueAfterEqualsSign(line);
-      } else if (RegexMonthTag.exec(line)) {
+      } else if (RegexMonthTag.test(line)) {
+        appearingNumber = null;
+        lastFocusType = null;
         this.month = this.#getValueAfterEqualsSign(line);
-      } else if (RegexImageTag.exec(line)) {
+      } else if (RegexImageTag.test(line)) {
+        appearingNumber = null;
+        lastFocusType = null;
         this.image = this.#getValueAfterEqualsSign(line);
+      } else if (RegexStoryTitleTag.test(line)) {
+        appearingNumber = null;
+        lastFocusType = null;
+        this.#addIssueTo(issueStories, line);
+      } else if (RegexAppearingTag.test(line)) {
+        lastFocusType = null;
+        appearingNumber = this.#resolveOrdinal(line, RegexAppearingTag);
+        if (!issueStories[appearingNumber]) {
+          issueStories[appearingNumber] = {};
+        }
+      } else if (line.startsWith("| ")) {
+        appearingNumber = null;
+        lastFocusType = null;
+      } else if (lastFocusType !== null) {
+        throw new Error(`Found focus type ${lastFocusType} but there no appearing!`);
       }
     }
-    allAppearings = this.#cleanupEmptyAppearings(allAppearings);
-    this.appearances = allAppearings;
+    this.issueStories = issueStories;
   };
 
-  #resolveStoryTitleAndOrdinal = function (allAppearings, line) {
-    const ordinal = this.#getOrdinalOfAppearing(line, RegexStoryTitleTag);
-    const appearing = this.#prepareAppearing(allAppearings, ordinal);
-    appearing.title = this.#getValueAfterEqualsSign(line);
+  #addIssueTo = function (issueStories, line) {
+    const title = this.#getValueAfterEqualsSign(line);
+    const story = this.#provideStoryByOrdinal(issueStories, line, RegexStoryTitleTag);
+    story.title = title;
   };
 
-  #resolveFocusType = function (allAppearings, ordinal, line) {
-    const appearing = this.#prepareAppearing(allAppearings, ordinal);
-    appearing.focusType = line.substring(3, line.length - 4).trim();
-  };
-
-  #prepareAppearing = function (allAppearings, idx) {
-    let appearing = allAppearings.find(appearing => appearing.id === idx);
-    if (!appearing) {
-      appearing = { id: idx };
-      allAppearings.push(appearing);
+  #provideStoryByOrdinal = function (issueStories, line, regex) {
+    const ordinal = this.#resolveOrdinal(line, regex);
+    if (!issueStories[ordinal]) {
+      issueStories[ordinal] = {};
     }
-    return appearing;
-  };
+    return issueStories[ordinal];
+  }
 
-  #getOrdinalOfAppearing = function (line, regexp) {
-    return parseInt(line.split(regexp)[1]);
+  #resolveOrdinal = function (line, regex) {
+    return parseInt(line.split(regex)[1]) || "";
+  }
+
+  #resolveFocusType = function (line, story) {
+    const focusType = line.substring(3, line.length - 4).trim();
+    story[focusType] = [];
+    return focusType;
   };
 
   #getValueAfterEqualsSign = function (line) {
     return line.substring(line.indexOf("=") + 1).trim();
-  };
-
-  #cleanupEmptyAppearings = function (allAppearings) {
-    return allAppearings.filter(appearing => appearing.typesOfAppearance);
-  };
-
-  #escapeRegExp = function (s) {
-    return s.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&')
-  };
-
-  #addAppearingTypes = function (appearing, line) {
-    const appearanceTypes = [];
-    let regexResolution = line.match(RegexForAppearanceTypeOptionOne);
-    if (regexResolution) {
-      regexResolution.forEach(type => {
-        const appearanceType = type.substring(1, type.length - 2).trim();
-        this.#addToAppearancesIfValidType(appearanceTypes, appearanceType);
-      });
-    }
-    regexResolution = line.match(RegexForAppearanceTypeOptionTwo);
-    if (regexResolution) {
-      regexResolution.forEach(type => {
-        const appearanceType = type.substring(1, type.length - 1).trim();
-        this.#addToAppearancesIfValidType(appearanceTypes, appearanceType);
-      });
-    }
-    appearing.typesOfAppearance = appearanceTypes;
-  };
-
-  #addToAppearancesIfValidType = function (appearanceTypes, appearanceType) {
-    if (this.#isValidTypeAppearance(appearanceType)) {
-      appearanceTypes.push(appearanceType);
-    }
-  };
-
-  #isValidTypeAppearance = function (typeAppearance) {
-    return typeAppearance &&
-      InvalidTypeAppearances.findIndex(type => type === typeAppearance.toUpperCase()) < 0 &&
-      !typeAppearance.includes(" Vol ");
   };
 };
