@@ -417,4 +417,29 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(appearances[1], undefined);
   });
 
+  it("Iron man happens to be twice in same story", function () {
+    const filePath = `${__dirname}/resources/issues/Iron_Man_Vol_2_11edit.html`;
+    const page = fs.readFileSync(filePath, "utf-8");
+    const pageWindow = new JSDOM(page).window;
+    const issue = new IssuePageModel(pageWindow);
+    assert.equal(issue.isIssue, true);
+    assert.equal(issue.getName(), "Iron Man");
+    assert.equal(issue.getVolume(), 2);
+    assert.equal(issue.getIssueNo(), 11);
+    issue.id = "Iron_Man_Vol_2_11";
+    assert.equal(issue.getImage(), "Iron_Man_Vol_2_11.jpg");
+    assert.equal(issue.getPublishedDate(), new Date(1997, 8).getTime());
+    const appearances = issue.getAppearances("Anthony_Stark_(Earth-616)");
+    assert.equal(appearances[0].title, "Magical Mystery Tour");
+    assert.equal(appearances[0].focusType, "Featured Characters");
+    assert.equal(appearances[0].typesOfAppearance[0], undefined);
+    assert.equal(appearances[1].title, "Magical Mystery Tour");
+    assert.equal(appearances[1].focusType, "Other Characters");
+    assert.equal(appearances[1].typesOfAppearance, "PAST");
+    assert.equal(appearances[2].title, "Magical Mystery Tour");
+    assert.equal(appearances[2].focusType, "Other Characters");
+    assert.equal(appearances[2].typesOfAppearance, "AGAIN PAST");
+    assert.equal(appearances[3], undefined);
+  });
+
 });

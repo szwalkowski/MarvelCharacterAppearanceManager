@@ -78,23 +78,24 @@ module.exports = class {
       if (!this.issueStories.hasOwnProperty(issueStory)) {
         continue;
       }
-      const appearance = { storyOrdinal: issueStory };
+      let appearance = { storyOrdinal: issueStory };
+      let title;
       for (const storyElement in this.issueStories[issueStory]) {
         if (!this.issueStories[issueStory].hasOwnProperty(storyElement)) {
           continue;
         }
         if (storyElement === "title") {
           appearance.title = this.issueStories[issueStory][storyElement];
+          title = appearance.title;
         } else {
-          const appearanceOfCharacter = this.issueStories[issueStory][storyElement].find(app => app.id === characterId);
-          if (appearanceOfCharacter) {
+          const appearanceOfCharacter = this.issueStories[issueStory][storyElement].filter(app => app.id === characterId);
+          for (const appearing in appearanceOfCharacter) {
             appearance.focusType = storyElement;
-            appearance.typesOfAppearance = appearanceOfCharacter.tags;
+            appearance.typesOfAppearance = appearanceOfCharacter[appearing].tags;
+            appearances.push(appearance);
+            appearance = { storyOrdinal: issueStory, title };
           }
         }
-      }
-      if (appearance.focusType) {
-        appearances.push(appearance);
       }
     }
     return appearances;
