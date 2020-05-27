@@ -38,8 +38,8 @@ module.exports = class {
       if (!record.label) {
         throw new Error("Label must be defined!");
       }
-      if (record.label.includes("_") || record.label.includes(",")) {
-        throw new Error("Label can't contain underscore (_) nor comma (,)!");
+      if (record.label.includes("_")) {
+        throw new Error("Label can't contain underscore (_)!");
       }
       if (knownLabels.includes(record.label)) {
         throw new Error(`Label ${record.label} is already defined!`);

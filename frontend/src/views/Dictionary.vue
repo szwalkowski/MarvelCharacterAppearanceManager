@@ -147,8 +147,8 @@ export default {
       const value = this.newRow.value;
       if (!label) {
         this.errors.push("Label must be defined!");
-      } else if (label.indexOf("_") > -1 || label.indexOf(",") > -1) {
-        this.errors.push("Label can't contain underscore (_) nor comma (,)!");
+      } else if (label.indexOf("_") > -1) {
+        this.errors.push("Label can't contain underscore (_)!");
       }
       if (!value) {
         this.errors.push("At least one value must be defined!");
