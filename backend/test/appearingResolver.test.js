@@ -217,4 +217,10 @@ describe("Test for appearing resolver", function () {
     assert.equal(appearing[0].id, "Anthony_Stark_(Earth-616)");
     assert.isEmpty(appearing[0].tags);
   });
+
+  it("Ignore things when space dash space", function () {
+    const appearing = new AppearingResolver().resolveAppearing("* {{apn|[[Peter Parker (Earth-616)|Page 19, Panel 7]]|Amazing Spider-Man #15|Amazing Spider-Man #15}} - Peter is greeted by Liz Allen");
+    assert.equal(appearing[0].id, "Peter_Parker_(Earth-616)");
+    assert.isEmpty(appearing[0].tags);
+  });
 });

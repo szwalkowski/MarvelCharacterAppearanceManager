@@ -92,7 +92,9 @@ module.exports = class {
           for (const appearing in appearanceOfCharacter) {
             appearance.focusType = storyElement;
             appearance.typesOfAppearance = appearanceOfCharacter[appearing].tags;
-            appearances.push(appearance);
+            if (this.#isSameAppearanceNotIncluded(appearances, appearance)) {
+              appearances.push(appearance);
+            }
             appearance = { storyOrdinal: issueStory, title };
           }
         }
@@ -107,6 +109,23 @@ module.exports = class {
     }
     return encodeURI(`${this.id}.jpg`);
   };
+
+  #isSameAppearanceNotIncluded = function (appearances, newAppearance) {
+    return !appearances.length || !appearances.find(appearance => {
+      if (appearance.focusType !== newAppearance.focusType) {
+        return false;
+      }
+      if (!appearance.typesOfAppearance.length && !newAppearance.typesOfAppearance.length) {
+        return true;
+      }
+      for(const tag of appearance.typesOfAppearance) {
+        if (newAppearance.typesOfAppearance.includes(tag)) {
+          return true;
+        }
+      }
+      return false;
+    });
+  }
 
   #readDataFromText = function (issueTextInfo) {
     const issueStories = {};
