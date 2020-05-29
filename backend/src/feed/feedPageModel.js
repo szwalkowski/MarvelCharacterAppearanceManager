@@ -1,25 +1,42 @@
 const JQuery = require('jquery');
-const SelectorForVolumeLinks = '[class*=_Vol_] a[title*=\' Vol \']:contains(\' Vol \')';
+const SelectorForLine = "table.mw-enhanced-rc";
+const TimeRegex = /\d\d:\d\d/;
 
 module.exports = class {
-  #jquery;
   #allIssueLinksSet;
+  #lastUpdateTime;
 
-  constructor(feedPageWindow) {
+  constructor(feedPageWindow, lastUpdateTime) {
     if (!feedPageWindow) {
       throw new Error("feedPageWindow is undefined!");
     }
-    this.#jquery = new JQuery(feedPageWindow);
+    const jQuery = new JQuery(feedPageWindow);
     this.#allIssueLinksSet = new Set();
-    this.#jquery.find(SelectorForVolumeLinks).forEach(volumeLink => {
-      if (!volumeLink["href"]) {
-        console.log(volumeLink);
+
+    for(const line of jQuery(SelectorForLine)){
+      const date = jQuery(line).parent().parent().find("h4:first").text()
+      const time = TimeRegex.exec(jQuery(line).find("td.mw-enhanced-rc").text())[0]
+      if (time && date && new Date(`${date} ${time}`) < lastUpdateTime) {
+        break;
       }
-      this.#allIssueLinksSet.add(volumeLink["href"]);
-    });
+      if (!this.#lastUpdateTime) {
+        this.#lastUpdateTime = new Date(`${date} ${time}`);
+      }
+      const href = jQuery(line).find("a:first").attr("href");
+      if (href && href.includes("_Vol_")) {
+        this.#allIssueLinksSet.add(href);
+      }
+    }
+    if (!this.#lastUpdateTime) {
+      throw new Error("Something wrong with update!");
+    }
   }
 
   getAllIssueLinksSet() {
     return this.#allIssueLinksSet;
+  }
+
+  getLastUpdateTime() {
+    return this.#lastUpdateTime;
   }
 }

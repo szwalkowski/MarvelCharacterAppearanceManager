@@ -2,9 +2,10 @@ const FeedManager = require("./feedManager");
 const { extractIdToken } = require("../utils");
 
 module.exports = class {
-  #feedManager = new FeedManager();
+  #feedManager;
 
-  constructor(server, userAccountManager) {
+  constructor(server, userAccountManager, dbConnection) {
+    this.#feedManager = new FeedManager(dbConnection);
     this.#createFeedEndpoints(server, userAccountManager);
   };
 

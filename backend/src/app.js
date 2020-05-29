@@ -41,7 +41,7 @@ class App {
     new IssueController(server, issueManager, userAccountManager);
     new IssueIgnoredController(server, userAccountManager);
     new IssueFavouritesController(server, userAccountManager);
-    new FeedController(server, userAccountManager);
+    new FeedController(server, userAccountManager, dbConnection);
   };
 
   #startServer = function (server) {
