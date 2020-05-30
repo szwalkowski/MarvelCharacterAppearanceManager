@@ -27,7 +27,7 @@ module.exports = class {
     try {
       const feedPagePromise = this.#pageDownloader.downloadWindowFromUrlAsync(FeedPageUrl);
       const lastSavedFeedDatePromise = this.#getLastSavedFeedDateAsync();
-      const feedPageModel = new FeedPageModel(await feedPagePromise, await lastSavedFeedDatePromise);
+      const feedPageModel = new FeedPageModel(await feedPagePromise, (await lastSavedFeedDatePromise).value);
       const allIssuesPageModels = await this.#downloadAllIssuesAsync(feedPageModel);
       if (this.#issueMassUpdateService.updateIssues(allIssuesPageModels)) {
 
@@ -44,7 +44,7 @@ module.exports = class {
     const issuesAndAppearances = [];
 
     function downloadWindowFromUrl(link, callback) {
-      that.#pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
+      that.#pageDownloader.downloadWindowFromUrlAsync(`https://marvel.fandom.com${link}?action=edit`).then(
         issuePage => {
           console.log(`${++no} page downloaded! ${link}`);
           const issuePageModel = new IssuePageModel(issuePage, link);
@@ -63,6 +63,9 @@ module.exports = class {
     const downloadingQueue = Async.queue(downloadWindowFromUrl, 7);
     const allIssueLinks = feedPageModel.getAllIssueLinksSet();
     console.log(`Downloading ${allIssueLinks.size}.`);
+    if (allIssueLinks.size === 0) {
+      return issuesAndAppearances;
+    }
     allIssueLinks.forEach(issueLink => {
       downloadingQueue.push(issueLink);
     });

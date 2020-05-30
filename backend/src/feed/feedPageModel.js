@@ -14,16 +14,17 @@ module.exports = class {
     this.#allIssueLinksSet = new Set();
 
     for(const line of jQuery(SelectorForLine)){
-      const date = jQuery(line).parent().parent().find("h4:first").text()
-      const time = TimeRegex.exec(jQuery(line).find("td.mw-enhanced-rc").text())[0]
-      if (time && date && new Date(`${date} ${time}`) < lastUpdateTime) {
+      const date = jQuery(line).parent().parent().find("h4:first").text();
+      const time = TimeRegex.exec(jQuery(line).find("td.mw-enhanced-rc").text())[0];
+      const lineDate = new Date(`${date} ${time} UTC`);
+      if (time && date && lineDate < lastUpdateTime) {
         break;
       }
       if (!this.#lastUpdateTime) {
-        this.#lastUpdateTime = new Date(`${date} ${time}`);
+        this.#lastUpdateTime = lineDate;
       }
       const href = jQuery(line).find("a:first").attr("href");
-      if (href && href.includes("_Vol_")) {
+      if (href && href.includes("_Vol_") && !/^\/wiki\/(Category|File):/.test(href)) {
         this.#allIssueLinksSet.add(href);
       }
     }
