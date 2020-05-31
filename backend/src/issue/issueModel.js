@@ -10,12 +10,4 @@ module.exports = class {
     this.image = image;
     this.appearances = appearances;
   };
-
-  markAsRead() {
-    this.read = Date.now();
-  };
-
-  markAsNotRead() {
-    this.read = null;
-  };
 };

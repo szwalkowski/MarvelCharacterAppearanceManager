@@ -223,4 +223,10 @@ describe("Test for appearing resolver", function () {
     assert.equal(appearing[0].id, "Peter_Parker_(Earth-616)");
     assert.isEmpty(appearing[0].tags);
   });
+
+  it("R appearance type", function () {
+    const appearing = new AppearingResolver().resolveAppearing("* {{FlashOnly|[[Satan (Unidentified) (Earth-616)|\"Satan\"]]}}{{r|Official Handbook of the Marvel Universe A-Z Update #1|; [[Jefferson Archer (Earth-616)|Highwayman]]'s entry}}");
+    assert.equal(appearing[0].id, "Satan_(Unidentified)_(Earth-616)");
+    assert.equal(appearing[0].tags, "FLASHONLY");
+  });
 });

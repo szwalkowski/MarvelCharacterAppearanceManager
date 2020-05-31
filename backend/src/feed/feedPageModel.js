@@ -23,7 +23,7 @@ module.exports = class {
       if (!this.#lastUpdateTime) {
         this.#lastUpdateTime = lineDate;
       }
-      const href = jQuery(line).find("a:first").attr("href");
+      const href = jQuery(line).find("td > a:first").attr("href");
       if (href && href.includes("_Vol_") && !/^\/wiki\/(Category|File):/.test(href)) {
         this.#allIssueLinksSet.add(href);
       }

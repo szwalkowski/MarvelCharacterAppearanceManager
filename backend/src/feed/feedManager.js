@@ -2,7 +2,7 @@ const FeedPageModel = require('./feedPageModel');
 const PageDownloader = require('../pageDownloader');
 const IssuePageModel = require('../issue/issuePageModel');
 const IssueMassUpdateService = require('../issue/issueMassUpdateService');
-const FeedPageUrl = 'https://marvel.fandom.com/wiki/Special:RecentChanges?days=1&limit=5000&hidelogs=1';
+const FeedPageUrl = 'https://marvel.fandom.com/wiki/Special:RecentChanges?days=1&limit=500&hidelogs=1';
 const Async = require("async");
 const CronJob = require("cron").CronJob;
 
@@ -12,14 +12,15 @@ module.exports = class {
   #issueMassUpdateService;
   #oneUpdateAtATime = false;
 
-  constructor(dbConnection) {
+  constructor(issueManager, dbConnection) {
     this.#dbConnection = dbConnection;
     this.#pageDownloader = new PageDownloader();
-    this.#issueMassUpdateService = new IssueMassUpdateService();
+    this.#issueMassUpdateService = new IssueMassUpdateService(issueManager, dbConnection);
     new CronJob(process.env.CRON_FEED_UPDATE, this.initiateUpdateProcess, null, true);
   }
 
   async initiateUpdateProcess() {
+    console.log("Feed update started");
     if (this.#oneUpdateAtATime) {
       return;
     }
@@ -29,11 +30,11 @@ module.exports = class {
       const lastSavedFeedDatePromise = this.#getLastSavedFeedDateAsync();
       const feedPageModel = new FeedPageModel(await feedPagePromise, (await lastSavedFeedDatePromise).value);
       const allIssuesPageModels = await this.#downloadAllIssuesAsync(feedPageModel);
-      if (this.#issueMassUpdateService.updateIssues(allIssuesPageModels)) {
-
+      if (await this.#issueMassUpdateService.updateIssuesAsync(allIssuesPageModels)) {
+        this.#saveLastFeedDateAsync(feedPageModel.getLastUpdateTime());
       }
-      this.#saveLastFeedDateAsync(feedPageModel.getLastUpdateTime());
     } finally {
+      console.log("Feed update stopped");
       this.#oneUpdateAtATime = false;
     }
   }

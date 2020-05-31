@@ -1,7 +1,7 @@
 // From here: https://marvel.fandom.com/wiki/Marvel_Database:Appearance_Tags
 const SECTION_CUTTER_CURLY = /{|}|\*|'{3}|<.*>|&LT;.*&GT;/i;
 const SECTION_CUTTER_SQUARE = /[\[|\]]/;
-const TAGS_TO_IGNORE = /^(Chronology|#Chronology Notes|ChronoFB|Topical Reference| - | & |Circa|#Continuity Notes| - .+)$/i;
+const TAGS_TO_IGNORE = /^(Chronology|#Chronology Notes|ChronoFB|Topical Reference| - | & |Circa|#Continuity Notes| - .+|r\|.*)$/i;
 const TAGS_WITH_CONTINUATION = ["A", "G", "GREEN", "MINOR", "MENTIONED", "FB"];
 const TAG_WITH_CONTINUATION_REGEX = /^(a|g|green|Minor|Mentioned|FB)\|/i;
 const TAGS_WITHOUT_CONTINUATION = [
@@ -48,7 +48,7 @@ module.exports = class {
         this.#createTagsForAppearing(section, appearing[appearingUnderChange]);
       }
     }
-    return appearing.filter(app => app.id);
+    return appearing.filter(app => app.id && app.id.endsWith(")"));
   };
 
   #extractTagForAppearingAfterCustom = function(section, appearing) {
@@ -68,7 +68,7 @@ module.exports = class {
     } else {
       const sectionTag = sections[0].trim().toUpperCase();
       if (TAGS_WITH_CONTINUATION.includes(sectionTag)) {
-        appearing.id = sections[1].replace(/ /g, "_");
+        appearing.id = sections[1].replace(/ +/g, "_");
         if (sectionTag !== "A" && sectionTag !== "G" && sectionTag !== "GREEN") {
           appearing.tags.push(sectionTag);
         }

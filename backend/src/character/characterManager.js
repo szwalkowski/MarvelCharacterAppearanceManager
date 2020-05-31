@@ -30,6 +30,15 @@ module.exports = class {
     return this.#dbConnection.saveAsync("characters", characterModel._id, characterModel);
   };
 
+  async updateCharacterAsync(characterId, issuesToSave) {
+    const characterData = await this.#dbConnection.findOneAsync("characters", { _id: characterId });
+    this.#expandAppearances(characterData.issues, issuesToSave);
+    characterData.issues.sort((a, b) => this.#compareIssues(a, b));
+    characterData.newestIssueTimestamp = characterData.issues[characterData.issues.length - 1].publishDateTimestamp;
+    await this.#dbConnection.saveAsync("characters", characterData._id, characterData);
+    return characterData;
+  }
+
   async loadIssuesAndAppearancesAsync(characterId) {
     const characterData = await this.#dbConnection.getByIdAsync("characters", characterId);
     const setOfAppearanceTypes = new Set();
@@ -45,6 +54,16 @@ module.exports = class {
     characterData.issues.sort((a, b) => this.#compareIssues(a, b));
     return { characterData, setOfAppearanceTypes: [...setOfAppearanceTypes].sort(), setOfFocusTypes: [...setOfFocusTypes].sort() };
   };
+
+  #expandAppearances = function(issues, issuesToSave) {
+    for (const issueToUpdate of issuesToSave) {
+      const foundIssue = issues.find(issue => issue.id === issueToUpdate.id);
+      if (foundIssue) {
+        issues.splice(issues.indexOf(foundIssue), 1);
+      }
+      issues.push(issueToUpdate);
+    }
+  }
 
   #compareIssues = function (a, b) {
     if (a.publishDateTimestamp !== b.publishDateTimestamp) {

@@ -57,7 +57,7 @@ module.exports = class {
 
   getImage() {
     const imageUrl = this.#findUrlOfImageBySelector(imageSelector);
-    return imageUrl && imageUrl.substring(0, imageUrl.indexOf(".jpg") + 4);
+    return imageUrl && imageUrl.substring(0, imageUrl.toLowerCase().indexOf(".jpg") + 4);
   };
 
   getAppearancesCount() {

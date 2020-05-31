@@ -10,23 +10,24 @@ const RegexMonthTag = /^\|[ ]+Month/;
 const RegexImageTag = /^\|[ ]+Image /;
 
 module.exports = class {
-  #jquery;
   #appearingResolver;
+  #appearingCharacters;
 
   constructor(issuePageWindow, url) {
     if (!issuePageWindow) {
       throw new Error("issuePageWindow is undefined!");
     }
+    this.#appearingCharacters = new Set();
     this.url = url;
     this.#appearingResolver = new AppearingResolver();
-    this.#jquery = new JQuery(issuePageWindow);
-    const allIssueDataElement = this.#jquery.find(SelectorWithAllIssueData)[0];
+    const jquery = new JQuery(issuePageWindow);
+    const allIssueDataElement = jquery.find(SelectorWithAllIssueData)[0];
     if (allIssueDataElement) {
       this.id = decodeURI(issuePageWindow.window.document.location.pathname.replace("/wiki/", ""));
       let issueTextInfo = allIssueDataElement.innerHTML.split("\n");
       this.isIssue = issueTextInfo.findIndex(value => value.includes("Marvel Database:Comic Template")) > -1;
       if (this.isIssue) {
-        this.fullName = this.#jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
+        this.fullName = jquery.find(SelectorForPageHeaderAndTitleThere)[0].innerHTML;
         this.#readDataFromText(issueTextInfo);
       }
     } else {
@@ -110,9 +111,13 @@ module.exports = class {
     return encodeURI(`${this.id}.jpg`);
   };
 
+  getAllAppearingIds() {
+    return this.#appearingCharacters;
+  }
+
   #isSameAppearanceNotIncluded = function (appearances, newAppearance) {
     return !appearances.length || !appearances.find(appearance => {
-      if (appearance.focusType !== newAppearance.focusType) {
+      if (appearance.storyOrdinal !== newAppearance.storyOrdinal || appearance.focusType !== newAppearance.focusType) {
         return false;
       }
       if (!appearance.typesOfAppearance.length && !newAppearance.typesOfAppearance.length) {
@@ -141,6 +146,7 @@ module.exports = class {
           lastFocusType = this.#resolveFocusType(line, issueStories[appearingNumber]);
         } else if (lastFocusType !== null && (line.startsWith("*") || line.startsWith(":*"))) {
           const appearance = this.#appearingResolver.resolveAppearing(line);
+          appearance.forEach(app => this.#appearingCharacters.add(app.id));
           if (appearance.length) {
             issueStories[appearingNumber][lastFocusType].push(...appearance);
           }

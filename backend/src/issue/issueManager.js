@@ -18,6 +18,18 @@ module.exports = class {
     return await this.#dbConnection.saveAsync(collectionName, issue._id, issue);
   }
 
+  async updateIssuesAsync(issueToUpdate) {
+    let issue = await this.#dbConnection.getByIdAsync(collectionName, issueToUpdate._id);
+    if (!issue) {
+      issue = issueToUpdate;
+    } else {
+      issue.image = issueToUpdate.image;
+      issue.publishDateTimestamp = issueToUpdate.publishDateTimestamp;
+      this.#expandAppearances(issue, issueToUpdate);
+    }
+    return await this.#dbConnection.saveAsync(collectionName, issue._id, issue);
+  }
+
   async changeIssuesStatusAsync(issueIds, newStatus, userIdToken, characterId) {
     const user = await this.#userAccountManager.findUserByIdTokenAsync(userIdToken);
     if (!user) {
@@ -155,9 +167,16 @@ module.exports = class {
   #removeAppearanceOfCharacter = function (issue, characterId) {
     const previousAppearanceIndex = issue.appearances.find(appearance => appearance.characterId === characterId);
     if (previousAppearanceIndex) {
-      issue.appearances.splice(previousAppearanceIndex, 1);
+      issue.appearances.splice(issue.appearances.indexOf(previousAppearanceIndex), 1);
     }
   };
+
+  #expandAppearances = function (destinationIssue, sourceIssue) {
+    for (const appearanceInSource of sourceIssue.appearances) {
+      this.#removeAppearanceOfCharacter(destinationIssue, appearanceInSource.characterId);
+      destinationIssue.appearances.push(appearanceInSource);
+    }
+  }
 
   #resolveCharacterId = function (issueStatus, newStatus, characterId) {
     const existingCharacterId = issueStatus.characters.find(char => char === characterId);
