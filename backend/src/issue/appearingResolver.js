@@ -10,7 +10,7 @@ const TAGS_WITHOUT_CONTINUATION = [
   "ONSCREEN", "ORIGIN", "REBIRTH", "RECAP", "REPAIRED", "RESURRECTION", "SHADOW", "UNNAMED", "BTS", "CARVING", "CORPSE", "DRAWING", "DREAM", "ILLUSION",
   "ONSCREENONLY", "PHOTO", "POSTER", "RECAPONLY", "STATUE", "TOY", "VISION", "VOICE", "INVOKED", "DECEASED", "SCREEN", "HOLOGRAM"];
 const TAG_WITHOUT_CONTINUATION_REGEX
-  = /^(Apn|1st|1st Real Name|1stas|1stChron|1stFull|1stHist|ApDeath|Cameo|Death|Defunct|Destroyed|Destruction|Disbands|Final|Final Dies|Flashback|Flashback and Flashforward|Flashforward|FlashOnly|Ghost|Joins|Last|Leaves|Only|Only Dies|OnScreen|Origin|Rebirth|Recap|Repaired|Resurrection|Shadow|Unnamed|BTS|Carving|Corpse|Drawing|Dream|Illusion|OnScreenOnly|Photo|RecapOnly|Statue|Toy|Vision|Invoked|Deceased|Screen|Hologram)\|/i;
+  = /^(Apn|1st|1st Real Name|1stas|1stChron|1stFull|1stHist|ApDeath|Cameo|Death|Defunct|Destroyed|Destruction|Disbands|Final|Final Dies|Flashback|Flashback and Flashforward|Flashforward|FlashOnly|Ghost|Joins|Last|Leaves|Only|Only Dies|OnScreen|Origin|Rebirth|Recap|Repaired|Resurrection|Shadow|Unnamed|BTS|Carving|Corpse|Drawing|Dream|Illusion|OnScreenOnly|Photo|Poster|RecapOnly|Statue|Toy|Vision|Invoked|Deceased|Screen|Hologram)\|/i;
 const TAG_FOR_POSSESSED_BY = /^g\|Possessed by $/i;
 const TAG_FOR_CUSTOM_BUT_AFTER = /^(g\||green\|)/i;
 const TAG_FOR_IMPERSONATION_BY = /^Impersonates[| ]/i;

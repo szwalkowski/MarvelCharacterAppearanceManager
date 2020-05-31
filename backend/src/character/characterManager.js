@@ -32,9 +32,13 @@ module.exports = class {
 
   async updateCharacterAsync(characterId, issuesToSave) {
     const characterData = await this.#dbConnection.findOneAsync("characters", { _id: characterId });
+    const oldSizeOfIssues = characterData.issues.length;
     this.#expandAppearances(characterData.issues, issuesToSave);
     characterData.issues.sort((a, b) => this.#compareIssues(a, b));
     characterData.newestIssueTimestamp = characterData.issues[characterData.issues.length - 1].publishDateTimestamp;
+    if (oldSizeOfIssues !== characterData.issues.length) {
+      console.log(`New issues appeared for ${characterId} in count of ${characterData.issues.length - oldSizeOfIssues}`);
+    }
     await this.#dbConnection.saveAsync("characters", characterData._id, characterData);
     return characterData;
   }
@@ -57,6 +61,7 @@ module.exports = class {
 
   async removeIssuesFromCharactersAsync(charactersToCleanUp, issue) {
     for (const characterId of charactersToCleanUp) {
+      console.log(`Removing ${characterId} from ${issue._id}`);
       await this.#dbConnection.pull("characters", { _id: characterId }, "issues", { id: issue._id });
     }
   }

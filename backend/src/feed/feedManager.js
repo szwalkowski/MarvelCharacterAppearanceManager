@@ -16,11 +16,11 @@ module.exports = class {
     this.#dbConnection = dbConnection;
     this.#pageDownloader = new PageDownloader();
     this.#issueMassUpdateService = new IssueMassUpdateService(issueManager, dbConnection);
-    new CronJob(process.env.CRON_FEED_UPDATE, this.initiateUpdateProcess, null, true);
+    new CronJob(process.env.CRON_FEED_UPDATE, () => this.initiateUpdateProcess(this), null, true);
   }
 
   async initiateUpdateProcess() {
-    console.log("Feed update started");
+    console.log(`Feed update started at ${new Date()}`);
     if (this.#oneUpdateAtATime) {
       return;
     }

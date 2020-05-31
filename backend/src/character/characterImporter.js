@@ -23,6 +23,7 @@ module.exports = class {
   };
 
   async downloadAndStoreConfirmedCharacterAsync(baseCharacterInfo) {
+    console.log("downloadAndStoreConfirmedCharacterAsync started");
     const that = this;
     let minorAppearanceLinks = [];
     if (baseCharacterInfo.MinorAppearanceUrl) {
@@ -67,7 +68,7 @@ module.exports = class {
     });
     Promise.all([saveCharacterPromise, ...issueUpdatesPromises])
       .then(() => {
-        console.log("All files are uploaded and saved");
+        console.log(`All files are uploaded and saved for ${characterAndIssues.CharacterId}`);
       })
       .catch(err => {
         console.error("Something went wrong with storing character. Investigate and retry!", err);

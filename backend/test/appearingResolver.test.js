@@ -229,4 +229,10 @@ describe("Test for appearing resolver", function () {
     assert.equal(appearing[0].id, "Satan_(Unidentified)_(Earth-616)");
     assert.equal(appearing[0].tags, "FLASHONLY");
   });
+
+  it("Poster appearing problem", function () {
+    const appearing = new AppearingResolver().resolveAppearing("** {{Poster|[[Thor Odinson (Earth-616)|Thor]]}}");
+    assert.equal(appearing[0].id, "Thor_Odinson_(Earth-616)");
+    assert.equal(appearing[0].tags, "POSTER");
+  });
 });

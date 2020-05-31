@@ -26,8 +26,12 @@ module.exports = class {
     } else {
       issue.image = issueToUpdate.image;
       issue.publishDateTimestamp = issueToUpdate.publishDateTimestamp;
+      const oldSizeOfAppearances = issue.appearances.length;
       charactersThatDisappeared = this.#findThoseThatDisappeared(issue.appearances, issueToUpdate.appearances);
       issue.appearances = issueToUpdate.appearances;
+      if (oldSizeOfAppearances !== issue.appearances.length) {
+        console.log(`New characters appeared for ${issue._id} in count of ${issue.appearances.length - oldSizeOfAppearances}`);
+      }
     }
     await this.#dbConnection.saveAsync(collectionName, issue._id, issue);
     return charactersThatDisappeared;
