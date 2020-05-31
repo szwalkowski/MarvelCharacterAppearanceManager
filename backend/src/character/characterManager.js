@@ -55,6 +55,12 @@ module.exports = class {
     return { characterData, setOfAppearanceTypes: [...setOfAppearanceTypes].sort(), setOfFocusTypes: [...setOfFocusTypes].sort() };
   };
 
+  async removeIssuesFromCharactersAsync(charactersToCleanUp, issue) {
+    for (const characterId of charactersToCleanUp) {
+      await this.#dbConnection.pull("characters", { _id: characterId }, "issues", { id: issue._id });
+    }
+  }
+
   #expandAppearances = function(issues, issuesToSave) {
     for (const issueToUpdate of issuesToSave) {
       const foundIssue = issues.find(issue => issue.id === issueToUpdate.id);

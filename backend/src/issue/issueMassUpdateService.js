@@ -30,7 +30,10 @@ module.exports = class {
       this.#mergeIssuesToUpdate(issuesToUpdate, issuesWithCharacters);
     }
     for (const issue of issuesToUpdate) {
-      await this.#issueManager.updateIssuesAsync(issue)
+      const charactersToCleanUp = await this.#issueManager.updateIssuesAndFindThoseThatDisappearedAsync(issue);
+      if (charactersToCleanUp.length) {
+        await this.#characterManager.removeIssuesFromCharactersAsync(charactersToCleanUp, issue);
+      }
     }
     return true;
   };

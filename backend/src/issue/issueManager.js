@@ -18,16 +18,19 @@ module.exports = class {
     return await this.#dbConnection.saveAsync(collectionName, issue._id, issue);
   }
 
-  async updateIssuesAsync(issueToUpdate) {
+  async updateIssuesAndFindThoseThatDisappearedAsync(issueToUpdate) {
     let issue = await this.#dbConnection.getByIdAsync(collectionName, issueToUpdate._id);
+    let charactersThatDisappeared = []
     if (!issue) {
       issue = issueToUpdate;
     } else {
       issue.image = issueToUpdate.image;
       issue.publishDateTimestamp = issueToUpdate.publishDateTimestamp;
-      this.#expandAppearances(issue, issueToUpdate);
+      charactersThatDisappeared = this.#findThoseThatDisappeared(issue.appearances, issueToUpdate.appearances);
+      issue.appearances = issueToUpdate.appearances;
     }
-    return await this.#dbConnection.saveAsync(collectionName, issue._id, issue);
+    await this.#dbConnection.saveAsync(collectionName, issue._id, issue);
+    return charactersThatDisappeared;
   }
 
   async changeIssuesStatusAsync(issueIds, newStatus, userIdToken, characterId) {
@@ -171,11 +174,14 @@ module.exports = class {
     }
   };
 
-  #expandAppearances = function (destinationIssue, sourceIssue) {
-    for (const appearanceInSource of sourceIssue.appearances) {
-      this.#removeAppearanceOfCharacter(destinationIssue, appearanceInSource.characterId);
-      destinationIssue.appearances.push(appearanceInSource);
+  #findThoseThatDisappeared = function (oldAppearances, newAppearances) {
+    const missingAppearances = [];
+    for (const oldAppearance of oldAppearances) {
+      if (!newAppearances.find(appearing => appearing.characterId === oldAppearance.characterId)) {
+        missingAppearances.push(oldAppearance.characterId);
+      }
     }
+    return missingAppearances;
   }
 
   #resolveCharacterId = function (issueStatus, newStatus, characterId) {
