@@ -235,4 +235,26 @@ describe("Test for appearing resolver", function () {
     assert.equal(appearing[0].id, "Thor_Odinson_(Earth-616)");
     assert.equal(appearing[0].tags, "POSTER");
   });
+
+  it("Possessed as starting", function () {
+    const appearing = new AppearingResolver().resolveAppearing("* {{possessed|[[Daniel Rand (Earth-616)|Iron Fist (Danny Rand)]]|[[Agamotto (Earth-616)|Agamotto]]}}");
+    assert.equal(appearing[0].id, "Daniel_Rand_(Earth-616)");
+    assert.equal(appearing[0].tags, "POSSESSED");
+    assert.equal(appearing[1].id, "Agamotto_(Earth-616)");
+    assert.equal(appearing[1].tags, "POSSESSES");
+  });
+
+  it("Voice as starting", function () {
+    const appearing = new AppearingResolver().resolveAppearing("** {{Voice|[[Maria Hill (Earth-616)|Director Maria Hill]]}}");
+    assert.equal(appearing[0].id, "Maria_Hill_(Earth-616)");
+    assert.equal(appearing[0].tags, "VOICE");
+  });
+
+  it("Shared existence", function () {
+    const appearing = new AppearingResolver().resolveAppearing("** {{apn|[[Thor Odinson (Earth-616)|Thor]]|Marvel Super-Heroes Vol 2 9}} {{g|Shared existence with {{apn|[[Eric Masterson (Earth-616)|Eric Masterson]]|Marvel Super-Heroes Vol 2 9|}}}}");
+    assert.equal(appearing[0].id, "Thor_Odinson_(Earth-616)");
+    assert.equal(appearing[0].tags, "SHARED EXISTENCE WITH");
+    assert.equal(appearing[1].id, "Eric_Masterson_(Earth-616)");
+    assert.equal(appearing[1].tags, "SHARED EXISTENCE WITH");
+  });
 });

@@ -10,8 +10,10 @@ const TAGS_WITHOUT_CONTINUATION = [
   "ONSCREEN", "ORIGIN", "REBIRTH", "RECAP", "REPAIRED", "RESURRECTION", "SHADOW", "UNNAMED", "BTS", "CARVING", "CORPSE", "DRAWING", "DREAM", "ILLUSION",
   "ONSCREENONLY", "PHOTO", "POSTER", "RECAPONLY", "STATUE", "TOY", "VISION", "VOICE", "INVOKED", "DECEASED", "SCREEN", "HOLOGRAM"];
 const TAG_WITHOUT_CONTINUATION_REGEX
-  = /^(Apn|1st|1st Real Name|1stas|1stChron|1stFull|1stHist|ApDeath|Cameo|Death|Defunct|Destroyed|Destruction|Disbands|Final|Final Dies|Flashback|Flashback and Flashforward|Flashforward|FlashOnly|Ghost|Joins|Last|Leaves|Only|Only Dies|OnScreen|Origin|Rebirth|Recap|Repaired|Resurrection|Shadow|Unnamed|BTS|Carving|Corpse|Drawing|Dream|Illusion|OnScreenOnly|Photo|Poster|RecapOnly|Statue|Toy|Vision|Invoked|Deceased|Screen|Hologram)\|/i;
+  = /^(Apn|1st|1st Real Name|1stas|1stChron|1stFull|1stHist|ApDeath|Cameo|Death|Defunct|Destroyed|Destruction|Disbands|Final|Final Dies|Flashback|Flashback and Flashforward|Flashforward|FlashOnly|Ghost|Joins|Last|Leaves|Only|Only Dies|OnScreen|Origin|Rebirth|Recap|Repaired|Resurrection|Shadow|Unnamed|BTS|Carving|Corpse|Drawing|Dream|Illusion|OnScreenOnly|Photo|Poster|RecapOnly|Statue|Toy|Vision|Voice|Invoked|Deceased|Screen|Hologram)\|/i;
 const TAG_FOR_POSSESSED_BY = /^g\|Possessed by $/i;
+const TAG_FOR_SHARED_EXISTENCE_WITH = /^g\|Shared existence with $/i;
+const TAG_FOR_POSSESSED_V2 = /^Possessed\|/i
 const TAG_FOR_CUSTOM_BUT_AFTER = /^(g\||green\|)/i;
 const TAG_FOR_IMPERSONATION_BY = /^Impersonates[| ]/i;
 
@@ -28,6 +30,12 @@ module.exports = class {
         appearing[appearingUnderChange].tags.push("POSSESSED");
         appearing.push({ tags: [] });
         appearing[++appearingUnderChange].tags.push("POSSESSES");
+      } else if (appearing[appearingUnderChange].id && TAG_FOR_SHARED_EXISTENCE_WITH.test(section)) {
+        appearing[appearingUnderChange].tags.push("SHARED EXISTENCE WITH");
+        appearing.push({ tags: [] });
+        appearing[++appearingUnderChange].tags.push("SHARED EXISTENCE WITH");
+      } else if (!appearing[appearingUnderChange].id && sections.length === 1 && TAG_FOR_POSSESSED_V2.test(section)) {
+        this.#createPossessionCombo(section, appearing, appearingUnderChange);
       } else if (appearing[appearingUnderChange].id && TAG_FOR_IMPERSONATION_BY.test(section)) {
         appearing[appearingUnderChange].tags.push("IMPERSONATES");
         ++appearingUnderChange;
@@ -50,6 +58,15 @@ module.exports = class {
     }
     return appearing.filter(app => app.id && app.id.endsWith(")"));
   };
+
+  #createPossessionCombo = function(section, appearing) {
+    const possessSections = section.split(SECTION_CUTTER_SQUARE).filter(section => section.trim());
+    appearing[0].id = possessSections[1].replace(/ +/g, "_");
+    appearing[0].tags.push("POSSESSED");
+    appearing.push({ tags: [] });
+    appearing[1].tags.push("POSSESSES");
+    appearing[1].id = possessSections[3].replace(/ +/g, "_");
+  }
 
   #extractTagForAppearingAfterCustom = function(section, appearing) {
     const sectionSplit = section.split(SECTION_CUTTER_SQUARE).filter(section => section.trim());
