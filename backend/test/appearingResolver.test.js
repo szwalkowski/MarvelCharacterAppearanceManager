@@ -257,4 +257,12 @@ describe("Test for appearing resolver", function () {
     assert.equal(appearing[1].id, "Eric_Masterson_(Earth-616)");
     assert.equal(appearing[1].tags, "SHARED EXISTENCE WITH");
   });
+
+  it("Shared line by dash", function () {
+    const appearing = new AppearingResolver().resolveAppearing("** {{apn|[[Johann Shmidt (Earth-616)|Red Skull]]||-}} {{apn|[[Aleksander Lukin (Earth-616)|(Aleksander Lukin)]]|-|}}");
+    assert.equal(appearing[0].id, "Johann_Shmidt_(Earth-616)");
+    assert.isEmpty(appearing[0].tags);
+    assert.equal(appearing[1].id, "Aleksander_Lukin_(Earth-616)");
+    assert.isEmpty(appearing[1].tags);
+  });
 });

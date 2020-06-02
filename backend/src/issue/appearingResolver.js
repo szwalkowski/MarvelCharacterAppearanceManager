@@ -51,6 +51,10 @@ module.exports = class {
       } else if (TAG_WITH_CONTINUATION_REGEX.test(section)) {
         this.#createAppearingWithContinuation(section, appearing[appearingUnderChange]);
       } else if (TAG_WITHOUT_CONTINUATION_REGEX.test(section)) {
+        if (appearing[appearingUnderChange].id) {
+          appearing.push({ tags: [] });
+          appearingUnderChange++;
+        }
         this.#createAppearingWithoutContinuation(section, appearing[appearingUnderChange]);
       } else {
         this.#createTagsForAppearing(section, appearing[appearingUnderChange]);
