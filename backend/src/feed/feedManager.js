@@ -2,7 +2,7 @@ const FeedPageModel = require('./feedPageModel');
 const PageDownloader = require('../pageDownloader');
 const IssuePageModel = require('../issue/issuePageModel');
 const IssueMassUpdateService = require('../issue/issueMassUpdateService');
-const FeedPageUrl = 'https://marvel.fandom.com/wiki/Special:RecentChanges?days=1&limit=500&hidelogs=1';
+const FeedPageUrl = 'https://marvel.fandom.com/wiki/Special:RecentChanges?days=1&limit=2000&hidelogs=1';
 const Async = require("async");
 const CronJob = require("cron").CronJob;
 
@@ -33,6 +33,8 @@ module.exports = class {
       if (await this.#issueMassUpdateService.updateIssuesAsync(allIssuesPageModels)) {
         this.#saveLastFeedDateAsync(feedPageModel.getLastUpdateTime());
       }
+    } catch (error) {
+      console.error(error);
     } finally {
       console.log("Feed update stopped");
       this.#oneUpdateAtATime = false;

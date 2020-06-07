@@ -14,7 +14,7 @@ export default {
       ui = new firebaseui.auth.AuthUI(firebase.auth());
     }
     const uiConfig = {
-      signInSuccessUrl: "/account",
+      signInSuccessUrl: "#/account",
       signInOptions: [
         firebase.auth.GoogleAuthProvider.PROVIDER_ID,
         firebase.auth.FacebookAuthProvider.PROVIDER_ID,

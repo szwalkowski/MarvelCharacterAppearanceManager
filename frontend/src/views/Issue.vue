@@ -318,6 +318,9 @@ export default {
     next();
     this.loadIssuePage();
   },
+  mounted() {
+    this.loadIssuePage();
+  },
   components: {
     IconLoading
   }

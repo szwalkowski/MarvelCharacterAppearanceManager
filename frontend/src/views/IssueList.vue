@@ -28,11 +28,13 @@
         >
           <a
             v-if="volumeNo !== 'null'"
-            :href="`/issue?issueName=${key}&issueVolume=${volumeNo}`"
+            :href="`#/issue?issueName=${encodeURIComponent(key)}&issueVolume=${encodeURIComponent(volumeNo)}`"
           >
             {{ volumeNo }}
           </a>
-          <a v-else :href="`/issue?issueName=${key}`">n/a</a>
+          <a v-else :href="`#/issue?issueName=${encodeURIComponent(key)}`">
+            n/a
+          </a>
           (Issue count: {{ volumeCount }})
         </div>
       </div>

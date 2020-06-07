@@ -1,4 +1,7 @@
 const express = require('express');
+const path = require('path');
+const serveStatic = require('serve-static');
+const helmet = require('helmet');
 const CharacterController = require('./character/characterController');
 const DictionaryController = require('./dictionary/dictionaryController');
 const IssueController = require('./issue/issueController');
@@ -9,8 +12,9 @@ const FeedController = require("./feed/feedController");
 const IssueManager = require("./issue/issueManager");
 const UserAccountManager = require("./user/userAccountManager");
 const bodyParser = require('body-parser');
-const server = express();
 const MongoClient = require('./driver/mongoDriver');
+
+const server = express();
 
 class App {
 
@@ -23,25 +27,32 @@ class App {
 
   #configureServerSettings = function (server) {
     server.use((req, res, next) => {
-      res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+      //res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
       res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
       next();
     });
     server.use(bodyParser.json());
+    server.use(helmet());
+    const publicRoot = "../../frontend/dist";
+    server.use(express.static(publicRoot));
+    server.get("/", (req, res) => {
+      res.sendFile("index.html", { root: publicRoot });
+    });
   };
 
   #createDataEndpoints = function (server, dbConnection) {
-    this.#indexEndpoint(server);
     const userAccountManager = new UserAccountManager(dbConnection);
     const issueManager = new IssueManager(userAccountManager, dbConnection);
-    new CharacterController(server, issueManager, userAccountManager, dbConnection);
-    new DictionaryController(server, dbConnection, userAccountManager);
-    new UserController(server, userAccountManager);
-    new IssueController(server, issueManager, userAccountManager);
-    new IssueIgnoredController(server, userAccountManager);
-    new IssueFavouritesController(server, userAccountManager);
-    new FeedController(server, userAccountManager, issueManager, dbConnection);
+    const router = express.Router();
+    new CharacterController(router, issueManager, userAccountManager, dbConnection);
+    new DictionaryController(router, dbConnection, userAccountManager);
+    new UserController(router, userAccountManager);
+    new IssueController(router, issueManager, userAccountManager);
+    new IssueIgnoredController(router, userAccountManager);
+    new IssueFavouritesController(router, userAccountManager);
+    new FeedController(router, userAccountManager, issueManager, dbConnection);
+    server.use("/api", router);
   };
 
   #startServer = function (server) {
@@ -49,12 +60,6 @@ class App {
       console.log('Server is up on port 3000');
     });
   };
-
-  #indexEndpoint = function (server) {
-    server.get('', (req, res) => {
-      res.render('index');
-    });
-  }
 }
 
 new App(server);

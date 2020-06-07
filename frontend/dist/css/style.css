@@ -1,0 +1,49 @@
+@font-face {
+    font-family: 'GoldenSentry';
+    src: url('../fonts/GoldenSentry-pXBv.ttf');
+}
+
+body, input, textarea, select, button {
+    color: #989898;
+    background: #171717;
+    border-color: #464646;
+}
+
+button:hover,
+input[type="checkbox"]:hover {
+    cursor: pointer;
+}
+
+.actions_top {
+    border-bottom: 1px solid #979798;
+}
+
+.v--modal-overlay {
+    background: rgba(0, 0, 0, 0.8) !important;
+}
+
+.v--modal {
+    background: #171717 !important;
+}
+
+.swal2-popup {
+    background-color: #464646 !important;
+}
+
+.swal2-content {
+    color: #cdcdcd !important;
+}
+
+.swal2-confirm {
+    color: #fff !important;
+    background-color: #375a7f !important;
+    border-color: #375a7f !important;
+}
+
+.swal2-actions button:active {
+    background-color: #640a14 !important;
+}
+
+.swal2-actions button:focus {
+    box-shadow: 0 0 0 3px #212121 !important;
+}

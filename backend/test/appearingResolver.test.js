@@ -265,4 +265,10 @@ describe("Test for appearing resolver", function () {
     assert.equal(appearing[1].id, "Aleksander_Lukin_(Earth-616)");
     assert.isEmpty(appearing[1].tags);
   });
+
+  it("First as after apn", function () {
+    const appearing = new AppearingResolver().resolveAppearing("* {{apn|[[Carl Creel (Earth-616)|Absorbing Man]]|Daredevil Vol 1 1}} {{1stas|Absorbing Man}}");
+    assert.equal(appearing[0].id, "Carl_Creel_(Earth-616)");
+    assert.equal(appearing[0].tags, "1STAS");
+  });
 });
