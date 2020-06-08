@@ -28,7 +28,11 @@
         >
           <a
             v-if="volumeNo !== 'null'"
-            :href="`#/issue?issueName=${encodeURIComponent(key)}&issueVolume=${encodeURIComponent(volumeNo)}`"
+            :href="
+              `#/issue?issueName=${encodeURIComponent(
+                key
+              )}&issueVolume=${encodeURIComponent(volumeNo)}`
+            "
           >
             {{ volumeNo }}
           </a>

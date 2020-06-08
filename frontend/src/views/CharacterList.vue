@@ -27,7 +27,11 @@
           :key="universe.universe"
         >
           <a
-            :href="`#/character?characterId=${encodeURIComponent(universe.characterId)}`"
+            :href="
+              `#/character?characterId=${encodeURIComponent(
+                universe.characterId
+              )}`
+            "
           >
             {{ universe.universe }}
           </a>

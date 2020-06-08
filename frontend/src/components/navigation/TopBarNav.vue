@@ -81,8 +81,7 @@ export default {
         .get("feedUpdate", {
           mcamAuthenticated: true
         })
-        .then(response => {
-        })
+        .then(_ => {})
         .catch(error => {
           console.error(error);
         });
