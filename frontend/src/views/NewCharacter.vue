@@ -67,7 +67,7 @@ import axios from "axios";
 
 const marvelWikiUrl = "https://marvel.fandom.com/wiki/";
 const maxDisplayNameLength = 20;
-const displayNameRegexp = /^[a-zA-Z0-9- ]+$/;
+const displayNameRegexp = /^[a-zA-Z0-9-. ]+$/;
 const urlStartRegex = /^https:\/\/|http:\/\/|www./i;
 
 export default {
@@ -131,7 +131,7 @@ export default {
         }
         if (!displayNameRegexp.test(displayName)) {
           this.errors.push(
-            "Display name can only contain a-z letters, numbers, spaces and dashes."
+            "Display name can only contain a-z letters, numbers, spaces, dots and dashes."
           );
         }
       }

@@ -33,6 +33,8 @@ module.exports = class {
       if (await this.#issueMassUpdateService.updateIssuesAsync(allIssuesPageModels)) {
         this.#saveLastFeedDateAsync(feedPageModel.getLastUpdateTime());
       }
+    } catch (error) {
+      console.error(error);
     } finally {
       console.log("Feed update stopped");
       this.#oneUpdateAtATime = false;

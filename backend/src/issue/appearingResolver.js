@@ -3,14 +3,14 @@ const SECTION_CUTTER_CURLY = /{|}|\*|'{3}|<.*>|&LT;.*&GT;/i;
 const SECTION_CUTTER_SQUARE = /[\[|\]]/;
 const TAGS_TO_IGNORE = /^(Chronology|#Chronology Notes|ChronoFB|Topical Reference| - | & |Circa|#Continuity Notes| - .+|r\|.*)$/i;
 const TAGS_WITH_CONTINUATION = ["A", "G", "GREEN", "MINOR", "MENTIONED", "FB"];
-const TAG_WITH_CONTINUATION_REGEX = /^(a|g|green|Minor|Mentioned|FB)\|/i;
+const TAG_WITH_CONTINUATION_REGEX = /^(a|g|green|Minor|Mentioned|FB)\|.+\|/i;
 const TAGS_WITHOUT_CONTINUATION = [
   "APN", "1ST", "1ST REAL NAME", "1STAS", "1STCHRON", "1STFULL", "1STHIST", "APDEATH", "CAMEO", "DEATH", "DEFUNCT", "DESTROYED", "DESTRUCTION", "DISBANDS",
   "FINAL", "FINAL DIES", "FLASHBACK", "FLASHBACK AND FLASHFORWARD", "FLASHFORWARD", "FLASHONLY", "GHOST", "JOINS", "LAST", "LEAVES", "ONLY", "ONLY DIES",
   "ONSCREEN", "ORIGIN", "REBIRTH", "RECAP", "REPAIRED", "RESURRECTION", "SHADOW", "UNNAMED", "BTS", "CARVING", "CORPSE", "DRAWING", "DREAM", "ILLUSION",
   "ONSCREENONLY", "PHOTO", "POSTER", "RECAPONLY", "STATUE", "TOY", "VISION", "VOICE", "INVOKED", "DECEASED", "SCREEN", "HOLOGRAM"];
 const TAG_WITHOUT_CONTINUATION_REGEX
-  = /^(Apn|1st|1st Real Name|1stas|1stChron|1stFull|1stHist|ApDeath|Cameo|Death|Defunct|Destroyed|Destruction|Disbands|Final|Final Dies|Flashback|Flashback and Flashforward|Flashforward|FlashOnly|Ghost|Joins|Last|Leaves|Only|Only Dies|OnScreen|Origin|Rebirth|Recap|Repaired|Resurrection|Shadow|Unnamed|BTS|Carving|Corpse|Drawing|Dream|Illusion|OnScreenOnly|Photo|Poster|RecapOnly|Statue|Toy|Vision|Voice|Invoked|Deceased|Screen|Hologram)\|/i;
+  = /^(Apn|1st|1st Real Name|1stas|1stChron|1stFull|1stHist|ApDeath|Cameo|Death|Defunct|Destroyed|Destruction|Disbands|Final|Final Dies|Flashback|Flashback and Flashforward|Flashforward|FlashOnly|Ghost|Joins|Last|Leaves|Only|Only Dies|OnScreen|Origin|Rebirth|Recap|Repaired|Resurrection|Shadow|Unnamed|BTS|Carving|Corpse|Drawing|Dream|Illusion|OnScreenOnly|Photo|Poster|RecapOnly|Statue|Toy|Vision|Voice|Invoked|Deceased|Screen|Hologram)\|.+\|/i;
 const TAG_FOR_POSSESSED_BY = /^g\|Possessed by $/i;
 const TAG_FOR_SHARED_EXISTENCE_WITH = /^g\|Shared existence with $/i;
 const TAG_FOR_POSSESSED_V2 = /^Possessed\|/i
