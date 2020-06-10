@@ -1,6 +1,4 @@
 const express = require('express');
-const path = require('path');
-const serveStatic = require('serve-static');
 const helmet = require('helmet');
 const CharacterController = require('./character/characterController');
 const DictionaryController = require('./dictionary/dictionaryController');
@@ -27,14 +25,13 @@ class App {
 
   #configureServerSettings = function (server) {
     server.use((req, res, next) => {
-      //res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
       res.setHeader("Access-Control-Allow-Methods", "GET, POST, DELETE");
       res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
       next();
     });
     server.use(bodyParser.json());
     server.use(helmet());
-    const publicRoot = "../../frontend/dist";
+    const publicRoot = "../dist";
     server.use(express.static(publicRoot));
     server.get("/", (req, res) => {
       res.sendFile("index.html", { root: publicRoot });

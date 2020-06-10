@@ -11,7 +11,9 @@
             src="/img/FavIcon.png"
             style="width: 30px"
           />
-          <a :href="issue.url" target="_blank">{{ issue.name }}</a>
+          <a :href="issue.url | adjustLinkToIssue" target="_blank">
+            {{ issue.name }}
+          </a>
         </h3>
       </div>
       <div class="col-sm-auto pl-sm-4 pt-sm-3 badge-secondary">
@@ -269,6 +271,12 @@ export default {
         month = "0" + month;
       }
       return [year, month].join("-");
+    },
+    adjustLinkToIssue(linkToIssue) {
+      if (linkToIssue.toUpperCase().includes("https://marvel.fandom.com")) {
+        return linkToIssue;
+      }
+      return `https://marvel.fandom.com/${linkToIssue}`;
     }
   },
   created() {
