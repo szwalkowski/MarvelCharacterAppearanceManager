@@ -5,17 +5,17 @@
         <label class="pr-sm-2" for="character-filter">Search: </label>
         <input
           id="character-filter"
+          v-model="characterFilter"
           placeholder="Enter character name"
           type="text"
-          v-model="characterFilter"
         />
       </div>
     </div>
     <div
-      class="text-center row bg-secondary p-sm-2 h-100"
-      style="border: 1px dotted #82cc6f;"
       v-for="character in visibleCharacters"
       :key="character.displayName"
+      class="text-center row bg-secondary p-sm-2 h-100"
+      style="border: 1px dotted #82cc6f;"
     >
       <div class="col-sm my-auto font-weight-bold text-info">
         {{ character.displayName }}
@@ -33,7 +33,7 @@
               )}`
             "
           >
-            {{ universe.universe }}
+            {{ universe.characterId | underscoresToSpaces }}
           </a>
         </div>
       </div>
@@ -44,6 +44,11 @@
 import axios from "axios";
 
 export default {
+  filters: {
+    underscoresToSpaces(value) {
+      return value.replace(/_/g, " ");
+    }
+  },
   data() {
     return {
       characterList: [],

@@ -273,7 +273,7 @@ export default {
       return [year, month].join("-");
     },
     adjustLinkToIssue(linkToIssue) {
-      if (linkToIssue.toUpperCase().includes("https://marvel.fandom.com")) {
+      if (linkToIssue.toLowerCase().includes("https://marvel.fandom.com")) {
         return linkToIssue;
       }
       return `https://marvel.fandom.com/${linkToIssue}`;
