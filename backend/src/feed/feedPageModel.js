@@ -17,7 +17,7 @@ module.exports = class {
       const date = jQuery(line).parent().parent().find("h4:first").text();
       const time = TimeRegex.exec(jQuery(line).find("td.mw-enhanced-rc").text())[0];
       const lineDate = new Date(`${date} ${time} UTC`);
-      if (time && date && lineDate < lastUpdateTime) {
+      if (time && date && lastUpdateTime && lineDate < lastUpdateTime) {
         break;
       }
       if (!this.#lastUpdateTime) {

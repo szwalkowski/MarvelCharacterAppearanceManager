@@ -2,7 +2,6 @@ const FeedPageModel = require('./feedPageModel');
 const PageDownloader = require('../pageDownloader');
 const IssuePageModel = require('../issue/issuePageModel');
 const IssueMassUpdateService = require('../issue/issueMassUpdateService');
-const FeedPageUrl = 'https://marvel.fandom.com/wiki/Special:RecentChanges?days=1&limit=5000&hidelogs=1';
 const Async = require("async");
 const CronJob = require("cron").CronJob;
 
@@ -26,9 +25,9 @@ module.exports = class {
     }
     this.#oneUpdateAtATime = true;
     try {
-      const feedPagePromise = this.#pageDownloader.downloadWindowFromUrlAsync(FeedPageUrl);
-      const lastSavedFeedDatePromise = this.#getLastSavedFeedDateAsync();
-      const feedPageModel = new FeedPageModel(await feedPagePromise, (await lastSavedFeedDatePromise).value);
+      const lastTime = await this.#findLastTimeReadOfFeedAsync();
+      const feedPagePromise = this.#pageDownloader.downloadWindowFromUrlAsync(this.#calculateLinkOfFeed(lastTime));
+      const feedPageModel = new FeedPageModel(await feedPagePromise, lastTime);
       const allIssuesPageModels = await this.#downloadAllIssuesAsync(feedPageModel);
       if (await this.#issueMassUpdateService.updateIssuesAsync(allIssuesPageModels)) {
         this.#saveLastFeedDateAsync(feedPageModel.getLastUpdateTime());
@@ -39,6 +38,23 @@ module.exports = class {
       console.log("Feed update stopped");
       this.#oneUpdateAtATime = false;
     }
+  }
+
+  #findLastTimeReadOfFeedAsync = async function () {
+    const lastSavedFeedDateProp = (await this.#getLastSavedFeedDateAsync());
+    if (lastSavedFeedDateProp) {
+      return new Date(lastSavedFeedDateProp.value);
+    }
+  }
+
+  #calculateLinkOfFeed = function (lastKnownDate) {
+    if (!lastKnownDate) {
+      return `https://marvel.fandom.com/wiki/Special:RecentChanges?days=5&limit=5000&hidelogs=1`;
+    }
+    const minutesSinceLast = (new Date().getTime() - new Date(lastKnownDate).getTime()) / 1000 / 60;
+    const limit = Math.max(100, parseInt(minutesSinceLast / 30) * 100);
+    const days = Math.max(1, parseInt(minutesSinceLast / 60 / 20));
+    return `https://marvel.fandom.com/wiki/Special:RecentChanges?days=${days}&limit=${limit}&hidelogs=1`;
   }
 
   #downloadAllIssuesAsync = async function (feedPageModel) {
@@ -81,7 +97,7 @@ module.exports = class {
   }
 
   #saveLastFeedDateAsync = async function (newTime) {
-    return await this.#dbConnection.updateAsync("properties", { _id: "lastSavedFeedDate" }, { value: newTime });
+    return await this.#dbConnection.saveAsync("properties", "lastSavedFeedDate", { _id: "lastSavedFeedDate", value: newTime.toISOString() });
   }
 
 }

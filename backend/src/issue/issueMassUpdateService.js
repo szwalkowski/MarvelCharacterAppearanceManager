@@ -14,7 +14,7 @@ module.exports = class {
 
   async updateIssuesAsync(allIssuesPageModels) {
     if (!allIssuesPageModels.length) {
-      return false;
+      return true;
     }
     const charactersOfInterest = await this.#createListOfCharactersOfInterestAsync(allIssuesPageModels);
     const issuesToUpdate = [];
