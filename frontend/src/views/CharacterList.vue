@@ -24,7 +24,7 @@
         <div
           class="p-sm-1"
           v-for="universe in character.universes"
-          :key="universe.universe"
+          :key="universe.characterId"
         >
           <a
             :href="
