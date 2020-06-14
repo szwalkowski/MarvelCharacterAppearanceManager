@@ -271,4 +271,14 @@ describe("Test for appearing resolver", function () {
     assert.equal(appearing[0].id, "Carl_Creel_(Earth-616)");
     assert.equal(appearing[0].tags, "1STAS");
   });
+
+  it("Impersonate test", function () {
+    const appearing = new AppearingResolver().resolveAppearing(
+      "** {{1st|[[Raven Darkholme (Earth-13264)|Mystique (Raven Darkholme)]]}} {{Impersonates|{{Minor|[[Warren Worthington III (Earth-15513)|Ranger Worthington]]}}}}"
+    );
+    assert.equal(appearing[0].id, "Raven_Darkholme_(Earth-13264)");
+    assert.equal(appearing[0].tags, "1ST,IMPERSONATES");
+    assert.equal(appearing[1].id, "Warren_Worthington_III_(Earth-15513)");
+    assert.equal(appearing[1].tags, "IMPERSONATED,MINOR");
+  });
 });

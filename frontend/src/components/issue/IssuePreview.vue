@@ -29,8 +29,8 @@
           </div>
           <div class="col">
             <button
-              @click="showImage(issue._id, issue.image)"
               class="btn btn-sm btn-info"
+              @click="showImage(issue._id, issue.image)"
             >
               Image
             </button>
@@ -38,28 +38,28 @@
         </div>
       </div>
       <div
-        class="pl-sm-4 pt-sm-3 modal-content"
         v-for="(characters, title) in stories"
         :key="title"
+        class="pl-sm-4 pt-sm-3 modal-content"
       >
         <h5 class="row pb-sm-2">{{ title }}</h5>
         <div
-          class="row col-sm-auto"
           v-for="character in characters.characters"
           :key="character.characterId"
+          class="row col-sm-auto"
         >
           <div v-if="user && !issue.read">
             <button
               v-if="character.read"
-              @click="changeStatus('clear', character.characterId)"
               class="btn btn-danger btn-sm"
+              @click="changeStatus('clear', character.characterId)"
             >
               Unread
             </button>
             <button
               v-else
-              @click="changeStatus('character', character.characterId)"
               class="btn btn-primary btn-sm"
+              @click="changeStatus('character', character.characterId)"
             >
               Read
             </button>
@@ -79,8 +79,8 @@
     <div v-if="user" class="modal-footer pr-sm-5">
       <button
         v-if="issue.read"
-        @click="changeStatus('clear')"
         class="btn btn-sm btn-dark"
+        @click="changeStatus('clear')"
       >
         Unread issue
       </button>
@@ -89,22 +89,22 @@
       </button>
       <button
         v-if="!issue.isFavourite"
-        @click="changeFavouriteState(true)"
         class="btn btn-sm btn-dark"
+        @click="changeFavouriteState(true)"
       >
         Mark as favourite
       </button>
       <button
         v-else
-        @click="changeFavouriteState(false)"
         class="btn btn-sm btn-dark"
+        @click="changeFavouriteState(false)"
       >
         Unfavourite
       </button>
       <button
         v-if="!issue.isIgnored"
-        @click="changeIgnoreState(true)"
         class="btn btn-sm btn-dark"
+        @click="changeIgnoreState(true)"
       >
         Mark as ignore
       </button>
@@ -124,13 +124,33 @@ import axios from "axios";
 import { mapActions, mapGetters } from "vuex";
 
 export default {
+  filters: {
+    timestampToDate(timestamp) {
+      const d = new Date(timestamp);
+      const year = d.getFullYear();
+      let month = "" + (d.getMonth() + 1);
+      if (month.length < 2) {
+        month = "0" + month;
+      }
+      return [year, month].join("-");
+    },
+    adjustLinkToIssue(linkToIssue) {
+      if (
+        linkToIssue &&
+        linkToIssue.toLowerCase().includes("https://marvel.fandom.com")
+      ) {
+        return linkToIssue;
+      }
+      return `https://marvel.fandom.com/${linkToIssue}`;
+    }
+  },
+  props: ["issueId", "markIssueAsFn"],
   data() {
     return {
       issue: {},
       stories: {}
     };
   },
-  props: ["issueId", "markIssueAsFn"],
   computed: {
     ...mapGetters("user", ["user", "isUserLoadInProgress"])
   },
@@ -140,6 +160,9 @@ export default {
         this.loadIssuePage();
       }
     }
+  },
+  created() {
+    this.loadIssuePage();
   },
   methods: {
     ...mapActions("issue", [
@@ -200,7 +223,7 @@ export default {
             });
           }
           this.updateStories();
-          this.markIssueAsFn(this.issue._id, status);
+          this.markIssueAsFn({ status, characterId });
         })
         .catch(error => {
           console.error(error);
@@ -245,7 +268,7 @@ export default {
       this.changeFavouriteStateOfIssue({ issueId: this.issue._id, state })
         .then(() => {
           this.issue.isFavourite = state;
-          this.markIssueAsFn(this.issue._id, "favourite", state);
+          this.markIssueAsFn({ status: "favourite", state });
         })
         .catch(err => {
           console.error(err);
@@ -255,32 +278,12 @@ export default {
       this.changeIgnoreStateOfIssue({ issueId: this.issue._id, state })
         .then(() => {
           this.issue.isIgnored = state;
-          this.markIssueAsFn(this.issue._id, "ignore", state);
+          this.markIssueAsFn({ status: "ignore", state });
         })
         .catch(err => {
           console.error(err);
         });
     }
-  },
-  filters: {
-    timestampToDate(timestamp) {
-      const d = new Date(timestamp);
-      const year = d.getFullYear();
-      let month = "" + (d.getMonth() + 1);
-      if (month.length < 2) {
-        month = "0" + month;
-      }
-      return [year, month].join("-");
-    },
-    adjustLinkToIssue(linkToIssue) {
-      if (linkToIssue.toLowerCase().includes("https://marvel.fandom.com")) {
-        return linkToIssue;
-      }
-      return `https://marvel.fandom.com/${linkToIssue}`;
-    }
-  },
-  created() {
-    this.loadIssuePage();
   }
 };
 </script>

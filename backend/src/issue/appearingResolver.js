@@ -39,8 +39,9 @@ module.exports = class {
       } else if (appearing[appearingUnderChange].id && TAG_FOR_IMPERSONATION_BY.test(section)) {
         appearing[appearingUnderChange].tags.push("IMPERSONATES");
         ++appearingUnderChange;
+        const impersonatedAppearing = section.split(SECTION_CUTTER_SQUARE).filter(section => section.trim());
         appearing.push({
-          id: section.split(SECTION_CUTTER_SQUARE).filter(section => section.trim())[1].replace(/ /g, "_"),
+          id: impersonatedAppearing[1] && impersonatedAppearing[1].replace(/ /g, "_"),
           tags: ["IMPERSONATED"]
         });
       } else if (appearing[appearingUnderChange].id && TAG_FOR_CUSTOM_BUT_AFTER.test(section)) {

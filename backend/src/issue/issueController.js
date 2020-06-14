@@ -34,8 +34,11 @@ module.exports = class {
       let readStatus;
       const idToken = extractIdToken(req);
       if (idToken) {
-        const iterator = await issueManager.getIssueStatusForUserAsync(issueId, idToken);
+        const iterator = await issueManager.getIssueStatusForUserAsync(idToken, issueId);
         readStatus = (await iterator.toArray())[0];
+      }
+      if (readStatus.issuesStatuses.length > 1) {
+        readStatus.issuesStatuses = readStatus.issuesStatuses.filter(issueStatus => issueStatus.issueId === issueId);
       }
       const issueDetails = await issuePromise;
       if (readStatus && readStatus.issuesStatuses[0]) {
@@ -91,6 +94,7 @@ module.exports = class {
               if (issueStatus && issueStatus.status === "read") {
                 issue.status = issueStatus.status;
               }
+              issue.id = issue._id;
               filteredData.push(issue);
             }
           });

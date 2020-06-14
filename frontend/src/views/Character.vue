@@ -5,7 +5,7 @@
         {{ `${characterId}` | removeDash }}
       </h3>
       <h4 class="row text-light">
-        {{ `Visible ${issues.length} issues of ${totalIssues} total:` }}
+        {{ `Filtered ${issues.length} issues of ${totalIssues} total:` }}
       </h4>
       <form class="row">
         <div class="col-sm">
@@ -86,176 +86,32 @@
       </form>
     </div>
     <section class="row">
-      <table class="table table-bordered table-striped table-sm">
-        <thead class="text-sm-center">
-          <tr>
-            <th v-if="user">Read:</th>
-            <th>Issue name:</th>
-            <th>Publication date:</th>
-            <th>Volume:</th>
-            <th>Issue no:</th>
-            <th>Stories:</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(issue, idx) in issues" :key="idx">
-            <template>
-              <td v-if="user">
-                <IconLoading v-if="issue.status === 'wait'" />
-                <div v-else class="btn-group">
-                  <input
-                    type="checkbox"
-                    class="form-check-inline mt-sm-2 ml-sm-1"
-                    v-model="issue.selected"
-                  />
-                  <button
-                    v-if="
-                      issue.status === 'read' || issue.status === 'character'
-                    "
-                    @click="changeStatus([issue.id], 'clear')"
-                    class="btn btn-danger"
-                  >
-                    Unread
-                  </button>
-                  <template v-else>
-                    <button
-                      @click="changeStatus([issue.id], 'read')"
-                      class="btn btn-primary"
-                    >
-                      Read
-                    </button>
-                    <div class="btn-group mr-sm-1">
-                      <button
-                        class="btn btn-primary dropdown-toggle"
-                        data-toggle="dropdown"
-                      />
-                      <div class="dropdown-menu">
-                        <button
-                          class="dropdown-item"
-                          @click="changeStatus([issue.id], 'character')"
-                        >
-                          Mark read for this character
-                        </button>
-                        <button
-                          class="dropdown-item"
-                          @click="
-                            changeFavouriteState(
-                              idx,
-                              issue.id,
-                              !issue.isFavourite
-                            )
-                          "
-                        >
-                          {{ issue.isFavourite ? "Unfavourite" : "Favourite" }}
-                        </button>
-                        <button
-                          class="dropdown-item"
-                          @click="addIssueToIgnored(idx, issue.id)"
-                        >
-                          Ignore
-                        </button>
-                      </div>
-                    </div>
-                  </template>
-                </div>
-              </td>
-              <td>
-                <img
-                  v-if="!!issue.isFavourite"
-                  src="/img/FavIcon.png"
-                  style="width: 15px"
-                />
-                <a
-                  type="button"
-                  class="text-info"
-                  @click="showIssueDetails(issue.id)"
-                >
-                  {{ issue.name }}
-                </a>
-              </td>
-              <td>{{ issue.publishDateTimestamp | timestampToDate }}</td>
-              <td>{{ issue.volume }}</td>
-              <td>{{ issue.issueNo }}</td>
-              <td>
-                <table class="table">
-                  <thead>
-                    <tr
-                      style="background-color: inherit"
-                      class="text-sm-center"
-                    >
-                      <th>Subtitle</th>
-                      <th>Focus type</th>
-                      <th>Appearance type</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr
-                      style="background-color: inherit"
-                      v-for="(appearance, idx) in issue.appearances"
-                      :key="idx"
-                    >
-                      <td>{{ appearance.subtitle }}</td>
-                      <td>{{ appearance.focusType }}</td>
-                      <td>{{ appearance.appearanceTypes }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </td>
-            </template>
-          </tr>
-        </tbody>
-      </table>
+      <IssuePageableTableView
+        paginatedElementComponent="IssueRowForCharacter"
+        :issues="issues"
+        :characterId="characterId"
+      />
     </section>
-    <div class="footer">
-      <div class="btn-group-sm card-footer">
-        <button
-          v-if="allVisibleIssuesShouldBeSelected"
-          @click="allVisibleIssuesShouldBeSelected = false"
-          class="btn btn-dark btn-sm"
-        >
-          Unselect all visible issues
-        </button>
-        <button
-          v-else
-          @click="allVisibleIssuesShouldBeSelected = true"
-          class="btn btn-dark btn-sm"
-        >
-          Select all visible issues
-        </button>
-        <button
-          @click="changeStateOfSelectedIssues('read')"
-          class="btn btn-dark btn-sm"
-        >
-          Read selected issues
-        </button>
-        <button
-          @click="changeStateOfSelectedIssues('character')"
-          class="btn btn-dark btn-sm"
-        >
-          Read selected issues for this character only
-        </button>
-        <button
-          @click="changeStateOfSelectedIssues('clear')"
-          class="btn btn-dark btn-sm"
-        >
-          Unread selected issues
-        </button>
-      </div>
-    </div>
   </div>
 </template>
 <script>
-import IconLoading from "@/components/icon/IconLoading";
-import IssuePreview from "@/components/issue/IssuePreview";
+import IssuePageableTableView from "@/components/issue/IssuePageableTableView";
+import { mapGetters, mapMutations } from "vuex";
 import axios from "axios";
-import { mapGetters, mapActions } from "vuex";
 
 export default {
+  components: {
+    IssuePageableTableView
+  },
+  filters: {
+    removeDash(title) {
+      return title.replace(/_/g, " ");
+    }
+  },
   data() {
     return {
       characterId: "",
-      universe: "",
-      readStatuses: ["All", "Read", "Not read"],
+      readStatuses: ["Not read", "All", "Read"],
       focusTypes: [],
       selectedFocusTypes: [],
       selectedReadStatus: "Not read",
@@ -263,66 +119,9 @@ export default {
       appearanceTypes: [],
       selectedAppearances: [],
       totalIssues: 0,
-      visibleIssues: 0,
       showEmptyAppearanceTypes: true,
-      showEmptyFocusTypes: true,
-      allVisibleIssuesShouldBeSelected: false
+      showEmptyFocusTypes: true
     };
-  },
-  watch: {
-    selectedAppearances(newValue, oldValue) {
-      this.allVisibleIssuesShouldBeSelected = false;
-      if (
-        newValue.length - oldValue.length > 1 ||
-        newValue.length === oldValue.length
-      ) {
-        return;
-      }
-      if (newValue.length > oldValue.length) {
-        const appearanceToShow = newValue.filter(
-          value => oldValue.indexOf(value) === -1
-        );
-        this.editStoredSettings(false, false, appearanceToShow[0]);
-      } else {
-        const appearanceToHide = oldValue.filter(
-          value => newValue.indexOf(value) === -1
-        );
-        this.editStoredSettings(true, false, appearanceToHide[0]);
-      }
-    },
-    selectedFocusTypes(newValue, oldValue) {
-      this.allVisibleIssuesShouldBeSelected = false;
-      if (
-        newValue.length - oldValue.length > 1 ||
-        newValue.length === oldValue.length
-      ) {
-        return;
-      }
-      if (newValue.length > oldValue.length) {
-        const appearanceToShow = newValue.filter(
-          value => oldValue.indexOf(value) === -1
-        );
-        this.editStoredSettings(false, true, appearanceToShow[0]);
-      } else {
-        const appearanceToHide = oldValue.filter(
-          value => newValue.indexOf(value) === -1
-        );
-        this.editStoredSettings(true, true, appearanceToHide[0]);
-      }
-    },
-    showEmptyAppearanceTypes(newValue) {
-      this.allVisibleIssuesShouldBeSelected = false;
-      this.editStoredSettings(!newValue, false, "Empty");
-    },
-    showEmptyFocusTypes(newValue) {
-      this.allVisibleIssuesShouldBeSelected = false;
-      this.editStoredSettings(!newValue, true, "Empty");
-    },
-    isUserLoadInProgress(newValue) {
-      if (!newValue) {
-        this.loadIssuePage();
-      }
-    }
   },
   computed: {
     ...mapGetters("user", ["user", "isUserLoadInProgress"]),
@@ -334,8 +133,8 @@ export default {
       const selectedFocusTypes = this.selectedFocusTypes;
       const selectedAppearances = this.selectedAppearances;
       return this.characterData.issues.filter(issue => {
-        issue.selected = false;
         if (issue.isIgnored) {
+          this.totalIssues--;
           return false;
         }
         if (
@@ -373,50 +172,75 @@ export default {
           }) ||
           (this.showEmptyAppearanceTypes && !issue.appearances.length)
         ) {
-          issue.selected = this.allVisibleIssuesShouldBeSelected;
           return true;
         }
         return false;
       });
     }
   },
+  watch: {
+    selectedAppearances(newValue, oldValue) {
+      if (oldValue.length && newValue.length !== oldValue.length) {
+        if (
+          newValue.length - oldValue.length > 1 ||
+          newValue.length === oldValue.length
+        ) {
+          return;
+        }
+        if (newValue.length > oldValue.length) {
+          const appearanceToShow = newValue.filter(
+            value => oldValue.indexOf(value) === -1
+          );
+          this.editStoredSettings(false, false, appearanceToShow[0]);
+        } else {
+          const appearanceToHide = oldValue.filter(
+            value => newValue.indexOf(value) === -1
+          );
+          this.editStoredSettings(true, false, appearanceToHide[0]);
+        }
+      }
+    },
+    selectedFocusTypes(newValue, oldValue) {
+      if (oldValue.length && newValue.length !== oldValue.length) {
+        if (
+          newValue.length - oldValue.length > 1 ||
+          newValue.length === oldValue.length
+        ) {
+          return;
+        }
+        if (newValue.length > oldValue.length) {
+          const appearanceToShow = newValue.filter(
+            value => oldValue.indexOf(value) === -1
+          );
+          this.editStoredSettings(false, true, appearanceToShow[0]);
+        } else {
+          const appearanceToHide = oldValue.filter(
+            value => newValue.indexOf(value) === -1
+          );
+          this.editStoredSettings(true, true, appearanceToHide[0]);
+        }
+      }
+    },
+    showEmptyAppearanceTypes(newValue) {
+      this.editStoredSettings(!newValue, false, "Empty");
+    },
+    showEmptyFocusTypes(newValue) {
+      this.editStoredSettings(!newValue, true, "Empty");
+    },
+    isUserLoadInProgress(newValue) {
+      if (!newValue) {
+        this.loadIssuePage();
+      }
+    }
+  },
+  mounted() {
+    this.loadIssuePage();
+  },
+  beforeRouteUpdate(to, from, next) {
+    next();
+    this.loadIssuePage();
+  },
   methods: {
-    ...mapActions("issue", [
-      "changeIgnoreStateOfIssue",
-      "changeFavouriteStateOfIssue",
-      "changeStatusOfIssues"
-    ]),
-    changeStateOfSelectedIssues(state) {
-      const issueIds = this.issues
-        .filter(issue => issue.selected)
-        .map(issue => issue.id);
-      this.changeStatus(issueIds, state);
-    },
-    changeStatus(issuesIds, status) {
-      const issues = this.issues;
-      issues
-        .filter(issue => issuesIds.includes(issue.id))
-        .forEach(issue => (issue.status = "wait"));
-      this.changeStatusOfIssues({
-        issuesIds,
-        status,
-        characterId: this.characterId
-      })
-        .then(response => {
-          for (const [key, value] of Object.entries(response.data)) {
-            this.issues.find(issue => issue.id === key).status = value.status;
-          }
-          this.allVisibleIssuesShouldBeSelected = false;
-        })
-        .catch(error => {
-          console.error(error);
-          this.$fire({
-            text: "You are not authorized to do such action",
-            type: "error"
-          });
-          this.loadIssuePage();
-        });
-    },
     async loadIssuePage() {
       this.characterId = this.$route.query.characterId;
       this.selectedFocusTypes = this.focusTypes;
@@ -498,13 +322,6 @@ export default {
       });
       localStorage.setItem("lastCharacters", JSON.stringify(lastCharacters));
     },
-    showIssueDetails(issueId) {
-      this.$modal.show(
-        IssuePreview,
-        { issueId, markIssueAsFn: this.markIssueAs },
-        { height: "auto", scrollable: true, width: 1000 }
-      );
-    },
     editStoredSettings(shouldAddToDisable, isFocusType, name) {
       if (isFocusType) {
         this.addToLocalStorage("disabledFocusTypes", shouldAddToDisable, name);
@@ -525,63 +342,7 @@ export default {
         disabledTypes.splice(indexOfDisabledType, 1);
       }
       localStorage.setItem(storageKey, JSON.stringify(disabledTypes));
-    },
-    changeFavouriteState(idx, issueId, state) {
-      this.changeFavouriteStateOfIssue({ issueId, state })
-        .then(() => {
-          this.issues[idx].isFavourite = state;
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    },
-    addIssueToIgnored(idx, issueId) {
-      this.changeIgnoreStateOfIssue({ issueId, state: true })
-        .then(() => {
-          this.totalIssues -= 1;
-          this.issues[idx].isIgnored = true;
-        })
-        .catch(err => {
-          console.error(err);
-        });
-    },
-    markIssueAs(issueId, statusName, state) {
-      const issue = this.characterData.issues.find(
-        issue => issue.id === issueId
-      );
-      if (statusName === "favourite") {
-        issue.isFavourite = state;
-      } else if (statusName === "ignore") {
-        this.totalIssues += state ? -1 : 1;
-        issue.isIgnored = state;
-      } else {
-        issue.status = statusName;
-      }
     }
-  },
-  filters: {
-    timestampToDate(timestamp) {
-      const d = new Date(timestamp);
-      const year = d.getFullYear();
-      let month = "" + (d.getMonth() + 1);
-      if (month.length < 2) {
-        month = "0" + month;
-      }
-      return [year, month].join("-");
-    },
-    removeDash(title) {
-      return title.replace(/_/g, " ");
-    }
-  },
-  beforeRouteUpdate(to, from, next) {
-    next();
-    this.loadIssuePage();
-  },
-  mounted() {
-    this.loadIssuePage();
-  },
-  components: {
-    IconLoading
   }
 };
 </script>

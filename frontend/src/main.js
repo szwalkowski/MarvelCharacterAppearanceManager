@@ -10,7 +10,11 @@ import firebase from "firebase/app";
 
 Vue.config.productionTip = false;
 
-axios.defaults.baseURL = "/api/";
+if (process.env.NODE_ENV === "development") {
+  axios.defaults.baseURL = "http://localhost:3000/api/";
+} else {
+  axios.defaults.baseURL = "/api/";
+}
 axios.interceptors.request.use(async config => {
   if (config.mcamAuthenticated) {
     try {

@@ -101,7 +101,7 @@ module.exports = class {
     return this.#dbConnection.findOneAsync("issues", { _id: issueId });
   }
 
-  async getIssueStatusForUserAsync(issueId, idToken) {
+  async getIssueStatusForUserAsync(idToken, issueId) {
     return this.#dbConnection.aggregateAsync(
       "users",
       {
