@@ -90,9 +90,13 @@ module.exports = class {
       }
       volumePack[issue.volume]++;
     });
-    const orderedPack = {};
+    const orderedPack = [];
+    let i = 0;
     Object.keys(packedIssued).sort().forEach(key => {
-      orderedPack[key] = packedIssued[key];
+      orderedPack[i++] = {
+        name: key,
+        volumePack: packedIssued[key]
+      };
     });
     return orderedPack;
   }

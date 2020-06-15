@@ -96,7 +96,7 @@
 </template>
 <script>
 import IssuePageableTableView from "@/components/issue/IssuePageableTableView";
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters } from "vuex";
 import axios from "axios";
 
 export default {
