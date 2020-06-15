@@ -4,86 +4,125 @@
       <h3 class="row text-info">
         {{ `${characterId}` | removeDash }}
       </h3>
-      <h4 class="row text-light">
-        {{ `Filtered ${issues.length} issues of ${totalIssues} total:` }}
-      </h4>
-      <form class="row">
-        <div class="col-sm">
-          <div class="row form-group" v-if="user">
-            <label for="read-dr" class="col-sm-1 pl-sm-0">
-              Status:
-            </label>
-            <select id="read-dr" class="col-sm-1" v-model="selectedReadStatus">
-              <option v-for="status in readStatuses" :key="status">
-                {{ status }}
-              </option>
-            </select>
-          </div>
-          <div v-else>
-            <p style="color: orange">Please log in to mark issues as read</p>
-          </div>
-          <div class="row form-group">
-            <label class="col-sm-1 pl-sm-0">Focus types:</label>
-            <div class="custom-control custom-checkbox col-sm-auto">
-              <input
-                type="checkbox"
-                class="custom-control-input"
-                id="hide-focus-type"
-                v-model="showEmptyFocusTypes"
-              />
-              <label class="custom-control-label" for="hide-focus-type">
-                Empty
-              </label>
-            </div>
-            <div
-              class="custom-control custom-checkbox col-sm-auto"
-              v-for="(type, idx) in focusTypes"
-              :key="'_' + type + idx"
-            >
-              <input
-                :id="type + idx"
-                :key="idx"
-                :value="type"
-                class="custom-control-input"
-                v-model="selectedFocusTypes"
-                type="checkbox"
-              />
-              <label class="custom-control-label" :for="type + idx" :key="type">
-                {{ ` ${type} ` }}
-              </label>
-            </div>
-          </div>
-          <div class="row form-group">
-            <label class="col-sm-1 pl-sm-0">Appearances: </label>
-            <div class="custom-control custom-checkbox col-sm-auto">
-              <input
-                type="checkbox"
-                class="custom-control-input"
-                id="hide-type"
-                v-model="showEmptyAppearanceTypes"
-              />
-              <label class="custom-control-label" for="hide-type">Empty</label>
-            </div>
-            <div
-              class="custom-control custom-checkbox col-sm-auto"
-              v-for="(type, idx) in appearanceTypes"
-              :key="' ' + idx"
-            >
-              <input
-                type="checkbox"
-                class="custom-control-input"
-                :id="type + idx"
-                :key="idx"
-                :value="type"
-                v-model="selectedAppearances"
-              />
-              <label class="custom-control-label" :for="type + idx" :key="type">
-                {{ ` ${type} ` }}
-              </label>
-            </div>
-          </div>
+      <div class="flex-fill" v-click-outside="collapse">
+        <div class="text-center flex-fill">
+          <button
+            class="btn btn-sm btn-secondary"
+            style="color: #9c9c9c"
+            @click.stop="show = !show"
+          >
+            <img
+              :src="`/img/${show ? 'Collapse' : 'Expand'}Icon.png`"
+              style="width: 15px"
+            />
+            {{ (show ? "Collapse" : "Expand") + " filters menu" }}
+            <img
+              :src="`/img/${show ? 'Collapse' : 'Expand'}Icon.png`"
+              style="width: 15px"
+            />
+          </button>
         </div>
-      </form>
+        <div class="row">
+          <form v-if="show" class="form-group">
+            <h4 class="row text-light">
+              {{ `Filtered ${issues.length} issues of ${totalIssues} total` }}
+            </h4>
+            <form class="row">
+              <div class="col-sm">
+                <div v-if="user" class="row form-group">
+                  <label for="read-dr" class="col-sm-1 pl-sm-0">
+                    Status:
+                  </label>
+                  <select
+                    id="read-dr"
+                    v-model="selectedReadStatus"
+                    class="col-sm-1"
+                  >
+                    <option v-for="status in readStatuses" :key="status">
+                      {{ status }}
+                    </option>
+                  </select>
+                </div>
+                <div v-else>
+                  <p style="color: orange">
+                    Please log in to mark issues as read
+                  </p>
+                </div>
+                <div class="row form-group">
+                  <label class="col-sm-1 pl-sm-0">Focus types:</label>
+                  <div class="custom-control custom-checkbox col-sm-auto">
+                    <input
+                      id="hide-focus-type"
+                      v-model="showEmptyFocusTypes"
+                      type="checkbox"
+                      class="custom-control-input"
+                    />
+                    <label class="custom-control-label" for="hide-focus-type">
+                      Empty
+                    </label>
+                  </div>
+                  <div
+                    v-for="(type, idx) in focusTypes"
+                    :key="'_' + type + idx"
+                    class="custom-control custom-checkbox col-sm-auto"
+                  >
+                    <input
+                      :id="type + idx"
+                      :key="idx"
+                      v-model="selectedFocusTypes"
+                      class="custom-control-input"
+                      type="checkbox"
+                      :value="type"
+                    />
+                    <label
+                      :key="type"
+                      class="custom-control-label"
+                      :for="type + idx"
+                    >
+                      {{ ` ${type} ` }}
+                    </label>
+                  </div>
+                </div>
+                <div class="row form-group">
+                  <label class="col-sm-1 pl-sm-0">Appearances: </label>
+                  <div class="custom-control custom-checkbox col-sm-auto">
+                    <input
+                      id="hide-type"
+                      v-model="showEmptyAppearanceTypes"
+                      type="checkbox"
+                      class="custom-control-input"
+                    />
+                    <label class="custom-control-label" for="hide-type">
+                      Empty
+                    </label>
+                  </div>
+                  <div
+                    v-for="(type, idx) in appearanceTypes"
+                    :key="' ' + idx"
+                    class="custom-control custom-checkbox col-sm-auto"
+                  >
+                    <input
+                      :id="type + idx"
+                      :key="idx"
+                      v-model="selectedAppearances"
+                      type="checkbox"
+                      class="custom-control-input"
+                      :value="type"
+                    />
+                    <label
+                      :for="type + idx"
+                      :key="type"
+                      class="custom-control-label"
+                    >
+                      {{ ` ${type} ` }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </form>
+        </div>
+      </div>
     </div>
     <section class="row">
       <IssuePageableTableView
@@ -98,10 +137,14 @@
 import IssuePageableTableView from "@/components/issue/IssuePageableTableView";
 import { mapGetters } from "vuex";
 import axios from "axios";
+import vClickOutside from "v-click-outside";
 
 export default {
   components: {
     IssuePageableTableView
+  },
+  directives: {
+    clickOutside: vClickOutside.directive
   },
   filters: {
     removeDash(title) {
@@ -120,7 +163,8 @@ export default {
       selectedAppearances: [],
       totalIssues: 0,
       showEmptyAppearanceTypes: true,
-      showEmptyFocusTypes: true
+      showEmptyFocusTypes: true,
+      show: false
     };
   },
   computed: {
@@ -342,6 +386,12 @@ export default {
         disabledTypes.splice(indexOfDisabledType, 1);
       }
       localStorage.setItem(storageKey, JSON.stringify(disabledTypes));
+    },
+    collapse() {
+      this.show = false;
+    },
+    expand() {
+      this.show = true;
     }
   }
 };
