@@ -1,11 +1,8 @@
-const UserValidator = require("./userValidator");
 const { extractIdToken } = require("../utils");
 
 module.exports = class {
-  #userValidator;
 
   constructor(server, userAccountManager) {
-    this.#userValidator = new UserValidator();
     this.#createUserEndpoints(server, userAccountManager);
   };
 
