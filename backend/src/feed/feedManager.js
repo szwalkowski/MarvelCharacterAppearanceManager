@@ -19,10 +19,10 @@ module.exports = class {
   }
 
   async initiateUpdateProcess() {
-    console.log(`Feed update started at ${new Date()}`);
     if (this.#oneUpdateAtATime) {
       return;
     }
+    console.log(`Feed update started at ${new Date()}`);
     this.#oneUpdateAtATime = true;
     try {
       const lastTime = await this.#findLastTimeReadOfFeedAsync();
@@ -73,9 +73,9 @@ module.exports = class {
           callback();
         }
       ).catch(reason => {
-        console.error(`Problem downloading ${link}. ${reason}`);
+        console.error(`Problem downloading ${link}.`);
         console.error(reason);
-        throw reason;
+        callback(reason);
       });
     }
 
@@ -88,7 +88,14 @@ module.exports = class {
     allIssueLinks.forEach(issueLink => {
       downloadingQueue.push(issueLink);
     });
+    let error;
+    downloadingQueue.error((err) => {
+      error = err;
+    });
     await downloadingQueue.drain();
+    if (error) {
+      throw error;
+    }
     return issuesAndAppearances;
   }
 
