@@ -38,7 +38,12 @@ module.exports = class {
     characterAndIssues.issues = [];
     console.log(`Downloading of ${mergedAppearanceLinks.length} issues starting!`);
 
+    let error;
     function downloadWindowFromUrl(link, callback) {
+      if (error) {
+        callback();
+        return;
+      }
       that.#pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
         issuePage => {
           console.log(`${++no} page downloaded! ${link}`);
@@ -49,15 +54,22 @@ module.exports = class {
           callback();
         }
       ).catch(reason => {
-        console.error(`Problem downloading ${link}. ${reason}`);
+        console.error(`Problem downloading ${link}.`);
         console.error(reason);
-        throw reason;
+        callback(reason);
       });
     }
 
-    const downloadingQueue = Async.queue(downloadWindowFromUrl, 7);
-    downloadingQueue.drain(() => this.#saveCharacterToDb(characterAndIssues));
+    const downloadingQueue = Async.queue(downloadWindowFromUrl, process.env.MCAM_MAX_DOWNLOAD_JOBS);
     downloadingQueue.push(mergedAppearanceLinks);
+    downloadingQueue.error((err) => {
+      error = err;
+    });
+    downloadingQueue.drain(() => {
+      if (!error) {
+        this.#saveCharacterToDb(characterAndIssues)
+      }
+    });
   };
 
   #saveCharacterToDb = function (characterAndIssues) {

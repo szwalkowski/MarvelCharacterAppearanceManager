@@ -62,7 +62,12 @@ module.exports = class {
     let no = 0;
     const issuesAndAppearances = [];
 
+    let error;
     function downloadWindowFromUrl(link, callback) {
+      if(error) {
+        callback();
+        return;
+      }
       that.#pageDownloader.downloadWindowFromUrlAsync(`https://marvel.fandom.com${link}?action=edit`).then(
         issuePage => {
           console.log(`${++no} page downloaded! ${link}`);
@@ -79,7 +84,7 @@ module.exports = class {
       });
     }
 
-    const downloadingQueue = Async.queue(downloadWindowFromUrl, 7);
+    const downloadingQueue = Async.queue(downloadWindowFromUrl, process.env.MCAM_MAX_DOWNLOAD_JOBS);
     const allIssueLinks = feedPageModel.getAllIssueLinksSet();
     console.log(`Downloading ${allIssueLinks.size}.`);
     if (allIssueLinks.size === 0) {
@@ -88,7 +93,6 @@ module.exports = class {
     allIssueLinks.forEach(issueLink => {
       downloadingQueue.push(issueLink);
     });
-    let error;
     downloadingQueue.error((err) => {
       error = err;
     });
