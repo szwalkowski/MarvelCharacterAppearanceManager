@@ -43,6 +43,7 @@ module.exports = class {
       throw new Error("Not allowed to call this method");
     }
     const issueStatuses = {};
+    const currentTime = new Date().toISOString();
     issueIds.forEach(issueId => {
       if (!issueId) {
         throw new Error("Empty issue id!");
@@ -55,6 +56,7 @@ module.exports = class {
         };
         user.issuesStatuses.push(issueStatus);
       }
+      issueStatus.updateTime = currentTime;
       if (characterId) {
         this.#resolveCharacterId(issueStatus, newStatus, characterId);
       }
