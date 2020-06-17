@@ -84,7 +84,7 @@ module.exports = class {
       });
     }
 
-    const downloadingQueue = Async.queue(downloadWindowFromUrl, process.env.MCAM_MAX_DOWNLOAD_JOBS);
+    const downloadingQueue = Async.queue(downloadWindowFromUrl, parseInt(process.env.MCAM_MAX_DOWNLOAD_JOBS));
     const allIssueLinks = feedPageModel.getAllIssueLinksSet();
     console.log(`Downloading ${allIssueLinks.size}.`);
     if (allIssueLinks.size === 0) {

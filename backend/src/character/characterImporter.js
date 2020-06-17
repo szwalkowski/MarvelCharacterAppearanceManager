@@ -24,27 +24,20 @@ module.exports = class {
 
   async downloadAndStoreConfirmedCharacterAsync(baseCharacterInfo) {
     console.log("downloadAndStoreConfirmedCharacterAsync started");
-    const that = this;
-    let minorAppearanceLinks = [];
-    if (baseCharacterInfo.MinorAppearanceUrl) {
-      const minorAppearanceWindow = this.#pageDownloader.downloadWindowFromUrlAsync(baseCharacterInfo.MinorAppearanceUrl);
-      minorAppearanceLinks = this.#characterAppearanceWalker.findAllLinksToIssuesAsync(await minorAppearanceWindow);
-    }
-    const appearanceWindow = this.#pageDownloader.downloadWindowFromUrlAsync(baseCharacterInfo.AppearanceUrl);
-    const appearanceLinks = this.#characterAppearanceWalker.findAllLinksToIssuesAsync(await appearanceWindow);
-    const mergedAppearanceLinks = await that.#mergeListsAndSortAsync(minorAppearanceLinks, appearanceLinks);
+    const mergedAppearanceLinks = await this.#findAllIssueLinks(baseCharacterInfo);
     let no = 0;
     let characterAndIssues = baseCharacterInfo;
     characterAndIssues.issues = [];
     console.log(`Downloading of ${mergedAppearanceLinks.length} issues starting!`);
 
     let error;
+    const that = this;
     function downloadWindowFromUrl(link, callback) {
       if (error) {
         callback();
         return;
       }
-      that.#pageDownloader.downloadWindowFromUrlAsync(`${link}?action=edit`).then(
+      that.#pageDownloader.downloadWindowFromUrlAsync(`https://marvel.fandom.com/${link}?action=edit`).then(
         issuePage => {
           console.log(`${++no} page downloaded! ${link}`);
           const issuePageModel = new IssuePageModel(issuePage, link);
@@ -60,7 +53,7 @@ module.exports = class {
       });
     }
 
-    const downloadingQueue = Async.queue(downloadWindowFromUrl, process.env.MCAM_MAX_DOWNLOAD_JOBS);
+    const downloadingQueue = Async.queue(downloadWindowFromUrl, parseInt(process.env.MCAM_MAX_DOWNLOAD_JOBS));
     downloadingQueue.push(mergedAppearanceLinks);
     downloadingQueue.error((err) => {
       error = err;
@@ -71,6 +64,20 @@ module.exports = class {
       }
     });
   };
+
+  #findAllIssueLinks = async function(baseCharacterInfo) {
+    let minorAppearanceLinks = [];
+    if (baseCharacterInfo.MinorAppearanceUrl) {
+      minorAppearanceLinks = this.#downloadLinks(baseCharacterInfo.MinorAppearanceUrl);
+    }
+    const appearanceLinks = this.#downloadLinks(baseCharacterInfo.AppearanceUrl);
+    return await this.#mergeListsAndSortAsync(minorAppearanceLinks, appearanceLinks);
+  }
+
+  #downloadLinks = async function (appearancesUrl) {
+    const minorAppearanceWindow = this.#pageDownloader.downloadWindowFromUrlAsync(appearancesUrl);
+    return this.#characterAppearanceWalker.findAllLinksToIssuesAsync(await minorAppearanceWindow);
+  }
 
   #saveCharacterToDb = function (characterAndIssues) {
     const saveCharacterPromise = this.#characterManager.saveCharacterAsync(characterAndIssues);
