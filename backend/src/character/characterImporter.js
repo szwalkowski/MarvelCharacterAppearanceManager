@@ -37,7 +37,7 @@ module.exports = class {
         callback();
         return;
       }
-      that.#pageDownloader.downloadWindowFromUrlAsync(`https://marvel.fandom.com/${link}?action=edit`).then(
+      that.#pageDownloader.downloadWindowFromUrlAsync(`https://marvel.fandom.com${link}?action=edit`).then(
         issuePage => {
           console.log(`${++no} page downloaded! ${link}`);
           const issuePageModel = new IssuePageModel(issuePage, link);

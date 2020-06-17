@@ -37,7 +37,7 @@ module.exports = class {
         const iterator = await issueManager.getIssueStatusForUserAsync(idToken, issueId);
         readStatus = (await iterator.toArray())[0];
       }
-      if (readStatus.issuesStatuses.length > 1) {
+      if (readStatus && readStatus.issuesStatuses.length > 1) {
         readStatus.issuesStatuses = readStatus.issuesStatuses.filter(issueStatus => issueStatus.issueId === issueId);
       }
       const issueDetails = await issuePromise;

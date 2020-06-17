@@ -135,13 +135,7 @@ export default {
       return [year, month].join("-");
     },
     adjustLinkToIssue(linkToIssue) {
-      if (
-        linkToIssue &&
-        linkToIssue.toLowerCase().includes("https://marvel.fandom.com")
-      ) {
-        return linkToIssue;
-      }
-      return `https://marvel.fandom.com/${linkToIssue}`;
+      return `https://marvel.fandom.com${linkToIssue}`;
     }
   },
   props: ["issueId", "markIssueAsFn"],
