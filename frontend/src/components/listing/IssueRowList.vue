@@ -12,19 +12,23 @@
         v-for="(volumeCount, volumeNo) in element.volumePack"
         :key="volumeNo"
       >
-        <a
+        <router-link
           v-if="volumeNo !== 'null'"
-          :href="
-            `#/issue?issueName=${encodeURIComponent(
+          tag="a"
+          :to="
+            `/issue?issueName=${encodeURIComponent(
               element.name
             )}&issueVolume=${encodeURIComponent(volumeNo)}`
           "
         >
           {{ volumeNo }}
-        </a>
-        <a v-else :href="`#/issue?issueName=${encodeURIComponent(issue.key)}`">
+        </router-link>
+        <router-link
+          v-else
+          :to="`/issue?issueName=${encodeURIComponent(issue.key)}`"
+        >
           n/a
-        </a>
+        </router-link>
         (Issue count: {{ volumeCount }})
       </div>
     </div>

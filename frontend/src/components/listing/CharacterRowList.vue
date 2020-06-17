@@ -12,15 +12,14 @@
         v-for="universe in element.universes"
         :key="universe.characterId"
       >
-        <a
-          :href="
-            `#/character?characterId=${encodeURIComponent(
-              universe.characterId
-            )}`
+        <router-link
+          tag="a"
+          :to="
+            `/character?characterId=${encodeURIComponent(universe.characterId)}`
           "
         >
           {{ universe.characterId | underscoresToSpaces }}
-        </a>
+        </router-link>
       </div>
     </div>
   </div>
