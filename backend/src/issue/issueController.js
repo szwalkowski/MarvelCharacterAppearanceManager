@@ -1,18 +1,22 @@
 const IssueImageFinder = require('./issueImageFinder');
+const IssuePageModel = require('./issuePageModel');
+const PageDownloader = require("../pageDownloader");
 const { extractIdToken } = require("../utils");
 
 module.exports = class {
+  #pageDownloader = new PageDownloader();
 
-  constructor(server, issueManager, userAccountManager) {
-    this.#setupEndpoints(server, issueManager, userAccountManager);
+  constructor(server, issueManager, userAccountManager, issueMassUpdateService) {
+    this.#setupEndpoints(server, issueManager, userAccountManager, issueMassUpdateService);
   }
 
-  #setupEndpoints = function (server, issueManager, userAccountManager) {
+  #setupEndpoints = function (server, issueManager, userAccountManager, issueMassUpdateService) {
     this.#prepareChangeStatusEndpoint(server, issueManager);
     this.#provideGetIssueDetails(server, issueManager);
     this.#provideUrlToIssueImage(server, new IssueImageFinder());
     this.#provideUrlToIssues(server, issueManager);
     this.#provideGetAllVolumeOfIssues(server, issueManager, userAccountManager);
+    this.#providePostIssueUpload(server, issueMassUpdateService, userAccountManager);
   };
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
@@ -103,6 +107,34 @@ module.exports = class {
         .catch(error => {
           res.status(500).send(error.toString());
         });
+    })
+  };
+
+  #providePostIssueUpload = function (server, issueMassUpdateService, userAccountManager) {
+    server.post("/uploadIssue", async (req, res) => {
+      const isAdmin = await userAccountManager.isAdminLoggedAsync(extractIdToken(req));
+      if (isAdmin) {
+        let issueUrl = `https://marvel.fandom.com/${req.body["issueUrl"]}?action=edit`;
+        this.#pageDownloader.downloadWindowFromUrlAsync(issueUrl).then(
+          async issuePage => {
+            console.log(`Page downloaded! ${req.body["issueUrl"]}`);
+            const issuePageModel = new IssuePageModel(issuePage, req.body["issueUrl"]);
+            if (issuePageModel.isIssue) {
+              await issueMassUpdateService.updateIssuesAsync([issuePageModel]);
+              res.end();
+            } else {
+              res.status(500);
+              res.end("It's not an issue!");
+            }
+          }
+        ).catch(reason => {
+          console.error(reason);
+          res.status(500);
+          res.end(`Problem downloading ${issueUrl}.`);
+        });
+      } else {
+        res.status(401).end("Unauthorized");
+      }
     })
   };
 };

@@ -22,6 +22,14 @@ const routes = [
     }
   },
   {
+    path: "/issue-upload",
+    name: "issue-upload",
+    component: () => import("../views/IssueUpload"),
+    meta: {
+      admin: true
+    }
+  },
+  {
     path: "/dictionary",
     name: "dictionary",
     component: () => import("../views/Dictionary"),

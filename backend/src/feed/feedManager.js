@@ -1,7 +1,6 @@
 const FeedPageModel = require('./feedPageModel');
 const PageDownloader = require('../pageDownloader');
 const IssuePageModel = require('../issue/issuePageModel');
-const IssueMassUpdateService = require('../issue/issueMassUpdateService');
 const Async = require("async");
 const CronJob = require("cron").CronJob;
 
@@ -11,10 +10,10 @@ module.exports = class {
   #issueMassUpdateService;
   #oneUpdateAtATime = false;
 
-  constructor(issueManager, dbConnection) {
+  constructor(issueManager, dbConnection, issueMassUpdateService) {
     this.#dbConnection = dbConnection;
     this.#pageDownloader = new PageDownloader();
-    this.#issueMassUpdateService = new IssueMassUpdateService(issueManager, dbConnection);
+    this.#issueMassUpdateService = issueMassUpdateService;
     new CronJob(process.env.CRON_FEED_UPDATE, () => this.initiateUpdateProcess(this), null, true);
   }
 
@@ -63,8 +62,9 @@ module.exports = class {
     const issuesAndAppearances = [];
 
     let error;
+
     function downloadWindowFromUrl(link, callback) {
-      if(error) {
+      if (error) {
         callback();
         return;
       }

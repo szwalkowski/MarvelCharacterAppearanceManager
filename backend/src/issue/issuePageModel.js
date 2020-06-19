@@ -3,11 +3,13 @@ const AppearingResolver = require('./appearingResolver');
 const Months = ['JANUARY', 'FEBRUARY', 'MARCH', 'APRIL', 'MAY', 'JUNE', 'JULY', 'AUGUST', 'SEPTEMBER', 'OCTOBER', 'NOVEMBER', 'DECEMBER'];
 const SelectorForPageHeaderAndTitleThere = '#EditPageHeader h1 a';
 const SelectorWithAllIssueData = '#wpTextbox1';
-const RegexStoryTitleTag = /^\|[ ]+StoryTitle/;
-const RegexAppearingTag = /^\|[ ]+Appearing/;
-const RegexYearTag = /^\|[ ]+Year/;
-const RegexMonthTag = /^\|[ ]+Month/;
-const RegexImageTag = /^\|[ ]+Image /;
+const RegexStoryTitleTag = /^\|[ ]*StoryTitle/;
+const RegexAppearingTag = /^\|[ ]*Appearing/;
+const RegexYearTag = /^\|[ ]*Year/;
+const RegexMonthTag = /^\|[ ]*Month/;
+const RegexImageTag = /^\|[ ]*Image /;
+const RegexForAppearanceStart = /^(:*\*)|# {/;
+const RegexForFocusType = /^'''.*'''(<.+>)?(&lt;.+&gt;)?$/;
 
 module.exports = class {
   #appearingResolver;
@@ -89,7 +91,7 @@ module.exports = class {
           appearance.title = this.issueStories[issueStory][storyElement];
           title = appearance.title;
         } else {
-          const appearanceOfCharacter = this.issueStories[issueStory][storyElement].filter(app => app.id === characterId);
+          const appearanceOfCharacter = this.issueStories[issueStory][storyElement].filter(app => app.id.toLowerCase() === characterId.toLowerCase());
           for (const appearing in appearanceOfCharacter) {
             appearance.focusType = storyElement;
             appearance.typesOfAppearance = appearanceOfCharacter[appearing].tags;
@@ -142,9 +144,9 @@ module.exports = class {
         continue;
       }
       if (appearingNumber !== null && !line.startsWith("| ")) {
-        if (line.startsWith("'''") && line.endsWith("'''")) {
+        if (RegexForFocusType.test(line)) {
           lastFocusType = this.#resolveFocusType(line, issueStories[appearingNumber]);
-        } else if (lastFocusType !== null && (line.startsWith("*") || line.startsWith(":*"))) {
+        } else if (lastFocusType !== null && RegexForAppearanceStart.test(line)) {
           const appearance = this.#appearingResolver.resolveAppearing(line);
           appearance.forEach(app => this.#appearingCharacters.add(app.id));
           if (appearance.length) {
@@ -202,8 +204,11 @@ module.exports = class {
   }
 
   #resolveFocusType = function (line, story) {
-    const focusType = line.substring(3, line.length - 4).trim();
-    story[focusType] = [];
+    const lineWithoutTags = line.split(/&lt;|</);
+    const focusType = lineWithoutTags[0].replace(/[':]/g, "").trim();
+    if (!story[focusType]) {
+      story[focusType] = [];
+    }
     return focusType;
   };
 

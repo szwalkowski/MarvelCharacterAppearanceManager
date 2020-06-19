@@ -18,6 +18,11 @@
           </router-link>
         </li>
         <li v-if="userMcamSession.userType === 'Admin'" class="nav-item">
+          <router-link tag="a" class="nav-link" to="/issue-upload">
+            Issue upload
+          </router-link>
+        </li>
+        <li v-if="userMcamSession.userType === 'Admin'" class="nav-item">
           <a class="nav-link" style="cursor: pointer;" @click="feedUpdate">
             Feed update
           </a>

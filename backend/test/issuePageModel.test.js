@@ -442,4 +442,40 @@ describe("Page model test based on downloaded html for issues", function () {
     assert.equal(appearances[3], undefined);
   });
 
+  it("Problem of Sandman", function () {
+    const filePath = `${__dirname}/resources/issues/Silver_Sable_and_the_Wild_Pack_Vol_1_21edit.html`;
+    const page = fs.readFileSync(filePath, "utf-8");
+    const pageWindow = new JSDOM(page).window;
+    const issue = new IssuePageModel(pageWindow);
+    assert.equal(issue.isIssue, true);
+    assert.equal(issue.getName(), "Silver Sable and the Wild Pack");
+    assert.equal(issue.getVolume(), 1);
+    assert.equal(issue.getIssueNo(), 21);
+    issue.id = "Silver_Sable_and_the_Wild_Pack_Vol_1_21";
+    assert.equal(issue.getImage(), "Silver_Sable_and_the_Wild_Pack_Vol_1_21.jpg");
+    assert.equal(issue.getPublishedDate(), new Date(1994, 1).getTime());
+    const appearances = issue.getAppearances("William_Baker_(Earth-616)");
+    assert.equal(appearances[0].title, "Home of the Bodybag");
+    assert.equal(appearances[0].focusType, "Featured Characters");
+    assert.equal(appearances[0].typesOfAppearance[0], undefined);
+    assert.equal(appearances[1], undefined);
+  });
+
+  it("Problem of not standard h3 subissues", function () {
+    const filePath = `${__dirname}/resources/issues/Thing_Vol_2_5edit.html`;
+    const page = fs.readFileSync(filePath, "utf-8");
+    const pageWindow = new JSDOM(page).window;
+    const issue = new IssuePageModel(pageWindow);
+    let appearances = issue.getAppearances("William_Baker_(Earth-616)");
+    assert.equal(appearances[0].title, "Part One: Give till it hurts...");
+    assert.equal(appearances[0].focusType, "Antagonists");
+    assert.equal(appearances[0].typesOfAppearance[0], undefined);
+    assert.equal(appearances[1], undefined);
+    appearances = issue.getAppearances("Carlotta_LaRosa_(Earth-616)");
+    assert.equal(appearances[0].title, "Part One: Give till it hurts...");
+    assert.equal(appearances[0].focusType, "Supporting Characters");
+    assert.equal(appearances[0].typesOfAppearance[0], undefined);
+    assert.equal(appearances[1], undefined);
+  });
+
 });

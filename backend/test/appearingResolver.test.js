@@ -281,4 +281,58 @@ describe("Test for appearing resolver", function () {
     assert.equal(appearing[1].id, "Warren_Worthington_III_(Earth-15513)");
     assert.equal(appearing[1].tags, "IMPERSONATED,MINOR");
   });
+
+  it("possessed and flash", function () {
+    const appearing = new AppearingResolver().resolveAppearing(
+      "* {{PossessedBy|[[Ulysses Klaw (Earth-616)|Klaw (Ulysses Klaw)]]|[[Beyonder (Earth-616)|Beyonder]]}} {{FlashOnly}}"
+    );
+    assert.equal(appearing[0].id, "Ulysses_Klaw_(Earth-616)");
+    assert.equal(appearing[0].tags, "POSSESSED,FLASHONLY");
+    assert.equal(appearing[1].id, "Beyonder_(Earth-616)");
+    assert.equal(appearing[1].tags, "POSSESSES,FLASHONLY");
+  });
+
+  it("possessed and a", function () {
+    const appearing = new AppearingResolver().resolveAppearing(
+      "* {{Possessed|[[Michael Pointer (Earth-616)|Collective (Michael Pointer)]]|{{a|[[Kuan-Yin Xorn (Earth-616)|an unnamed intelligence]]}}}}"
+    );
+    assert.equal(appearing[0].id, "Michael_Pointer_(Earth-616)");
+    assert.equal(appearing[0].tags, "POSSESSED");
+    assert.equal(appearing[1].id, "Kuan-Yin_Xorn_(Earth-616)");
+    assert.equal(appearing[1].tags, "POSSESSES");
+  });
+
+  it("chronology problem for she-hulk", function () {
+    const appearing = new AppearingResolver().resolveAppearing("* {{Chronology|[[Jennifer Walters (Earth-616)|She-Hulk (Jen Walters)]]}} {{ChronoFB}}");
+    assert.equal(appearing[0].id, "Jennifer_Walters_(Earth-616)");
+    assert.isEmpty(appearing[0].tags);
+  });
+
+  it("simply id of character", function () {
+    const appearing = new AppearingResolver().resolveAppearing("* {{Corpse|[[Thanos (Earth-616)]]}}");
+    assert.equal(appearing[0].id, "Thanos_(Earth-616)");
+    assert.equal(appearing[0].tags, "CORPSE");
+  });
+
+  it("g with tag to other", function () {
+    const appearing = new AppearingResolver().resolveAppearing("* {{g|Thanos (Earth-4321)|Merges with {{a|[[Thanos (Earth-616)]]}}}}");
+    assert.equal(appearing[0].id, "Thanos_(Earth-4321)");
+    assert.equal(appearing[0].tags, "MERGES WITH");
+    assert.equal(appearing[1].id, "Thanos_(Earth-616)");
+    assert.isEmpty(appearing[1].tags);
+  });
+
+  it("custom name without []", function () {
+    const appearing = new AppearingResolver().resolveAppearing("* {{RecapOnly|Mar-Vell (Earth-616)|Captain Mar-Vell}}");
+    assert.equal(appearing[0].id, "Mar-Vell_(Earth-616)");
+    assert.equal(appearing[0].tags, "RECAPONLY");
+  });
+
+  it("Two characters", function () {
+    const appearing = new AppearingResolver().resolveAppearing("* {{a|[[Phoenix Force (Earth-616)|Phoenix]]}} {{g|[[Jean Grey (Earth-616)|(Jean Grey)]]|Past}}");
+    assert.equal(appearing[0].id, "Phoenix_Force_(Earth-616)");
+    assert.isEmpty(appearing[0].tags);
+    assert.equal(appearing[1].id, "Jean_Grey_(Earth-616)");
+    assert.equal(appearing[1].tags, "PAST");
+  });
 });

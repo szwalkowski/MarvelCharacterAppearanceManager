@@ -5,6 +5,7 @@ const DictionaryController = require('./dictionary/dictionaryController');
 const IssueController = require('./issue/issueController');
 const IssueIgnoredController = require('./issue/issueIgnoredController');
 const IssueFavouritesController = require('./issue/issueFavouritesController');
+const IssueMassUpdateService = require('./issue/issueMassUpdateService');
 const UserController = require('./user/userController');
 const FeedController = require("./feed/feedController");
 const IssueManager = require("./issue/issueManager");
@@ -41,14 +42,15 @@ class App {
   #createDataEndpoints = function (server, dbConnection) {
     const userAccountManager = new UserAccountManager(dbConnection);
     const issueManager = new IssueManager(userAccountManager, dbConnection);
+    const issueMassUpdateService = new IssueMassUpdateService(issueManager, dbConnection);
     const router = express.Router();
     new CharacterController(router, issueManager, userAccountManager, dbConnection);
     new DictionaryController(router, dbConnection, userAccountManager);
     new UserController(router, userAccountManager);
-    new IssueController(router, issueManager, userAccountManager);
+    new IssueController(router, issueManager, userAccountManager, issueMassUpdateService);
     new IssueIgnoredController(router, userAccountManager);
     new IssueFavouritesController(router, userAccountManager);
-    new FeedController(router, userAccountManager, issueManager, dbConnection);
+    new FeedController(router, userAccountManager, issueManager, dbConnection, issueMassUpdateService);
     server.use("/api", router);
   };
 
