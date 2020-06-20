@@ -21,15 +21,14 @@
             )}&issueVolume=${encodeURIComponent(volumeNo)}`
           "
         >
-          {{ volumeNo }}
+          Volume {{ volumeNo }} <small class="text-light">- ({{ volumeCount }})</small>
         </router-link>
         <router-link
           v-else
-          :to="`/issue?issueName=${encodeURIComponent(issue.key)}`"
+          :to="`/issue?issueName=${encodeURIComponent(element.name)}`"
         >
-          n/a
+          Volume <small class="text-light">- ({{ volumeCount }})</small>
         </router-link>
-        (Issue count: {{ volumeCount }})
       </div>
     </div>
   </div>
