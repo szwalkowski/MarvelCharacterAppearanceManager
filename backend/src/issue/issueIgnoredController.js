@@ -16,7 +16,9 @@ module.exports = class {
     server.get("/issues/ignored", async (req, res) => {
       userAccountManager.findUserIgnoredIssuesAsync(extractIdToken(req))
         .then(issues => {
-          res.end(JSON.stringify(issues.ignored));
+          res.end(JSON.stringify(issues.ignored.map(issueId => {
+            return { issueId }
+          })));
         })
         .catch(error => {
           res.status(500).send(error.toString());

@@ -60,13 +60,15 @@
   </div>
 </template>
 <script>
-import IssueRowList from "@/components/listing/IssueRowList";
 import CharacterRowList from "@/components/listing/CharacterRowList";
+import IssueRowList from "@/components/listing/IssueRowList";
+import IssueSimpleRow from "@/components/issue/IssueSimpleRow";
 
 export default {
   components: {
     CharacterRowList,
-    IssueRowList
+    IssueRowList,
+    IssueSimpleRow
   },
   props: {
     elementsList: {

@@ -16,7 +16,9 @@ module.exports = class {
     server.get("/issues/favourites", async (req, res) => {
       userAccountManager.findUserFavouritesIssuesAsync(extractIdToken(req))
         .then(issues => {
-          res.end(JSON.stringify(issues.favourites));
+          res.end(JSON.stringify(issues.favourites.map(issueId => {
+            return { issueId }
+          })));
         })
         .catch(error => {
           res.status(500).send(error.toString());

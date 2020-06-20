@@ -3,24 +3,27 @@
     <IconLoading v-if="isLoading" />
     <div v-else>
       <div v-if="!issues.length">No {{ issueTypeView }} issues found.</div>
-      <div v-for="(issue, idx) in issues" :key="issue" class="row">
-        <button
-          @click="removeIssueFromList(idx, issue)"
-          class="btn btn-primary btn-sm m-sm-1"
-        >
-          X
-        </button>
-        <p class="pl-sm-3 mt-sm-1">{{ issue | removeDash }}</p>
-      </div>
+      <PageableList
+        v-else
+        :elementsList="issues"
+        paginatedElementComponent="IssueSimpleRow"
+        type="issue"
+        :filterMethod="filter"
+      />
     </div>
   </div>
 </template>
 <script>
-import IconLoading from "@/components/icon/IconLoading";
-import { mapGetters, mapMutations, mapActions } from "vuex";
+import IconLoading from "../icon/IconLoading";
+import PageableList from "../listing/PageableList";
+import { mapGetters, mapMutations } from "vuex";
 import axios from "axios";
 
 export default {
+  components: {
+    IconLoading,
+    PageableList
+  },
   props: ["issueTypeView"],
   data() {
     return {
@@ -36,19 +39,18 @@ export default {
       this.loadPageData(newValue);
     }
   },
+  created() {
+    this.loadPageData(this.issueTypeView);
+  },
   methods: {
     ...mapMutations("loading", ["disableLoading", "enableLoading"]),
-    ...mapActions("issue", [
-      "changeIgnoreStateOfIssue",
-      "changeFavouriteStateOfIssue"
-    ]),
     loadPageData(issueTypeView) {
       this.enableLoading();
       axios
         .get(`issues/${issueTypeView}`, { mcamAuthenticated: true })
         .then(response => {
           if (response.data) {
-            this.issues = response.data.sort();
+            this.issues = response.data;
           }
         })
         .catch(err => {
@@ -58,34 +60,12 @@ export default {
           this.disableLoading();
         });
     },
-    removeIssueFromList(idx, issueId) {
-      let methodToCall;
-      if (this.issueTypeView === "ignored") {
-        methodToCall = this.changeIgnoreStateOfIssue;
-      } else if (this.issueTypeView === "favourites") {
-        methodToCall = this.changeFavouriteStateOfIssue;
-      } else {
-        console.error("Something went wrong with issue type view");
-      }
-      methodToCall({ issueId, state: false })
-        .then(() => {
-          this.issues.splice(idx, 1);
-        })
-        .catch(err => {
-          console.error(err);
-        });
+    filter(issueList, filter) {
+      const filterLowerCase = filter.toLowerCase();
+      return issueList.filter(issue => {
+        return issue.issueId.toLowerCase().includes(filterLowerCase);
+      });
     }
-  },
-  created() {
-    this.loadPageData(this.issueTypeView);
-  },
-  filters: {
-    removeDash(title) {
-      return title.replace(/_/g, " ");
-    }
-  },
-  components: {
-    IconLoading
   }
 };
 </script>

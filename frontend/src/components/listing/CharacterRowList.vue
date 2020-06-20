@@ -18,7 +18,8 @@
             `/character?characterId=${encodeURIComponent(universe.characterId)}`
           "
         >
-          {{ universe.characterId | underscoresToSpaces }} <small class="text-light">- ({{ universe.numberOfIssues }})</small>
+          {{ universe.characterId | underscoresToSpaces }}
+          <small class="text-light">- ({{ universe.numberOfIssues }})</small>
         </router-link>
       </div>
     </div>

@@ -2,28 +2,31 @@
   <div class="row">
     <div class="card btn-gr col-auto">
       <button
-        @click="selectedComponent = 'AccountInfo'"
         class="btn btn-secondary"
+        @click="selectedComponent = 'AccountInfo'"
       >
         Account info
       </button>
-      <button @click="showFavourites()" class="btn btn-secondary">
+      <button class="btn btn-secondary" @click="showReadIssues()">
+        Read issues
+      </button>
+      <button class="btn btn-secondary" @click="showFavourites()">
         Favourite issues
       </button>
-      <button @click="showIgnored()" class="btn btn-secondary">
+      <button class="btn btn-secondary" @click="showIgnored()">
         Ignored issues
       </button>
       <button
-        @click="selectedComponent = 'AccountDeletion'"
         class="btn btn-secondary"
+        @click="selectedComponent = 'AccountDeletion'"
       >
         Remove account
       </button>
     </div>
     <component
-      class="flex-fill"
       :is="selectedComponent"
       :issueTypeView="issueTypeView"
+      class="flex-fill"
     />
   </div>
 </template>
@@ -50,6 +53,10 @@ export default {
     },
     showIgnored() {
       this.issueTypeView = "ignored";
+      this.selectedComponent = "IssueSimpleList";
+    },
+    showReadIssues() {
+      this.issueTypeView = "read";
       this.selectedComponent = "IssueSimpleList";
     }
   },

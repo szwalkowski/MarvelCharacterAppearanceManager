@@ -17,6 +17,7 @@ module.exports = class {
     this.#provideUrlToIssues(server, issueManager);
     this.#provideGetAllVolumeOfIssues(server, issueManager, userAccountManager);
     this.#providePostIssueUpload(server, issueMassUpdateService, userAccountManager);
+    this.#provideGetIssuesRead(server, userAccountManager);
   };
 
   #prepareChangeStatusEndpoint = function (server, issueManager) {
@@ -134,6 +135,38 @@ module.exports = class {
         });
       } else {
         res.status(401).end("Unauthorized");
+      }
+    })
+  };
+
+  #provideGetIssuesRead = function (server, userAccountManager) {
+    server.get("/issues/read", async (req, res) => {
+      const user = await userAccountManager.findUserByIdTokenAsync(extractIdToken(req));
+      if (!user) {
+        res.status(401).end("Unauthorized");
+      } else {
+        userAccountManager.findUserByIdTokenAsync(extractIdToken(req))
+          .then(user => {
+            user.issuesStatuses.sort((a, b) => {
+              if (a.updateTime) {
+                if (b.updateTime) {
+                  if (a.updateTime > b.updateTime) {
+                    return -1;
+                  }
+                  return 1;
+                }
+                return -1;
+              }
+              if (b.updateTime) {
+                return 1;
+              }
+              return 0;
+            });
+            res.end(JSON.stringify(user.issuesStatuses));
+          })
+          .catch(error => {
+            res.status(500).send(error.toString());
+          });
       }
     })
   };

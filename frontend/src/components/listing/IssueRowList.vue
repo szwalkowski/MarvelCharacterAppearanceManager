@@ -21,7 +21,8 @@
             )}&issueVolume=${encodeURIComponent(volumeNo)}`
           "
         >
-          Volume {{ volumeNo }} <small class="text-light">- ({{ volumeCount }})</small>
+          Volume {{ volumeNo }}
+          <small class="text-light">- ({{ volumeCount }})</small>
         </router-link>
         <router-link
           v-else

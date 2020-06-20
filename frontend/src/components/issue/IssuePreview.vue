@@ -217,7 +217,9 @@ export default {
             });
           }
           this.updateStories();
-          this.markIssueAsFn({ status, characterId });
+          if (this.markIssueAsFn) {
+            this.markIssueAsFn({ status, characterId });
+          }
         })
         .catch(error => {
           console.error(error);
@@ -262,7 +264,9 @@ export default {
       this.changeFavouriteStateOfIssue({ issueId: this.issue._id, state })
         .then(() => {
           this.issue.isFavourite = state;
-          this.markIssueAsFn({ status: "favourite", state });
+          if (this.markIssueAsFn) {
+            this.markIssueAsFn({ status: "favourite", state });
+          }
         })
         .catch(err => {
           console.error(err);
@@ -272,7 +276,9 @@ export default {
       this.changeIgnoreStateOfIssue({ issueId: this.issue._id, state })
         .then(() => {
           this.issue.isIgnored = state;
-          this.markIssueAsFn({ status: "ignore", state });
+          if (this.markIssueAsFn) {
+            this.markIssueAsFn({ status: "ignore", state });
+          }
         })
         .catch(err => {
           console.error(err);
