@@ -48,39 +48,79 @@ module.exports = class {
   }
 
   async findUserByIdTokenAsync(idToken) {
-    return this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken });
+    let user = await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken });
+    if (!user) {
+      user = await this.#tryRelogAsync(idToken);
+    }
+    return user;
   }
 
   async findUserIgnoredIssuesAsync(idToken) {
-    return await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { _id: 0, ignored: 1 });
+    let user = await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { _id: 0, ignored: 1 });
+    if (!user) {
+      user = await this.#tryRelogAsync(idToken, { _id: 0, ignored: 1 });
+    }
+    return user;
   }
 
   async markIssueAsIgnoredAsync(idToken, issueId) {
-    await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "ignored", [issueId]);
+    let user = await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "ignored", [issueId]);
+    if (!user) {
+      user = await this.#tryRelogAsync(idToken);
+      await this.#dbConnection.addToSet("users", { "sessionData.idToken": user.sessionData.idToken }, "ignored", [issueId]);
+    }
   }
 
   async removeIssueFromIgnoredAsync(idToken, issueId) {
-    await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "ignored", issueId);
+    let user = await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "ignored", issueId);
+    if (!user) {
+      user = await this.#tryRelogAsync(idToken);
+      await this.#dbConnection.pull("users", { "sessionData.idToken": user.sessionData.idToken }, "ignored", issueId);
+    }
   }
 
   async findUserFavouritesIssuesAsync(idToken) {
-    return await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { _id: 0, favourites: 1 });
+    let user = await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, { _id: 0, favourites: 1 });
+    if (!user) {
+      user = await this.#tryRelogAsync(idToken, { _id: 0, favourites: 1 });
+    }
+    return user;
   }
 
   async markIssueAsFavouriteAsync(idToken, issueId) {
-    await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "favourites", [issueId]);
+    let user = await this.#dbConnection.addToSet("users", { "sessionData.idToken": idToken }, "favourites", [issueId]);
+    if (!user) {
+      user = await this.#tryRelogAsync(idToken);
+      await this.#dbConnection.addToSet("users", { "sessionData.idToken": user.sessionData.idToken }, "favourites", [issueId]);
+    }
   }
 
   async removeIssueFromFavouriteAsync(idToken, issueId) {
-    await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "favourites", issueId);
+    let user = await this.#dbConnection.pull("users", { "sessionData.idToken": idToken }, "favourites", issueId);
+    if (!user) {
+      user = await this.#tryRelogAsync(idToken);
+      await this.#dbConnection.pull("users", { "sessionData.idToken": user.sessionData.idToken }, "ignored", issueId);
+    }
   }
 
   async isAdminLoggedAsync(idToken) {
     if (!idToken) {
       return false;
     }
-    const user = await this.#dbConnection.findOneAsync("users", { _id: process.env.ADMIN_USER_ID, "sessionData.idToken": idToken }, { _id: 1 });
+    let user = await this.#dbConnection.findOneAsync("users", { _id: process.env.ADMIN_USER_ID, "sessionData.idToken": idToken }, { _id: 1 });
+    if (!user) {
+      user = (await this.#tryRelogAsync(idToken, { _id: 1 }))._id === process.env.ADMIN_USER_ID;
+    }
     return !!user;
+  }
+
+  #tryRelogAsync = async function(idToken, projection) {
+    const verificationData = await this.verifyIdTokenAsync(idToken);
+    if (!verificationData) {
+      throw new Error("Could not verify id token!");
+    }
+    await this.#addSessionWithUserCreationAsync(verificationData);
+    return await this.#dbConnection.findOneAsync("users", { "sessionData.idToken": idToken }, projection);
   }
 
   #addSessionWithUserCreationAsync = async function (sessionData) {
