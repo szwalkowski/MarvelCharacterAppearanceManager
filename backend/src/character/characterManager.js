@@ -8,7 +8,12 @@ module.exports = class {
   }
 
   async provideAllCharactersAvailableAsync() {
-    const allCharactersCursor = await this.#dbConnection.findAsync("characters", {}, { displayName: 1, realName: 1, aliases: 1, universe: 1 });
+    const allCharactersCursor = await this.#dbConnection.aggregateAsync("characters", {
+      $project: {
+        displayName: 1, realName: 1, aliases: 1, universe: 1,
+        numberOfIssues: { $cond: { if: { $isArray: "$issues" }, then: { $size: "$issues" }, else: 0 } }
+      }
+    });
     const allCharacters = await allCharactersCursor.toArray();
     const characters = [];
     allCharacters.forEach(character => {
@@ -17,7 +22,11 @@ module.exports = class {
         existingCharacterWithAliasIdx = characters.length;
         characters.push({ displayName: character.displayName, realName: character.realName, aliases: character.aliases.join(","), universes: [] });
       }
-      characters[existingCharacterWithAliasIdx].universes.push({ characterId: character._id, universe: character.universe });
+      characters[existingCharacterWithAliasIdx].universes.push({
+        characterId: character._id,
+        universe: character.universe,
+        numberOfIssues: character.numberOfIssues
+      });
     });
     return characters;
   };
@@ -66,7 +75,7 @@ module.exports = class {
     }
   }
 
-  #expandAppearances = function(issues, issuesToSave) {
+  #expandAppearances = function (issues, issuesToSave) {
     for (const issueToUpdate of issuesToSave) {
       const foundIssue = issues.find(issue => issue.id === issueToUpdate.id);
       if (foundIssue) {
