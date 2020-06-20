@@ -141,10 +141,10 @@ module.exports = class {
     );
   }
 
-  async getAllIssuesByVolume(issueName, issueVolume) {
+  async getAllIssuesByVolumeWithAnnualsAsync(issueName, issueVolume) {
     const iteratorOfVolumes = await this.#dbConnection.findAsync(
       "issues",
-      { "name": issueName, "volume": issueVolume && parseInt(issueVolume) },
+      { "name": { $in: [issueName, `${issueName} Annual`] }, "volume": issueVolume && parseInt(issueVolume) },
       { "issueNo": 1, "name": 1, "publishDateTimestamp": 1, "volume": 1, "appearances.characterAppearance.subtitle": 1 }
     );
     const volumes = await iteratorOfVolumes.toArray();

@@ -78,7 +78,7 @@ module.exports = class {
 
   #provideGetAllVolumeOfIssues = function (server, issueManager, userAccountManager) {
     server.get("/getAllVolumeOfIssues", async (req, res) => {
-      const fullVolumeOfIssuesPromise = issueManager.getAllIssuesByVolume(req.query.issueName, req.query.issueVolume);
+      const fullVolumeOfIssuesPromise = issueManager.getAllIssuesByVolumeWithAnnualsAsync(req.query.issueName, req.query.issueVolume);
       const idToken = extractIdToken(req);
       const userCharacterReadsPromise = idToken && userAccountManager.findUserByIdTokenAsync(idToken);
       await Promise.all([fullVolumeOfIssuesPromise, userCharacterReadsPromise])
