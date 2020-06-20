@@ -159,6 +159,11 @@ export default {
       for (let i = 0; i < this.pageSize; i++) {
         this.$set(this.selectedIndexes, i, false);
       }
+    },
+    pageCount(newPageCount) {
+      if (newPageCount <= this.currentPage) {
+        this.currentPage = Math.max(0, newPageCount - 1);
+      }
     }
   },
   methods: {
@@ -217,6 +222,9 @@ export default {
       }
       if (this.manualPage > this.pageCount) {
         this.manualPage = this.pageCount;
+      }
+      if (this.manualPage <= 0) {
+        this.manualPage = 1;
       }
     },
     markAllIssues() {

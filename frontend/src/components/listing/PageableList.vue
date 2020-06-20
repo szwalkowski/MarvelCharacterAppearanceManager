@@ -122,6 +122,13 @@ export default {
       );
     }
   },
+  watch: {
+    pageCount(newPageCount) {
+      if (newPageCount <= this.currentPage) {
+        this.currentPage = Math.max(0, newPageCount - 1);
+      }
+    }
+  },
   methods: {
     incrementPage() {
       this.currentPage++;
@@ -146,6 +153,9 @@ export default {
       }
       if (this.manualPage > this.pageCount) {
         this.manualPage = this.pageCount;
+      }
+      if (this.manualPage <= 0) {
+        this.manualPage = 1;
       }
     }
   }
