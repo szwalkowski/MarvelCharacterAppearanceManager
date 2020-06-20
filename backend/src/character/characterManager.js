@@ -21,6 +21,9 @@ module.exports = class {
       if (existingCharacterWithAliasIdx < 0) {
         existingCharacterWithAliasIdx = characters.length;
         characters.push({ displayName: character.displayName, realName: character.realName, aliases: character.aliases.join(","), universes: [] });
+      } else {
+        characters[existingCharacterWithAliasIdx].aliases = existingCharacterWithAliasIdx.aliases + "," + character.aliases.join(",");
+        characters[existingCharacterWithAliasIdx].realName = existingCharacterWithAliasIdx.realName + ", " + character.realName;
       }
       characters[existingCharacterWithAliasIdx].universes.push({
         characterId: character._id,
