@@ -41,8 +41,7 @@ module.exports = class {
     if (verificationData) {
       return {
         idToken,
-        userId: verificationData.uid,
-        userName: verificationData.name
+        userId: verificationData.uid
       }
     }
   }

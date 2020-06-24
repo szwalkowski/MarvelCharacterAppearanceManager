@@ -1,26 +1,30 @@
 <template>
-  <div id="app" class="container-sm">
-    <div class="header_div row">
-      <div class="col-sm pl-sm-5 p-sm-3">
-        <h1 class="header_title row" @click="navigateToHome">
-          MARVEL CHARACTER APPEARANCE
-        </h1>
-        <h2 class="header_subtitle row" @click="navigateToHome">
-          MANAGER
-        </h2>
+  <div id="app">
+    <div class="container-sm">
+      <div class="header_div row">
+        <div class="col-sm pl-sm-5 p-sm-3">
+          <h1 class="header_title row" @click="navigateToHome">
+            MARVEL CHARACTER APPEARANCE
+          </h1>
+          <h2 class="header_subtitle row" @click="navigateToHome">
+            MANAGER
+          </h2>
+        </div>
+      </div>
+      <McamTopBarNav class="row" />
+      <div>
+        <CharactersBarNav class="row" />
+        <router-view />
       </div>
     </div>
-    <McamTopBarNav class="row" />
-    <div>
-      <CharactersBarNav class="row" />
-      <router-view />
-    </div>
+    <PageFooter />
   </div>
 </template>
 <script>
 import "vue-loading-overlay/dist/vue-loading.css";
 import McamTopBarNav from "@/components/navigation/TopBarNav";
 import CharactersBarNav from "@/components/navigation/CharactersBarNav";
+import PageFooter from "@/components/navigation/PageFooter";
 
 export default {
   methods: {
@@ -32,7 +36,8 @@ export default {
   },
   components: {
     McamTopBarNav,
-    CharactersBarNav
+    CharactersBarNav,
+    PageFooter
   },
   created() {
     this.$store.dispatch("user/initFirebase");

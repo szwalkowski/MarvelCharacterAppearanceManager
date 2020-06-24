@@ -110,7 +110,7 @@ module.exports = class {
   async getIssueStatusForUserAsync(idToken, issueId) {
     return this.#dbConnection.aggregateAsync(
       "users",
-      {
+      [{
         $match: { "sessionData.idToken": idToken }
       },
       {
@@ -137,7 +137,7 @@ module.exports = class {
             }
           }
         }
-      }
+      }]
     );
   }
 

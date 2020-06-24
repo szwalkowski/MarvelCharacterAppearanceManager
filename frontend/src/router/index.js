@@ -72,6 +72,14 @@ const routes = [
     meta: {
       auth: true
     }
+  },
+  {
+    path: "/policy-privacy",
+    name: "policy-privacy",
+    component: () => import("../views/PolicyPrivacy"),
+    meta: {
+      auth: true
+    }
   }
 ];
 
