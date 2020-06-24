@@ -184,6 +184,30 @@ export default {
             characterAppearanceTypes: storyAppearance.appearanceTypes,
             read: appearance.read
           });
+          subStory.characters.sort((c1, c2) => {
+            if (c1.characterFocusType.includes("Featured")) {
+              return -1;
+            }
+            if (c2.characterFocusType.includes("Featured")) {
+              return 1;
+            }
+            if (c1.characterFocusType.includes("Antagonist")) {
+              return -1;
+            }
+            if (c2.characterFocusType.includes("Antagonist")) {
+              return 1;
+            }
+            if (c1.characterFocusType.includes("Supporting")) {
+              return -1;
+            }
+            if (c2.characterFocusType.includes("Supporting")) {
+              return 1;
+            }
+            if (c1.characterFocusType > c2.characterFocusType) {
+              return 1;
+            }
+            return -1;
+          });
         });
       });
       return stories;
