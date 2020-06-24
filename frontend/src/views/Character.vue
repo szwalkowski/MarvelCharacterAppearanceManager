@@ -287,9 +287,14 @@ export default {
   methods: {
     async loadIssuePage() {
       this.characterId = this.$route.query.characterId;
-      this.selectedFocusTypes = this.focusTypes;
-      this.showEmptyAppearanceTypes = true;
-      this.showEmptyFocusTypes = true;
+      const disabledAppearancesTypes =
+        JSON.parse(localStorage.getItem("disabledAppearanceTypes")) ||
+        this.provideDefaultDisabledAppearances();
+      this.showEmptyAppearanceTypes =
+        disabledAppearancesTypes.indexOf("Empty") === -1;
+      const disabledFocusTypes =
+        JSON.parse(localStorage.getItem("disabledFocusTypes")) || [];
+      this.showEmptyFocusTypes = disabledFocusTypes.indexOf("Empty") === -1;
       axios
         .get("getAllIssuesForCharacter", {
           params: {
@@ -300,19 +305,12 @@ export default {
         .then(response => {
           this.characterData = response.data.characterData;
           this.appearanceTypes = response.data.setOfAppearanceTypes;
-          const disabledAppearancesTypes =
-            JSON.parse(localStorage.getItem("disabledAppearanceTypes")) || [];
-          this.showEmptyAppearanceTypes =
-            disabledAppearancesTypes.indexOf("Empty") === -1;
           this.selectedAppearances = response.data.setOfAppearanceTypes.filter(
             appearance => {
               return disabledAppearancesTypes.indexOf(appearance) === -1;
             }
           );
           this.focusTypes = response.data.setOfFocusTypes;
-          const disabledFocusTypes =
-            JSON.parse(localStorage.getItem("disabledFocusTypes")) || [];
-          this.showEmptyFocusTypes = disabledFocusTypes.indexOf("Empty") === -1;
           this.selectedFocusTypes = response.data.setOfFocusTypes.filter(
             appearance => {
               return disabledFocusTypes.indexOf(appearance) === -1;
@@ -392,6 +390,34 @@ export default {
     },
     expand() {
       this.show = true;
+    },
+    provideDefaultDisabledAppearances() {
+      const defaultDisabled = [
+        "Behind the scenes",
+        "Minor",
+        "Corpse",
+        "Drawing",
+        "Dream",
+        "Illusion",
+        "Appears on a computer screen, TV, or hologram only",
+        "Photo",
+        "Poster",
+        "Recap",
+        "Statue",
+        "Toy",
+        "Vision",
+        "Voice",
+        "Mentioned",
+        "Referenced",
+        "Named only",
+        "Invoked",
+        "Carving"
+      ];
+      localStorage.setItem(
+        "disabledAppearanceTypes",
+        JSON.stringify(defaultDisabled)
+      );
+      return defaultDisabled;
     }
   }
 };
