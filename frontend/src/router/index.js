@@ -80,6 +80,14 @@ const routes = [
     meta: {
       auth: true
     }
+  },
+  {
+    path: "/donation",
+    name: "donation",
+    component: () => import("../views/DonationLandingPage"),
+    meta: {
+      auth: true
+    }
   }
 ];
 

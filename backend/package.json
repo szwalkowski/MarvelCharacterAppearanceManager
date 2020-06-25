@@ -2,6 +2,11 @@
   "name": "backend",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "node src/app.js",
+    "copy": "cp *.json ../../mcam_deploy && cp -r ./src ../../mcam_deploy && cp -r ./dist ../../mcam_deploy",
+    "deploy": "npm run copy && cd ../../mcam_deploy && git add . && git commit -m 'deploy' && git push heroku master"
+  },
   "dependencies": {
     "async": "^3.2.0",
     "axios": "^0.19.2",
@@ -9,10 +14,10 @@
     "cron": "^1.8.2",
     "express": "~4.17.1",
     "firebase-admin": "^8.12.1",
-    "helmet": "^3.22.0",
+    "helmet": "^3.23.2",
     "jquery": "^3.5.1",
     "jsdom": "^16.2.2",
-    "mongodb": "^3.5.8",
+    "mongodb": "^3.5.9",
     "node-cache": "^5.1.1",
     "serve-static": "^1.14.1",
     "validator": "^12.2.0"
