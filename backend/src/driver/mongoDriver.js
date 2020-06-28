@@ -9,7 +9,7 @@ module.exports = class {
     const user = process.env.MCAM_DB_USER;
     const pwd = process.env.MCAM_DB_PWD;
     const dbName = process.env.MCAM_DB_NAME;
-    const uri = `mongodb://${user}:${pwd}@${ip}:${port}/${dbName}?retryWrites=true&w=majority`;
+    const uri = `mongodb${port ? '' : '+srv'}://${user}:${pwd}@${ip}${port ? ':' + port : ''}/${dbName}?retryWrites=true&w=majority`;
     MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true })
       .connect()
       .then(connection => {
