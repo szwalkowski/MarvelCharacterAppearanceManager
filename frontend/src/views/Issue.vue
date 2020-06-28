@@ -1,6 +1,7 @@
 <template>
   <div class="container">
-    <div class="col-sm">
+    <IconLoading v-if="isLoading" />
+    <div v-else class="col-sm">
       <h4 class="row">
         {{ `Filtered ${issues.length} issues of ${totalIssues} total:` }}
       </h4>
@@ -31,12 +32,14 @@
   </div>
 </template>
 <script>
-import IssuePageableTableView from "@/components/issue/IssuePageableTableView";
+import IconLoading from "../components/icon/IconLoading";
+import IssuePageableTableView from "../components/issue/IssuePageableTableView";
 import axios from "axios";
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
   components: {
+    IconLoading,
     IssuePageableTableView
   },
   filters: {
@@ -62,6 +65,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("loading", ["isLoading"]),
     ...mapGetters("user", ["user", "isUserLoadInProgress"]),
     issues() {
       if (!this.issuesData) {
@@ -101,7 +105,9 @@ export default {
     this.loadIssuePage();
   },
   methods: {
+    ...mapMutations("loading", ["disableLoading", "enableLoading"]),
     async loadIssuePage() {
+      this.enableLoading();
       this.issueName = this.$route.query.issueName;
       this.issueVolume = this.$route.query.issueVolume;
       axios
@@ -118,6 +124,9 @@ export default {
         })
         .catch(error => {
           console.error(error);
+        })
+        .finally(() => {
+          this.disableLoading();
         });
     }
   }

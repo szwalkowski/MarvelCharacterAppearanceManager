@@ -4,7 +4,7 @@
     style="border: 1px dotted #82cc6f;"
   >
     <div class="col-sm my-auto font-weight-bold text-info">
-      {{ element.name }}
+      {{ element.name | parse }}
     </div>
     <div class="col-sm my-auto text-center font-italic font-weight-bold">
       <div
@@ -35,7 +35,14 @@
   </div>
 </template>
 <script>
+const domParser = new DOMParser();
+
 export default {
+  filters: {
+    parse(text) {
+      return domParser.parseFromString(text, "text/html").body.textContent;
+    }
+  },
   props: {
     element: {
       type: Object,

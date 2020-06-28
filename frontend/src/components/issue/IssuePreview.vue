@@ -12,7 +12,7 @@
             style="width: 30px"
           />
           <a :href="issue.url | adjustLinkToIssue" target="_blank">
-            {{ issue.name }}
+            {{ issue.name | parse }}
           </a>
         </h3>
       </div>
@@ -65,11 +65,20 @@
             </button>
           </div>
           <h4 class="col-sm-6">
-            <a href="#" @click="navigateToCharacter(character.characterId)">
-              {{ character.characterDisplayName }} ({{
-                character.characterUniverse
-              }})
-            </a>
+            <router-link
+              tag="a"
+              :to="
+                `/character?characterId=${encodeURIComponent(
+                  character.characterId
+                )}`
+              "
+            >
+              <span @click="navigateToCharacter()">
+                {{ character.characterDisplayName }} ({{
+                  character.characterUniverse
+                }})
+              </span>
+            </router-link>
           </h4>
           <p class="col-sm-auto">{{ character.characterFocusType }}</p>
           <p class="col-sm-auto">{{ character.characterAppearanceTypes }}</p>
@@ -123,6 +132,8 @@ import IssueImage from "@/components/issue/IssueImage";
 import axios from "axios";
 import { mapActions, mapGetters } from "vuex";
 
+const domParser = new DOMParser();
+
 export default {
   filters: {
     timestampToDate(timestamp) {
@@ -136,6 +147,9 @@ export default {
     },
     adjustLinkToIssue(linkToIssue) {
       return `https://marvel.fandom.com${linkToIssue}`;
+    },
+    parse(text) {
+      return domParser.parseFromString(text, "text/html").body.textContent;
     }
   },
   props: ["issueId", "markIssueAsFn"],
@@ -212,11 +226,7 @@ export default {
       });
       return stories;
     },
-    navigateToCharacter(characterId) {
-      const newRoute = `/character?characterId=${characterId}`;
-      if (decodeURIComponent(this.$route.fullPath) !== newRoute) {
-        this.$router.push(newRoute);
-      }
+    navigateToCharacter() {
       this.$emit("close");
     },
     changeStatus(status, characterId) {

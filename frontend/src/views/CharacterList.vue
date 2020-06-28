@@ -1,6 +1,8 @@
 <template>
   <div>
+    <IconLoading v-if="isLoading" />
     <PageableList
+      v-else
       :elementsList="characterList"
       paginatedElementComponent="CharacterRowList"
       type="character"
@@ -9,11 +11,14 @@
   </div>
 </template>
 <script>
+import IconLoading from "../components/icon/IconLoading";
 import PageableList from "../components/listing/PageableList";
 import axios from "axios";
+import { mapGetters, mapMutations } from "vuex";
 
 export default {
   components: {
+    IconLoading,
     PageableList
   },
   data() {
@@ -22,7 +27,11 @@ export default {
       characterFilter: ""
     };
   },
+  computed: {
+    ...mapGetters("loading", ["isLoading"])
+  },
   created() {
+    this.enableLoading();
     axios
       .get("getAllCharacters")
       .then(res => {
@@ -43,9 +52,13 @@ export default {
           this.characterList.push(character);
         });
       })
-      .catch(error => console.log(error));
+      .catch(error => console.log(error))
+      .finally(() => {
+        this.disableLoading();
+      });
   },
   methods: {
+    ...mapMutations("loading", ["disableLoading", "enableLoading"]),
     filter(characterList, filter) {
       const filterLowerCase = filter.toLowerCase();
       return characterList.filter(character => {

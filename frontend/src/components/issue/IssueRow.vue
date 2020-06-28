@@ -48,7 +48,7 @@
           style="width: 15px"
         />
         <a type="button" class="text-info" @click="showIssueDetails(issue.id)">
-          {{ issue.name }}
+          {{ issue.name | parse }}
         </a>
       </td>
       <td>{{ issue.publishDateTimestamp | timestampToDate }}</td>
@@ -74,6 +74,7 @@
 import IssuePreview from "@/components/issue/IssuePreview";
 import IconLoading from "@/components/icon/IconLoading";
 import { mapActions, mapGetters } from "vuex";
+const domParser = new DOMParser();
 
 export default {
   components: {
@@ -88,6 +89,9 @@ export default {
         month = "0" + month;
       }
       return [year, month].join("-");
+    },
+    parse(text) {
+      return domParser.parseFromString(text, "text/html").body.textContent;
     }
   },
   props: {

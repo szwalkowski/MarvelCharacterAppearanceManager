@@ -60,9 +60,9 @@
   </div>
 </template>
 <script>
-import CharacterRowList from "@/components/listing/CharacterRowList";
-import IssueRowList from "@/components/listing/IssueRowList";
-import IssueSimpleRow from "@/components/issue/IssueSimpleRow";
+import CharacterRowList from "./CharacterRowList";
+import IssueRowList from "./IssueRowList";
+import IssueSimpleRow from "../issue/IssueSimpleRow";
 
 export default {
   components: {

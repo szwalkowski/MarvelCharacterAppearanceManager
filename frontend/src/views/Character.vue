@@ -1,6 +1,7 @@
 <template>
   <div class="container">
-    <div class="col-sm">
+    <IconLoading v-if="isLoading" />
+    <div v-else class="col-sm">
       <h3 class="row text-info">
         {{ `${characterId}` | removeDash }}
       </h3>
@@ -134,13 +135,15 @@
   </div>
 </template>
 <script>
+import IconLoading from "../components/icon/IconLoading";
 import IssuePageableTableView from "@/components/issue/IssuePageableTableView";
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
 import axios from "axios";
 import vClickOutside from "v-click-outside";
 
 export default {
   components: {
+    IconLoading,
     IssuePageableTableView
   },
   directives: {
@@ -168,6 +171,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters("loading", ["isLoading"]),
     ...mapGetters("user", ["user", "isUserLoadInProgress"]),
     issues() {
       if (!this.characterData) {
@@ -285,7 +289,9 @@ export default {
     this.loadIssuePage();
   },
   methods: {
+    ...mapMutations("loading", ["disableLoading", "enableLoading"]),
     async loadIssuePage() {
+      this.enableLoading();
       this.characterId = this.$route.query.characterId;
       const disabledAppearancesTypes =
         JSON.parse(localStorage.getItem("disabledAppearanceTypes")) ||
@@ -320,6 +326,9 @@ export default {
         })
         .catch(error => {
           console.error(error);
+        })
+        .finally(() => {
+          this.disableLoading();
         });
       this.addOccurrenceToLastVisitedCharacter(this.characterId);
     },
