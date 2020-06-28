@@ -17,7 +17,11 @@
     <p>All new issues should be added automatically every once in a while.</p>
     <p>
       If you find something not updated or missing character or any bug, please
-      <a href="mailto: app.mcam@gmail.com">contact me!</a>
+      contact me! Email address:
+      <a href="mailto: app.mcam@gmail.com">app.mcam@gmail.com</a>
+      or
+      <a href="https://www.facebook.com/mcamapp">Facebook fan page</a>
+      .
     </p>
     <p>
       You can also write issue directly on
@@ -31,8 +35,6 @@
     <h4 class="text-warning">Important note</h4>
     <p class="text-warning">
       This is 'dry-run'.<br />
-      It's hosted using free tier on Heroku - that means it has limited
-      availability. <br />
       Hosting might change and as well the address. But I will do my best to
       migrate your comics data history. <br />
       I am looking for patreons/donations that is needed for hosting (host
